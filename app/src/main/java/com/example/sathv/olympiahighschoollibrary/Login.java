@@ -1,10 +1,11 @@
 package com.example.sathv.olympiahighschoollibrary;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,9 +15,7 @@ import android.widget.Toast;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  * A login screen that offers login via email/password.
@@ -28,6 +27,8 @@ public class Login extends Activity {
     private EditText mPasswordView;
     private View mLoginFormView;
 
+   private Button buttons;
+
     String ip, database, un, pd;
 
     @Override
@@ -38,30 +39,56 @@ public class Login extends Activity {
         mUsername = (EditText) findViewById(R.id.username);
         mPasswordView = (EditText) findViewById(R.id.password);
 
+        buttons = (Button) findViewById(R.id.signUp);
+
+        /*buttons.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(Login.this,
+                        SignUp.class);
+                startActivity(myIntent);
+            }
+        });*/
+
+
         mPasswordView.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    Connection con = connectionclass(un, pd, database, ip);
-                    Toast.makeText(Login.this, "FAIL", Toast.LENGTH_LONG).show();
+
+                   /* Connection con = createConnection(un, pd, database, ip);
+
+                    if (con == null) {
+                        Toast.makeText(Login.this, "FAIL login", Toast.LENGTH_LONG).show();
+                    }
 
                     try {
-                        String query = "select * from Login where Username= '" + mUsername.toString() + "' and Password = '" + mPasswordView.toString() + "'  ";
-                        Statement stmt = con.createStatement();
-                        ResultSet rs = stmt.executeQuery(query);
-                        if (rs.next()) {
-                            Toast.makeText(Login.this, "Login Success", Toast.LENGTH_LONG).show();
-                            con.close();
-                            Intent intent = new Intent(getApplicationContext(), Home.class);
-                            startActivity(intent);
+                        String query = "select * from UserInfo where Username=? and Password=?";
+                        PreparedStatement pst = con.prepareStatement(query);
+                        pst.setString(1, mUsername.getText().toString());
+                        pst.setString(2, mPasswordView.getText().toString());
+                        ResultSet rs = pst.executeQuery();
+                        int count = 0;
 
-                        } else {
-                            Toast.makeText(Login.this, "Login Invalid", Toast.LENGTH_LONG).show();
+                        while (rs.next()) {
+                            if (count == 1) {
+                                Toast.makeText(Login.this, "Login Success", Toast.LENGTH_LONG).show();
+                                con.close();
+                                Intent intent = new Intent(getApplicationContext(), Home.class);
+                                startActivity(intent);
 
+                            } else {
+                                Toast.makeText(Login.this, "Login Invalid", Toast.LENGTH_LONG).show();
+                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                    }
+                    }*/
+
+                    Intent intent = new Intent(getApplicationContext(), Activities.class);
+                    startActivity(intent);
+
                     return true;
+
                 }
                 return false;
             }
@@ -76,60 +103,90 @@ public class Login extends Activity {
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Connection con = connectionclass(un, pd, database, ip);
+                /*Connection con = createConnection(un, pd, database, ip);
 
-                if(con==null) {
+                if (con == null) {
                     Toast.makeText(Login.this, "FAIL login", Toast.LENGTH_LONG).show();
+                }
+                else{
+                    Toast.makeText(Login.this, "GOOD login", Toast.LENGTH_LONG).show();
                 }
 
                 try {
-                    String query = "select * from Login where Username= '" + mUsername.toString() + "' and Password = '" + mPasswordView.toString() + "'  ";
-                    Statement stmt = con.createStatement();
-                    ResultSet rs = stmt.executeQuery(query);
-                    if (rs.next()) {
-                        Toast.makeText(Login.this, "Login Success", Toast.LENGTH_LONG).show();
-                        con.close();
-                        Intent intent = new Intent(getApplicationContext(), Home.class);
-                        startActivity(intent);
 
-                    } else {
-                        Toast.makeText(Login.this, "Login Invalid", Toast.LENGTH_LONG).show();
+                    String query = "select * from UserInfo where Username=? and Password=?";
+                    PreparedStatement pst = con.prepareStatement(query);
+                    pst.setString(1, mUsername.getText().toString());
+                    pst.setString(2, mPasswordView.getText().toString());
+                    ResultSet rs = pst.executeQuery();
+                    int count = 0;
 
+                    while (rs.next()) {
+                        if (count == 1) {
+                            Toast.makeText(Login.this, "Login Success", Toast.LENGTH_LONG).show();
+                            con.close();
+                            Intent intent = new Intent(getApplicationContext(), Home.class);
+                            startActivity(intent);
+
+                        } else {
+                            Toast.makeText(Login.this, "Login Invalid", Toast.LENGTH_LONG).show();
+                        }
                     }
+
+
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
+                }*/
+
+                Intent intent = new Intent(getApplicationContext(), Activities.class);
+                startActivity(intent);
             }
         });
 
-        mLoginFormView = findViewById(R.id.login_form);
+    }
+
+    public class DoLogin extends AsyncTask<String, String, String>{
+
+       // String z = ""
+
+        @Override
+        protected String doInBackground(String... strings) {
+            return null;
+        }
     }
 
 
-
-
-
-    public Connection connectionclass(String user, String password, String database, String server) {
+    @SuppressLint("NewApi")
+    public Connection createConnection(String user, String password, String database, String server) {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         Connection connection = null;
         String ConnectionURL = "";
         try {
             Class.forName("net.sourceforge.jtds.jdbc.Driver");
-            ConnectionURL = "jdbc:jtds:sqlserver://" + ip + ";"
-                    + "databaseName=" + database + ";user=" + un + ";password="
-                    + password + ";";
+            ConnectionURL = "jdbc:jtds:sqlserver://" + "localhost" + ";"
+                    + "databaseName=" + database + ";user=" + user + ";password="
+                    + password + ";instance=SQLEXPRESS";
             connection = DriverManager.getConnection(ConnectionURL);
+            Toast.makeText(Login.this, "Connection Success", Toast.LENGTH_LONG).show();
 
-        } catch (SQLException se) {
-            Log.e("error here 1 : ", se.getMessage());
+
         } catch (ClassNotFoundException e) {
-            Log.e("error here 2 : ", e.getMessage());
-        } catch (Exception e) {
-            Log.e("error here 3 : ", e.getMessage());
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return connection;
     }
+
+    public void action(View view ) {
+        Intent dashboard = new Intent(this, SignUp.class);
+        startActivity(dashboard);
+
+
+    }
+
+
 }
 
 
