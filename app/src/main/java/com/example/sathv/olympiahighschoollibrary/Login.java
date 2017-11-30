@@ -27,6 +27,8 @@ public class Login extends Activity {
     private EditText mPasswordView;
     private View mLoginFormView;
 
+    static String name;
+
    private Button buttons;
 
     String ip, database, un, pd;
@@ -84,8 +86,16 @@ public class Login extends Activity {
                         e.printStackTrace();
                     }*/
 
-                    Intent intent = new Intent(getApplicationContext(), Activities.class);
-                    startActivity(intent);
+                    name = mUsername.getText().toString();
+
+                    if(mPasswordView.getText().toString().isEmpty() || name.isEmpty()) {
+                        Toast.makeText(Login.this, "Missing field", Toast.LENGTH_LONG).show();
+                    }
+                    else{
+                        Intent intent = new Intent(getApplicationContext(), Activities.class);
+                        startActivity(intent);
+                    }
+
 
                     return true;
 
@@ -138,8 +148,15 @@ public class Login extends Activity {
                     e.printStackTrace();
                 }*/
 
-                Intent intent = new Intent(getApplicationContext(), Activities.class);
-                startActivity(intent);
+                name = mUsername.getText().toString();
+
+                if(mPasswordView.getText().toString().isEmpty() || name.isEmpty()) {
+                    Toast.makeText(Login.this, "Missing field", Toast.LENGTH_LONG).show();
+                }
+                else{
+                    Intent intent = new Intent(getApplicationContext(), Activities.class);
+                    startActivity(intent);
+                }
             }
         });
 

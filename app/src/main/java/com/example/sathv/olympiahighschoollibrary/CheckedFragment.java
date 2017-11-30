@@ -2,7 +2,6 @@ package com.example.sathv.olympiahighschoollibrary;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +12,16 @@ import android.view.ViewGroup;
 
 public class CheckedFragment extends Fragment {
 
-    View myView;
+    public CheckedFragment() {
 
-    @Nullable
+    }
+
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        myView = inflater.inflate(R.layout.checkedbooks, container,false);
-        return super.onCreateView(inflater, container, savedInstanceState);
+
+    public View onCreateView(LayoutInflater inflater,  ViewGroup container, Bundle savedInstanceState) {
+
+        getActivity().setTitle("Checked out books");
+
+        return inflater.inflate(R.layout.checkedbooks,container,false);
     }
 }

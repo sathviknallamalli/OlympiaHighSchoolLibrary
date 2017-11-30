@@ -10,9 +10,9 @@ import android.view.ViewGroup;
  * Created by sathv on 11/28/2017.
  */
 
-public class MapFragment extends Fragment {
+public class HomeFragment extends Fragment {
 
-    public MapFragment() {
+    public HomeFragment() {
 
     }
 
@@ -20,8 +20,8 @@ public class MapFragment extends Fragment {
 
     public View onCreateView(LayoutInflater inflater,  ViewGroup container, Bundle savedInstanceState) {
 
-        getActivity().setTitle("Map of the OHS library");
+        getActivity().setTitle("Home");
 
-        return inflater.inflate(R.layout.map,container,false);
+        return inflater.inflate(R.layout.home,container,false);
     }
 }
