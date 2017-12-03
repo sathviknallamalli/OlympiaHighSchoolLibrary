@@ -23,7 +23,8 @@
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
-        android:layout_height="566dp"
-        tools:layout_editor_absoluteY="130dp"></FrameLayout>
+        android:layout_height="match_parent">
+
+    </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>

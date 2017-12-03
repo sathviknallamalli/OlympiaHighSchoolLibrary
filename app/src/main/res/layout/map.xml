@@ -2,14 +2,19 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context="com.example.sathv.olympiahighschoollibrary.Activities">
 
     <TextView
         android:id="@+id/text"
-        android:layout_width="347dp"
-        android:layout_height="98dp"
+        android:layout_width="331dp"
+        android:layout_height="111dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="sans-serif"
         android:text="The OHS library is a place full of valuable information that is accessible to all and located conviniently in the school to allow easy sccess for everyone"
         android:textColor="@android:color/black"
         android:textSize="18sp"
@@ -18,12 +23,12 @@
         app:layout_constraintHorizontal_bias="0.513"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.038" />
+        app:layout_constraintVertical_bias="0.054" />
 
     <ImageView
         android:id="@+id/imageView3"
-        android:layout_width="364dp"
-        android:layout_height="199dp"
+        android:layout_width="362dp"
+        android:layout_height="189dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -36,15 +41,20 @@
 
     <TextView
         android:id="@+id/directions"
-        android:layout_width="345dp"
-        android:layout_height="101dp"
+        android:layout_width="343dp"
+        android:layout_height="100dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:text="Located in the middle of the main hallway and in between the Halls 1 and 3 and Halls 2 and 4. It has a wide range of books with loads of information"
         android:textColor="@android:color/black"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.347"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.917" />
+        app:layout_constraintVertical_bias="0.898" />
 
 </android.support.constraint.ConstraintLayout>

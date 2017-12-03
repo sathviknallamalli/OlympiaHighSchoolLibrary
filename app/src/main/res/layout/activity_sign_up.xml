@@ -18,15 +18,15 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintHorizontal_bias="0.507"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.285" />
+        app:layout_constraintVertical_bias="0.268" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="336dp"
-        android:layout_height="279dp"
+        android:layout_height="313dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -36,7 +36,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.676">
+        app:layout_constraintVertical_bias="0.76">
 
         <EditText
             android:id="@+id/firstName"
@@ -68,7 +68,16 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:fontFamily="sans-serif"
-            android:hint="Enter your student id as your password"
+            android:hint="Password - student id"
+            android:inputType="numberPassword" />
+
+        <EditText
+            android:id="@+id/confirmPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:fontFamily="sans-serif"
+            android:hint="Confirm password"
             android:inputType="numberPassword" />
 
         <EditText
@@ -76,17 +85,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Enter an email you will check regularly"
+            android:hint="Email"
             android:inputType="textEmailAddress" />
 
-        <EditText
-            android:id="@+id/pinCode"
+        <Spinner
+            android:id="@+id/gradeOptions"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:fontFamily="sans-serif"
-            android:hint="Enter a 4-digit pin code as a backup"
-            android:inputType="number" />
+            android:layout_height="34dp" />
 
     </LinearLayout>
 
@@ -98,18 +103,19 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:onClick="registerToDatabase"
+        android:onClick="registerAction"
         android:text="Register"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="154dp"
-        android:layout_height="132dp"
+        android:layout_width="135dp"
+        android:layout_height="117dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"

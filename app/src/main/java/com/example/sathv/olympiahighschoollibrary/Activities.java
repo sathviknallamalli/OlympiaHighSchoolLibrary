@@ -31,6 +31,7 @@ public class Activities extends AppCompatActivity
         fragmentTransaction.replace(R.id.frameLayout,fragment);
         fragmentTransaction.commit();
 
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 

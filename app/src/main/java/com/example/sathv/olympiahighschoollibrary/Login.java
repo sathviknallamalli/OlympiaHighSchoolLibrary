@@ -57,7 +57,12 @@ public class Login extends Activity {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((keyCode == KeyEvent.KEYCODE_ENTER)) {
 
-                    Login();
+                    if (usernameField.getText().toString().trim().isEmpty() || passwordField.getText().toString().trim().isEmpty()) {
+                        Toast.makeText(getApplicationContext(), "Missing field(s)", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Login();
+                    }
+
 
                     return true;
                 }
@@ -70,7 +75,13 @@ public class Login extends Activity {
         login.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Login();
+
+                if (usernameField.getText().toString().trim().isEmpty() || passwordField.getText().toString().trim().isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Missing field(s)", Toast.LENGTH_SHORT).show();
+                } else {
+                    Login();
+                }
+
 
             }
         });
@@ -80,7 +91,7 @@ public class Login extends Activity {
     public void action(View view) {
         Intent dashboard = new Intent(this, SignUp.class);
         startActivity(dashboard);
-
+        //finish();
     }
 
     public void Login() {
@@ -95,6 +106,7 @@ public class Login extends Activity {
 
                     Intent activities = new Intent(getApplicationContext(), Activities.class);
                     startActivity(activities);
+                    finish();
                 } else {
                     Toast.makeText(getApplicationContext(), "Login incorrect", Toast.LENGTH_SHORT).show();
                 }
@@ -122,8 +134,6 @@ public class Login extends Activity {
         requestQueue.add(stringRequest);
 
     }
-
-
 
 }
 
