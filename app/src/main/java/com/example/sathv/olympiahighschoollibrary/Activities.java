@@ -9,6 +9,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,9 +29,11 @@ public class Activities extends AppCompatActivity
 
         HomeFragment fragment = new HomeFragment();
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frameLayout,fragment);
+        fragmentTransaction.replace(R.id.frameLayout, fragment);
         fragmentTransaction.commit();
 
+      //  Login l = new Login();
+       // l.getNameFromHost();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -55,8 +58,14 @@ public class Activities extends AppCompatActivity
 
         View v = navigationView.getHeaderView(0);
         TextView studentName = (TextView) v.findViewById(R.id.name);
-        studentName.setText(Login.name);
 
+
+        studentName.setText(Login.getFullName());
+        Log.d("BAD", "NAME HEADER SET" + Login.getFullName());
+
+        TextView email = (TextView) v.findViewById(R.id.email);
+        email.setText(Login.getEmail());
+        Log.d("BAD", "EMAIL HEADER SET" + Login.getEmail());
 
     }
 
@@ -109,6 +118,19 @@ public class Activities extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new MapFragment()).commit();
         } else if (id == R.id.nav_profile) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new ProfileFragment()).commit();
+
+
+            TextView name = (TextView) findViewById(R.id.fullName);
+            if (Login.getFullName() == null) {
+                Log.d("BAD", "NAME NULL");
+            } else {
+                name.setText(Login.getFullName());
+
+                TextView gr = (TextView) findViewById(R.id.grade);
+                gr.setText("Grade: " + Login.getGrade());
+            }
+
+
         } else if (id == R.id.nav_settings) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new SettingsFragment()).commit();
         } else if (id == R.id.nav_reminders) {

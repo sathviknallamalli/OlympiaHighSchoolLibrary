@@ -3,12 +3,15 @@ package com.example.sathv.olympiahighschoollibrary;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -37,7 +40,49 @@ public class Login extends Activity {
 
     ProgressBar pb;
 
-    static String name = "temporary for now";
+    public static String getName() {
+        return name;
+    }
+
+    public static void setName(String name) {
+        Login.name = name;
+    }
+
+    public static String getEmail() {
+        return email;
+    }
+
+    public static void setEmail(String email) {
+        Login.email = email;
+    }
+
+    public static String getGrade() {
+        return grade;
+    }
+
+    public static void setGrade(String grade) {
+        Login.grade = grade;
+    }
+
+    public static String getFullName() {
+        return fullName;
+    }
+
+    public static void setFullName(String fullName) {
+        Login.fullName = fullName;
+    }
+
+    static String name, email, grade, fullName;
+
+    public static String getResult() {
+        return result;
+    }
+
+    public static void setResult(String result) {
+        Login.result = result;
+    }
+
+    static String result;
 
     private Button buttons;
 
@@ -52,23 +97,19 @@ public class Login extends Activity {
 
         buttons = (Button) findViewById(R.id.signUp);
 
-
-        passwordField.setOnKeyListener(new View.OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if ((keyCode == KeyEvent.KEYCODE_ENTER)) {
-
+        passwordField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
                     if (usernameField.getText().toString().trim().isEmpty() || passwordField.getText().toString().trim().isEmpty()) {
                         Toast.makeText(getApplicationContext(), "Missing field(s)", Toast.LENGTH_SHORT).show();
                     } else {
-                        Login();
+                        loginCheck();
+                        getNameFromHost();
                     }
-
-
-                    return true;
                 }
                 return false;
             }
-
         });
 
         Button login = (Button) findViewById(R.id.logIn);
@@ -79,10 +120,9 @@ public class Login extends Activity {
                 if (usernameField.getText().toString().trim().isEmpty() || passwordField.getText().toString().trim().isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Missing field(s)", Toast.LENGTH_SHORT).show();
                 } else {
-                    Login();
+                    loginCheck();
+                    getNameFromHost();
                 }
-
-
             }
         });
 
@@ -94,7 +134,7 @@ public class Login extends Activity {
         //finish();
     }
 
-    public void Login() {
+    public void loginCheck() {
         String url = "https://sathviknallamalli.000webhostapp.com/loginwebhost.php";
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -102,13 +142,72 @@ public class Login extends Activity {
             @Override
             public void onResponse(String response) {
                 if (response.trim().equals("success")) {
-                    Toast.makeText(getApplicationContext(), "Login success!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "login success!", Toast.LENGTH_SHORT).show();
 
+
+                    Log.d("BAD", "first inent of activities called when done is pressed");
                     Intent activities = new Intent(getApplicationContext(), Activities.class);
                     startActivity(activities);
                     finish();
+
+
                 } else {
-                    Toast.makeText(getApplicationContext(), "Login incorrect", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "login incorrect", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(), "error" + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        })
+
+        {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+
+                Map<String, String> params = new HashMap<>();
+
+                params.put("username", usernameField.getText().toString().trim());
+                params.put("password", passwordField.getText().toString().trim());
+
+                return params;
+
+            }
+        };
+
+        requestQueue.add(stringRequest);
+
+
+    }
+
+    public void getNameFromHost() {
+        String url = "https://sathviknallamalli.000webhostapp.com/namefromwebhost.php";
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                if (!response.trim().equals("incorrect") && response.length() >= 4) {
+                    name = response.trim();
+
+                    String[] splitStr = name.split("\\s+");
+                    String firstname = splitStr[0];
+                    Log.d("BAD", firstname);
+                    String lastname = splitStr[1];
+                    Log.d("BAD", lastname);
+                    String emailRaw = splitStr[2];
+                    Log.d("BAD", emailRaw);
+                    String gradeRaw = splitStr[3];
+                    Log.d("BAD", gradeRaw);
+
+                    setFullName(firstname + " " + lastname);
+                    Log.d("BAD", getFullName());
+                    setEmail(emailRaw + "");
+                    Log.d("BAD", getEmail());
+                    setGrade(gradeRaw + "");
+                    Log.d("BAD", getGrade());
+
                 }
             }
         }, new Response.ErrorListener() {

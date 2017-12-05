@@ -22,6 +22,9 @@ public class ProfileFragment extends Fragment {
 
         getActivity().setTitle("Your profile");
 
+
         return inflater.inflate(R.layout.profile,container,false);
     }
+
+
 }

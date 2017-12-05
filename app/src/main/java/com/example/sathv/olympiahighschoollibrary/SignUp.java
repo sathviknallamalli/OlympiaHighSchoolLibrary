@@ -88,6 +88,7 @@ public class SignUp extends Activity {
             }
             //passwords are identical
             else{
+                //ACCOUNT CREATED!!
                 registerToDatabase();
             }
 
@@ -104,6 +105,11 @@ public class SignUp extends Activity {
             public void onResponse(String response) {
                 if (response.trim().equals("success")) {
                     Toast.makeText(getApplicationContext(), "Your account has been created!", Toast.LENGTH_SHORT).show();
+
+                    Login l = new Login();
+
+                    l.name = firstName.getText().toString() + " " + lastName.getText().toString();
+                    l.email= email.getText().toString();
 
                     Intent activities = new Intent(getApplicationContext(), Activities.class);
                     startActivity(activities);
