@@ -32,6 +32,6 @@
         android:id="@+id/email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="this email should be retrieved from the database once connection is establlisehd" />
+        android:text="" />
 
 </LinearLayout>

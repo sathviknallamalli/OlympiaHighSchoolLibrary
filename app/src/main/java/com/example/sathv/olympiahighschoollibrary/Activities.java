@@ -21,6 +21,7 @@ public class Activities extends AppCompatActivity
 
     NavigationView navigationView = null;
     Toolbar toolbar = null;
+    Login l = new Login();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +33,8 @@ public class Activities extends AppCompatActivity
         fragmentTransaction.replace(R.id.frameLayout, fragment);
         fragmentTransaction.commit();
 
-      //  Login l = new Login();
-       // l.getNameFromHost();
+        //  Login l = new Login();
+        // l.getNameFromHost();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -60,12 +61,12 @@ public class Activities extends AppCompatActivity
         TextView studentName = (TextView) v.findViewById(R.id.name);
 
 
-        studentName.setText(Login.getFullName());
-        Log.d("BAD", "NAME HEADER SET" + Login.getFullName());
+        studentName.setText(l.getFullName());
+        Log.d("BAD", "NAME HEADER SET" + l.getFullName());
 
         TextView email = (TextView) v.findViewById(R.id.email);
-        email.setText(Login.getEmail());
-        Log.d("BAD", "EMAIL HEADER SET" + Login.getEmail());
+        email.setText(l.getEmail());
+        Log.d("BAD", "EMAIL HEADER SET" + l.getEmail());
 
     }
 
@@ -118,26 +119,15 @@ public class Activities extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new MapFragment()).commit();
         } else if (id == R.id.nav_profile) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new ProfileFragment()).commit();
-
-
-            TextView name = (TextView) findViewById(R.id.fullName);
-            if (Login.getFullName() == null) {
-                Log.d("BAD", "NAME NULL");
-            } else {
-                name.setText(Login.getFullName());
-
-                TextView gr = (TextView) findViewById(R.id.grade);
-                gr.setText("Grade: " + Login.getGrade());
-            }
-
-
         } else if (id == R.id.nav_settings) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new SettingsFragment()).commit();
         } else if (id == R.id.nav_reminders) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new RemindersFragment()).commit();
         } else if (id == R.id.nav_home) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new HomeFragment()).commit();
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_account) {
+            fragmentManager.beginTransaction().replace(R.id.frameLayout, new AccountFragment()).commit();
+        }else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
 

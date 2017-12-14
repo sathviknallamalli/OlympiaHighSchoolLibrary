@@ -40,35 +40,35 @@ public class Login extends Activity {
 
     ProgressBar pb;
 
-    public static String getName() {
+    public  String getName() {
         return name;
     }
 
-    public static void setName(String name) {
+    public  void setName(String name) {
         Login.name = name;
     }
 
-    public static String getEmail() {
+    public  String getEmail() {
         return email;
     }
 
-    public static void setEmail(String email) {
+    public  void setEmail(String email) {
         Login.email = email;
     }
 
-    public static String getGrade() {
+    public  String getGrade() {
         return grade;
     }
 
-    public static void setGrade(String grade) {
+    public  void setGrade(String grade) {
         Login.grade = grade;
     }
 
-    public static String getFullName() {
+    public  String getFullName() {
         return fullName;
     }
 
-    public static void setFullName(String fullName) {
+    public  void setFullName(String fullName) {
         Login.fullName = fullName;
     }
 
@@ -111,6 +111,9 @@ public class Login extends Activity {
                 return false;
             }
         });
+
+        //COPY GET NAME CODE INTO SIGN UP AFTER REGISTER, FIX PROFILE PAGE GETTING NAME FROM LOGIN PAGE
+        //TRY TO CONDENSE SQL METHODS AND MAKE REUSABLE
 
         Button login = (Button) findViewById(R.id.logIn);
         login.setOnClickListener(new OnClickListener() {
