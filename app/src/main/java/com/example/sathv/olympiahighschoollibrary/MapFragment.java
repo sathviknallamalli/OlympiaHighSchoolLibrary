@@ -25,7 +25,7 @@ public class MapFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         gyroscopeObserver = new GyroscopeObserver();
-        gyroscopeObserver.setMaxRotateRadian(Math.PI/9);
+        gyroscopeObserver.setMaxRotateRadian(Math.PI/5);
 
         View view = inflater.inflate(R.layout.map, container, false);
 
