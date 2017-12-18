@@ -109,17 +109,9 @@ public class SignUp extends Activity {
                 registerToDatabase();
 
                 Login l = new Login();
-                String emailRaw = l.getEmail();
-                String code = generateRandomString();
 
-                String subject = "Confirm your email address for Olympia High School Library";
-                String message = "from android studio";
 
-                SendMail sm = new SendMail(this, emailRaw, subject, message);
 
-                sm.execute();
-
-                //sendEmailVerification();
             }
 
         }
@@ -161,12 +153,20 @@ public class SignUp extends Activity {
                     l.setFullName(firstName.getText().toString() + " " + lastName.getText().toString());
                     Log.d("BAD", "after setting in SIGN UP " + l.getFullName());
                     l.setEmail(email.getText().toString());
-
+                    Log.d("BAD", "email is after register" + l.getEmail());
                     mDialog.dismiss();
 
-                    //Intent activities = new Intent(getApplicationContext(), Activities.class);
-                    //startActivity(activities);
-                    //finish();
+                    String emailRaw = l.getEmail();
+                    Log.d("BAD", "email" + emailRaw);
+                    String code = generateRandomString();
+
+                    String subject = "Confirm your email address for Olympia High School Library";
+                    String message = "Thank you for signing up for Olympia High School. Please enter this verification code in the app" + code;
+
+                    SendMail sm = new SendMail(SignUp.this, emailRaw, subject, message, code);
+
+                    sm.execute();
+
                 } else {
                     Toast.makeText(getApplicationContext(), "Oops something went wrong" + response, Toast.LENGTH_SHORT).show();
                 }
@@ -203,13 +203,14 @@ public class SignUp extends Activity {
     public void sendEmail() {
         Login l = new Login();
 
-        String email = l.getEmail();
+        String emailRaw = l.getEmail();
+        Log.d("BAD", "email" + emailRaw);
         String code = generateRandomString();
 
         String subject = "Confirm your email address for Olympia High School Library";
         String message = "from android studio";
 
-        SendMail sm = new SendMail(this, email, subject, message);
+        SendMail sm = new SendMail(this, emailRaw, subject, message, code);
 
         sm.execute();
     }

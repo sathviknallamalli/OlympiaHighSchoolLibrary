@@ -41,9 +41,19 @@ public class CatalogFragment extends Fragment {
         for (int i = 0; i < title.length; i++) {
             books.add(new Book(title[i], author[i], pageCount[i], picids[i]));
         }
-
         adapter = new BookAdapter(getActivity().getApplicationContext(), R.layout.customlayout, books);
         lvBook.setAdapter(adapter);
+
+       /* lvBook.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent activities = new Intent(getActivity().getApplication(), BookInformation.class);
+                startActivity(activities);
+
+                String selectedBookTitle = lvBook.getItemAtPosition(i).toString();
+                Log.d("thign", "onItemClick: " + selectedBookTitle);
+            }
+        });*/
 
         return view;
     }

@@ -28,7 +28,7 @@ public class Activities extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activities);
 
-        HomeFragment fragment = new HomeFragment();
+        CatalogFragment fragment = new CatalogFragment();
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, fragment);
         fragmentTransaction.commit();
