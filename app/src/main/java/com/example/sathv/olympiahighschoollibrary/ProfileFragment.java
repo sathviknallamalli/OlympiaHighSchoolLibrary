@@ -33,6 +33,11 @@ public class ProfileFragment extends Fragment {
         TextView gr = (TextView) view.findViewById(R.id.grade);
         gr.setText("Grade: " + l2.getGrade());
 
+        TextView val = (TextView) view.findViewById(R.id.value);
+        val.setText(BookInformation.checkedoutcount + "");
+
+        TextView reserval = (TextView) view.findViewById(R.id.reservedval);
+        reserval.setText(BookInformation.reservedcount + "");
         getActivity().setTitle("Your profile");
 
 

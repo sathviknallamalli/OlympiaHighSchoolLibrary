@@ -84,6 +84,26 @@ public class Login extends Activity {
 
     static String result;
 
+    public static String getPassword() {
+        return password;
+    }
+
+    public static void setPassword(String password) {
+        Login.password = password;
+    }
+
+    static String password;
+
+    public static String getUsername() {
+        return username;
+    }
+
+    public static void setUsername(String username) {
+        Login.username = username;
+    }
+
+    static String username;
+
     private Button buttons;
 
 
@@ -147,6 +167,9 @@ public class Login extends Activity {
                 if (response.trim().equals("success")) {
                     Toast.makeText(getApplicationContext(), "login success!", Toast.LENGTH_SHORT).show();
 
+                    setPassword(passwordField.getText().toString());
+                    setUsername(usernameField.getText().toString());
+                    Log.d("BAD", "password set in login field" + getPassword());
 
                     Log.d("BAD", "first inent of activities called when done is pressed");
                     Intent activities = new Intent(getApplicationContext(), Activities.class);
@@ -161,7 +184,7 @@ public class Login extends Activity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), "error" + error.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "error " + error.toString(), Toast.LENGTH_SHORT).show();
             }
         })
 

@@ -5,10 +5,6 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/ic_home_name"
-            android:title="Home"/>
-        <item
             android:id="@+id/nav_catalog"
             android:icon="@drawable/ic_stat_name"
             android:title="Catalog" />
@@ -40,8 +36,10 @@
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_settings"
             android:title="Settings" />
-
-
+        <item
+            android:id="@+id/nav_information"
+            android:icon="@drawable/ic_contact_info"
+            android:title="Information" />
 
     </group>
 

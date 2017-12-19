@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout"
@@ -64,14 +63,31 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.189" />
 
+    <TextView
+        android:id="@+id/bookCategory"
+        android:layout_width="166dp"
+        android:layout_height="27dp"
+        android:layout_alignBaseline="@+id/bookAuthor"
+        android:layout_alignBottom="@+id/bookAuthor"
+        android:layout_alignEnd="@+id/bookImage"
+        android:layout_alignRight="@+id/bookImage"
+        android:layout_marginEnd="35dp"
+        android:layout_marginRight="35dp"
+        android:text="TextView"
+        tools:layout_editor_absoluteX="132dp"
+        tools:layout_editor_absoluteY="275dp" />
+
     <ImageView
         android:id="@+id/bookImage"
         android:layout_width="84dp"
-        android:layout_height="121dp"
+        android:layout_height="104dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/bookTitle"
-        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="19dp"
+        android:layout_marginRight="19dp"
         app:srcCompat="@drawable/common_google_signin_btn_icon_dark"
-        tools:layout_editor_absoluteX="150dp"
-        tools:layout_editor_absoluteY="16dp" />
+        tools:layout_editor_absoluteX="173dp"
+        tools:layout_editor_absoluteY="148dp" />
 
 </RelativeLayout>

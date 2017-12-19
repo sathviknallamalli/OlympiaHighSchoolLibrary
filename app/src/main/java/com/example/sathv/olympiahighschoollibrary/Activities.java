@@ -123,10 +123,10 @@ public class Activities extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new SettingsFragment()).commit();
         } else if (id == R.id.nav_reminders) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new RemindersFragment()).commit();
-        } else if (id == R.id.nav_home) {
-            fragmentManager.beginTransaction().replace(R.id.frameLayout, new HomeFragment()).commit();
-        } else if (id == R.id.nav_account) {
+        }  else if (id == R.id.nav_account) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new AccountFragment()).commit();
+        } else if (id == R.id.nav_information) {
+            fragmentManager.beginTransaction().replace(R.id.frameLayout, new InformationFragment()).commit();
         }else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {

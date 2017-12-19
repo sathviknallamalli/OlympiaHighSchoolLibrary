@@ -107,13 +107,7 @@ public class SignUp extends Activity {
             else {
                 //ACCOUNT CREATED!!
                 registerToDatabase();
-
-                Login l = new Login();
-
-
-
             }
-
         }
 
     }

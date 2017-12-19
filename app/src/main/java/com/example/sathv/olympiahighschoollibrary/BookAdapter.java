@@ -38,11 +38,13 @@ public class BookAdapter extends ArrayAdapter<Book> {
         TextView bookTitle = (TextView) convertView.findViewById(R.id.bookTitle);
         TextView bookAuthor = (TextView) convertView.findViewById(R.id.bookAuthor);
         TextView bookCount = (TextView) convertView.findViewById(R.id.pageCount);
+        TextView bookCategory = (TextView) convertView.findViewById(R.id.bookCategory);
         ImageView bookImage = (ImageView) convertView.findViewById(R.id.bookImage);
 
         bookTitle.setText(book.title);
         bookAuthor.setText(book.author);
         bookCount.setText(book.pageCount + "");
+        bookCategory.setText(book.category);
         bookImage.setImageResource(book.imageid);
 
         return convertView;
