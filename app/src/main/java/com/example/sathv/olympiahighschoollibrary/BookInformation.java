@@ -16,14 +16,35 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class BookInformation extends AppCompatActivity {
 
     TextView status;
     EditText input;
-    ArrayList checkedoutbooks = new ArrayList();
+
     static int checkedoutcount = 0;
     static int reservedcount = 0;
+
+    static ArrayList checkedoutbookstitles = new ArrayList();
+    static ArrayList checkedoutbooksdates = new ArrayList();
+    static ArrayList checkedoutbooksimages = new ArrayList();
+
+    static ArrayList reservedbooktitles = new ArrayList();
+    static ArrayList reservedbookauthor = new ArrayList();
+    static ArrayList reservedbookimages = new ArrayList();
+
+
+    public static String getDatetoputinconfirmation() {
+        return datetoputinconfirmation;
+    }
+
+    public static void setDatetoputinconfirmation(String datetoputinconfirmation) {
+        BookInformation.datetoputinconfirmation = datetoputinconfirmation;
+    }
+
+    static String datetoputinconfirmation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +76,12 @@ public class BookInformation extends AppCompatActivity {
 
         bookCover.setImageResource(CatalogFragment.id);
 
+        if (CatalogFragment.getStatus().equals("Available")) {
+            status.setTextColor(getResources().getColor(R.color.forestgreeen));
+        } else if (CatalogFragment.getStatus().equals("Unavailable")) {
+            status.setTextColor(getResources().getColor(R.color.crimson));
+        }
+
     }
 
     public void checkoutOnClick(View view) {
@@ -66,7 +93,7 @@ public class BookInformation extends AppCompatActivity {
             builder.setTitle("Please enter your password to proceed");
 
             input = new EditText(context);
-            input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+            input.setInputType(InputType.TYPE_CLASS_NUMBER);
             builder.setView(input);
 
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -82,9 +109,29 @@ public class BookInformation extends AppCompatActivity {
 
                         checkedoutcount++;
 
-                        checkedoutbooks.add(CatalogFragment.titleofthebook);
 
-                        Log.d("BAD", checkedoutbooks.toString());
+                        checkedoutbookstitles.add(CatalogFragment.titleofthebook);
+
+                        Log.d("BAD", "titles array " + checkedoutbookstitles.toString());
+
+                        int noOfDays = 14; //i.e two weeks
+                        Calendar calendar = Calendar.getInstance();
+                        Date currentDate = new Date();
+
+                        calendar.setTime(currentDate);
+
+                        calendar.add(Calendar.DAY_OF_YEAR, noOfDays);
+                        Date duedate = calendar.getTime();
+
+                        setDatetoputinconfirmation(duedate.toString());
+
+                        checkedoutbooksdates.add(getDatetoputinconfirmation());
+
+                        Log.d("BAD", "dates array " + checkedoutbookstitles.toString());
+
+                        checkedoutbooksimages.add(CatalogFragment.id);
+
+                        Log.d("BAD", "images array " + checkedoutbooksimages.toString());
 
                         Intent activities = new Intent(context, CheckedOutConfirmation.class);
                         startActivity(activities);
@@ -107,7 +154,7 @@ public class BookInformation extends AppCompatActivity {
             builder.show();
 
         } else {
-            Toast.makeText(getApplicationContext(), "This book is currently unavailable for check out now. You can reserve this book however", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "This book is currently unavailable for check out now. You can reserve this book however", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -119,7 +166,7 @@ public class BookInformation extends AppCompatActivity {
             builder.setTitle("Please enter your password to proceed");
 
             input = new EditText(context);
-            input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+            input.setInputType(InputType.TYPE_CLASS_NUMBER);
             builder.setView(input);
 
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -134,6 +181,10 @@ public class BookInformation extends AppCompatActivity {
                     if (entered.equals(Login.getPassword())) {
 
                         reservedcount++;
+
+                        reservedbooktitles.add(CatalogFragment.titleofthebook);
+                        reservedbookauthor.add(CatalogFragment.authorofthebook);
+                        reservedbookimages.add(CatalogFragment.id);
 
                         Intent activities = new Intent(context, ReservedConfirmation.class);
                         startActivity(activities);
@@ -154,6 +205,9 @@ public class BookInformation extends AppCompatActivity {
             });
 
             builder.show();
+        } else {
+            Toast.makeText(getApplicationContext(), "Please check out the book instead", Toast.LENGTH_SHORT).show();
+
         }
     }
 }

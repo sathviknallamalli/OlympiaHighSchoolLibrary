@@ -35,15 +35,15 @@ public class BookAdapter extends ArrayAdapter<Book> {
             convertView = LayoutInflater.from(context).inflate(R.layout.customlayout, parent, false);
         }
 
-        TextView bookTitle = (TextView) convertView.findViewById(R.id.bookTitle);
+        TextView bookTitle = (TextView) convertView.findViewById(R.id.titleofbookinreserved);
         TextView bookAuthor = (TextView) convertView.findViewById(R.id.bookAuthor);
         TextView bookCount = (TextView) convertView.findViewById(R.id.pageCount);
         TextView bookCategory = (TextView) convertView.findViewById(R.id.bookCategory);
-        ImageView bookImage = (ImageView) convertView.findViewById(R.id.bookImage);
+        ImageView bookImage = (ImageView) convertView.findViewById(R.id.reservedimage);
 
         bookTitle.setText(book.title);
         bookAuthor.setText(book.author);
-        bookCount.setText(book.pageCount + "");
+        bookCount.setText("Pagecount: " + book.pageCount + "");
         bookCategory.setText(book.category);
         bookImage.setImageResource(book.imageid);
 

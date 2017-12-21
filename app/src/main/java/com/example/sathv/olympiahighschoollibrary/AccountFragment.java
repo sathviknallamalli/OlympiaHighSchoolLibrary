@@ -25,7 +25,7 @@ public class AccountFragment extends Fragment {
         View view = inflater.inflate(R.layout.account, container, false);
 
 
-        getActivity().setTitle("Account");
+        getActivity().setTitle("Manage account");
 
 
         return view;

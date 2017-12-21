@@ -5,9 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Calendar;
-import java.util.Date;
-
 public class CheckedOutConfirmation extends AppCompatActivity {
 
 
@@ -19,7 +16,7 @@ public class CheckedOutConfirmation extends AppCompatActivity {
 
         setTitle("Confirm check out");
 
-        Toast.makeText(getApplicationContext(), "This book is checked out to your account and avaiable for pickup.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "This book is checked out to your account and avaiable for pickup.", Toast.LENGTH_LONG).show();
 
         CatalogFragment.setStatus("Unavailable", CatalogFragment.pos);
 
@@ -30,16 +27,7 @@ public class CheckedOutConfirmation extends AppCompatActivity {
         bookName.setText("Book name: " + CatalogFragment.titleofthebook);
         checkedoutto.setText("Checked out to " + Login.getUsername());
 
-        int noOfDays = 14; //i.e two weeks
-        Calendar calendar = Calendar.getInstance();
-        Date currentDate = new Date();
-
-        calendar.setTime(currentDate);
-
-        calendar.add(Calendar.DAY_OF_YEAR, noOfDays);
-        Date duedate = calendar.getTime();
-
-        dueDate.setText("Due date: " + duedate.toString());
+        dueDate.setText("Due date: " + BookInformation.getDatetoputinconfirmation());
 
     }
 }

@@ -20,7 +20,7 @@ public class Activities extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     NavigationView navigationView = null;
-    Toolbar toolbar = null;
+    Toolbar toolbar;
     Login l = new Login();
 
     @Override
@@ -32,9 +32,6 @@ public class Activities extends AppCompatActivity
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, fragment);
         fragmentTransaction.commit();
-
-        //  Login l = new Login();
-        // l.getNameFromHost();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -85,6 +82,8 @@ public class Activities extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.activities, menu);
         return true;
+
+        
     }
 
     @Override
@@ -95,9 +94,6 @@ public class Activities extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }

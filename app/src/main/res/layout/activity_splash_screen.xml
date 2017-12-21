@@ -32,7 +32,7 @@
         android:layout_marginTop="8dp"
         android:fontFamily="casual"
         android:text="Olympia High School Library"
-        android:textColor="@android:color/background_light"
+        android:textColor="@android:color/white"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

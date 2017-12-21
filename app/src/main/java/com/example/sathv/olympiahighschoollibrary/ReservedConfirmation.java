@@ -14,7 +14,7 @@ public class ReservedConfirmation extends AppCompatActivity {
 
         setTitle("Confirm reservation");
 
-        Toast.makeText(getApplicationContext(), "This book is reserved and you will be notified when the book is available for pickup", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "This book is reserved and you will be notified when the book is available for pickup", Toast.LENGTH_LONG).show();
 
         TextView reserveBook = (TextView) findViewById(R.id.reservename);
         TextView reservedto = (TextView) findViewById(R.id.reserveusernmae);

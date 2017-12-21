@@ -95,7 +95,8 @@ public class SignUp extends Activity {
 
     public void registerAction(View view) {
         //check is all fields are entered correctly
-        if (username.getText().toString().trim().isEmpty() || firstName.getText().toString().trim().isEmpty() || lastName.getText().toString().trim().isEmpty() || password.getText().toString().trim().isEmpty() || email.getText().toString().trim().isEmpty() || (String) gradeOptions.getSelectedItem() == "Please select your grade") {
+        if (username.getText().toString().trim().isEmpty() || firstName.getText().toString().trim().isEmpty() || lastName.getText().toString().trim().isEmpty() || password.getText().toString().trim().isEmpty() || email.getText().toString().trim().isEmpty() ||
+                gradeOptions.getSelectedItem().toString().equals("Please select your grade")) {
             Toast.makeText(getApplicationContext(), "Missing field(s)", Toast.LENGTH_SHORT).show();
 
         } else {

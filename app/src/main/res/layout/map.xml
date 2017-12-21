@@ -10,7 +10,7 @@
         android:id="@+id/panorama_image_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/ohslibrarymap"
+        android:src="@drawable/trllibrary360"
         app:piv_enablePanoramaMode="true"
         app:piv_invertScrollDirection="false"
         app:piv_show_scrollbar="true" />
