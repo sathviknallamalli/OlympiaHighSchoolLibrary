@@ -1,8 +1,12 @@
 package com.example.sathv.olympiahighschoollibrary;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -36,39 +40,40 @@ public class Login extends Activity {
     private EditText passwordField;
     private View mLoginFormView;
 
+    EditText input;
+
     Connection connection;
 
-    ProgressBar pb;
 
-    public  String getName() {
+    public String getName() {
         return name;
     }
 
-    public  void setName(String name) {
+    public void setName(String name) {
         Login.name = name;
     }
 
-    public  String getEmail() {
+    public String getEmail() {
         return email;
     }
 
-    public  void setEmail(String email) {
+    public void setEmail(String email) {
         Login.email = email;
     }
 
-    public  String getGrade() {
+    public String getGrade() {
         return grade;
     }
 
-    public  void setGrade(String grade) {
+    public void setGrade(String grade) {
         Login.grade = grade;
     }
 
-    public  String getFullName() {
+    public String getFullName() {
         return fullName;
     }
 
-    public  void setFullName(String fullName) {
+    public void setFullName(String fullName) {
         Login.fullName = fullName;
     }
 
@@ -104,7 +109,8 @@ public class Login extends Activity {
 
     static String username;
 
-    private Button buttons;
+    Button buttons;
+    ProgressBar pb;
 
 
     @Override
@@ -117,6 +123,9 @@ public class Login extends Activity {
 
         buttons = (Button) findViewById(R.id.signUp);
 
+        pb = (ProgressBar) findViewById(R.id.pb);
+        pb.setVisibility(View.GONE);
+
         passwordField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -124,6 +133,7 @@ public class Login extends Activity {
                     if (usernameField.getText().toString().trim().isEmpty() || passwordField.getText().toString().trim().isEmpty()) {
                         Toast.makeText(getApplicationContext(), "Missing field(s)", Toast.LENGTH_SHORT).show();
                     } else {
+                        pb.setVisibility(View.VISIBLE);
                         loginCheck();
                         getNameFromHost();
                     }
@@ -143,6 +153,7 @@ public class Login extends Activity {
                 if (usernameField.getText().toString().trim().isEmpty() || passwordField.getText().toString().trim().isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Missing field(s)", Toast.LENGTH_SHORT).show();
                 } else {
+                    pb.setVisibility(View.VISIBLE);
                     loginCheck();
                     getNameFromHost();
                 }
@@ -150,6 +161,7 @@ public class Login extends Activity {
         });
 
     }
+
 
     public void action(View view) {
         Intent dashboard = new Intent(this, SignUp.class);
@@ -167,11 +179,14 @@ public class Login extends Activity {
                 if (response.trim().equals("success")) {
                     Toast.makeText(getApplicationContext(), "login success!", Toast.LENGTH_SHORT).show();
 
+
                     setPassword(passwordField.getText().toString());
                     setUsername(usernameField.getText().toString());
                     Log.d("BAD", "password set in login field" + getPassword());
 
                     Log.d("BAD", "first inent of activities called when done is pressed");
+
+                    pb.setVisibility(View.GONE);
                     Intent activities = new Intent(getApplicationContext(), Activities.class);
                     startActivity(activities);
                     finish();
@@ -179,12 +194,15 @@ public class Login extends Activity {
 
                 } else {
                     Toast.makeText(getApplicationContext(), "login incorrect", Toast.LENGTH_SHORT).show();
+                    pb.setVisibility(View.GONE);
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getApplicationContext(), "error " + error.toString(), Toast.LENGTH_SHORT).show();
+
+                pb.setVisibility(View.GONE);
             }
         })
 
@@ -200,6 +218,8 @@ public class Login extends Activity {
                 return params;
 
             }
+
+
         };
 
         requestQueue.add(stringRequest);
@@ -219,20 +239,20 @@ public class Login extends Activity {
 
                     String[] splitStr = name.split("\\s+");
                     String firstname = splitStr[0];
-                    Log.d("BAD", firstname);
+                    //Log.d("BAD", firstname);
                     String lastname = splitStr[1];
-                    Log.d("BAD", lastname);
+                    // Log.d("BAD", lastname);
                     String emailRaw = splitStr[2];
-                    Log.d("BAD", emailRaw);
+                    // Log.d("BAD", emailRaw);
                     String gradeRaw = splitStr[3];
-                    Log.d("BAD", gradeRaw);
+                    // Log.d("BAD", gradeRaw);
 
                     setFullName(firstname + " " + lastname);
-                    Log.d("BAD", getFullName());
+                    //  Log.d("BAD", getFullName());
                     setEmail(emailRaw + "");
-                    Log.d("BAD", getEmail());
+                    // Log.d("BAD", getEmail());
                     setGrade(gradeRaw + "");
-                    Log.d("BAD", getGrade());
+                    // Log.d("BAD", getGrade());
 
                 }
             }
@@ -258,6 +278,45 @@ public class Login extends Activity {
 
         requestQueue.add(stringRequest);
 
+    }
+
+    public void changepd(View v) {
+        final Context context = v.getContext();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Please enter your current password to proceed");
+
+        input = new EditText(context);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        builder.setView(input);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                String entered = input.getText().toString();
+
+                if (entered.equals(Login.getPassword())) {
+
+                    Intent activities = new Intent(context, ChangePassword.class);
+                    startActivity(activities);
+
+                } else {
+                    Toast.makeText(context, "password is incorrect", Toast.LENGTH_LONG).show();
+                    input.setText("");
+                }
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
     }
 
 }

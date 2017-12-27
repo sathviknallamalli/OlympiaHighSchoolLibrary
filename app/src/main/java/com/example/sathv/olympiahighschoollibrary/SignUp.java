@@ -156,7 +156,7 @@ public class SignUp extends Activity {
                     String code = generateRandomString();
 
                     String subject = "Confirm your email address for Olympia High School Library";
-                    String message = "Thank you for signing up for Olympia High School. Please enter this verification code in the app" + code;
+                    String message = "Thank you for signing up for Olympia High School. Please enter this verification code in the app " + code;
 
                     SendMail sm = new SendMail(SignUp.this, emailRaw, subject, message, code);
 

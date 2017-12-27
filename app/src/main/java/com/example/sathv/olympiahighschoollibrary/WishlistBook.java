@@ -4,21 +4,19 @@ package com.example.sathv.olympiahighschoollibrary;
  * Created by sathv on 12/15/2017.
  */
 
-public class Book {
+public class WishlistBook {
     public String title;
     public String author;
+    public int pagecount;
     public String category;
-    public int pageCount;
     public int imageid;
-    public String added;
 
-    public Book(String title, String author, int pageCount, int imageid, String category, String added) {
+    public WishlistBook(String title, String author, int pagecount, String category, int imageid) {
         this.title = title;
         this.author = author;
-        this.pageCount = pageCount;
         this.imageid = imageid;
         this.category = category;
-        this.added = added;
+        this.pagecount = pagecount;
     }
 
     /*public String getTitle() {

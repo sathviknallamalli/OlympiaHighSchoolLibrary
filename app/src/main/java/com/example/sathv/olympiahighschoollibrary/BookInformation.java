@@ -30,6 +30,7 @@ public class BookInformation extends AppCompatActivity {
     static ArrayList checkedoutbookstitles = new ArrayList();
     static ArrayList checkedoutbooksdates = new ArrayList();
     static ArrayList checkedoutbooksimages = new ArrayList();
+    static ArrayList<Date> reminderdates = new ArrayList<Date>();
 
     static ArrayList reservedbooktitles = new ArrayList();
     static ArrayList reservedbookauthor = new ArrayList();
@@ -64,7 +65,6 @@ public class BookInformation extends AppCompatActivity {
 
         Button checkOut = (Button) findViewById(R.id.checkOut);
         Button reserve = (Button) findViewById(R.id.reserve);
-
 
         title.setText(CatalogFragment.titleofthebook);
         author.setText(CatalogFragment.authorofthebook);
@@ -115,14 +115,22 @@ public class BookInformation extends AppCompatActivity {
                         Log.d("BAD", "titles array " + checkedoutbookstitles.toString());
 
                         int noOfDays = 14; //i.e two weeks
+                        int daysbeforedue= 2;
+
+                        //current date
                         Calendar calendar = Calendar.getInstance();
                         Date currentDate = new Date();
-
                         calendar.setTime(currentDate);
 
+                        //due date set
                         calendar.add(Calendar.DAY_OF_YEAR, noOfDays);
                         Date duedate = calendar.getTime();
 
+                        //reminder date
+                        calendar.add(Calendar.DAY_OF_YEAR, daysbeforedue);
+                        Date reminderdate = calendar.getTime();
+
+                        reminderdates.add(reminderdate);
                         setDatetoputinconfirmation(duedate.toString());
 
                         checkedoutbooksdates.add(getDatetoputinconfirmation());
@@ -161,50 +169,55 @@ public class BookInformation extends AppCompatActivity {
     public void reserveOnClick(View view) {
         if (status.getText().toString().contains("Unavailable")) {
             final Context context = view.getContext();
+            if (reservedbooktitles.contains(CatalogFragment.titleofthebook) || reservedbookimages.contains(CatalogFragment.id) || reservedbookauthor.contains(CatalogFragment.authorofthebook)) {
+                Toast.makeText(context, "Book is already reserved", Toast.LENGTH_LONG).show();
+            } else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Please enter your password to proceed");
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("Please enter your password to proceed");
+                input = new EditText(context);
+                input.setInputType(InputType.TYPE_CLASS_NUMBER);
+                builder.setView(input);
 
-            input = new EditText(context);
-            input.setInputType(InputType.TYPE_CLASS_NUMBER);
-            builder.setView(input);
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
+                        String entered = input.getText().toString();
 
-                    String entered = input.getText().toString();
+                        Log.d("BAD", "password in bookinfo confirmation for reserve" + Login.getPassword());
 
-                    Log.d("BAD", "password in bookinfo confirmation for reserve" + Login.getPassword());
+                        if (entered.equals(Login.getPassword())) {
 
-                    if (entered.equals(Login.getPassword())) {
+                            reservedcount++;
 
-                        reservedcount++;
+                            reservedbooktitles.add(CatalogFragment.titleofthebook);
+                            reservedbookauthor.add(CatalogFragment.authorofthebook);
+                            reservedbookimages.add(CatalogFragment.id);
 
-                        reservedbooktitles.add(CatalogFragment.titleofthebook);
-                        reservedbookauthor.add(CatalogFragment.authorofthebook);
-                        reservedbookimages.add(CatalogFragment.id);
+                            Intent activities = new Intent(context, ReservedConfirmation.class);
+                            startActivity(activities);
+                            finish();
 
-                        Intent activities = new Intent(context, ReservedConfirmation.class);
-                        startActivity(activities);
-                        finish();
+                        } else {
+                            Toast.makeText(context, "password is incorrect", Toast.LENGTH_LONG).show();
+                            input.setText("");
+                        }
 
-                    } else {
-                        Toast.makeText(context, "password is incorrect", Toast.LENGTH_LONG).show();
-                        input.setText("");
                     }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
 
-                }
-            });
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
+                builder.show();
+            }
 
-            builder.show();
+
         } else {
             Toast.makeText(getApplicationContext(), "Please check out the book instead", Toast.LENGTH_SHORT).show();
 

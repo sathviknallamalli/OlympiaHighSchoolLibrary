@@ -7,12 +7,12 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/titleofbookinreserved"
+        android:id="@+id/bookTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignTop="@+id/reservedimage"
+        android:layout_alignTop="@+id/bookimage"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="11dp"
@@ -31,9 +31,9 @@
         android:id="@+id/checkedoutdateforrowitem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/titleofbookinreserved"
-        android:layout_alignStart="@+id/titleofbookinreserved"
-        android:layout_below="@+id/titleofbookinreserved"
+        android:layout_alignLeft="@+id/bookTitle"
+        android:layout_alignStart="@+id/bookTitle"
+        android:layout_below="@+id/bookTitle"
         android:layout_marginTop="21dp"
         android:text="TextView"
         android:textColor="@android:color/black"
@@ -47,7 +47,7 @@
         app:layout_constraintVertical_bias="0.017" />
 
     <ImageView
-        android:id="@+id/reservedimage"
+        android:id="@+id/bookimage"
         android:layout_width="84dp"
         android:layout_height="104dp"
         android:layout_alignParentEnd="true"

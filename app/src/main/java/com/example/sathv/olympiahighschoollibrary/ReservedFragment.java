@@ -47,7 +47,7 @@ public class ReservedFragment extends Fragment {
 
         if (BookInformation.reservedbooktitles.isEmpty() || BookInformation.reservedbookauthor.isEmpty()
                 || BookInformation.reservedbookimages.isEmpty()) {
-            Log.d("BAD", "arraylists are empty in checked fragment");
+            Log.d("BAD", "arraylists are empty in rserevd fragment");
 
             message.setText("You currently have no books reserved");
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,7 +8,7 @@
     android:descendantFocusability="blocksDescendants">
 
     <TextView
-        android:id="@+id/bookTitle"
+        android:id="@+id/wishlisttitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -18,7 +19,7 @@
         android:layout_marginTop="21dp"
         android:text="TextView"
         android:textColor="@color/colorGreen"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,12 +29,12 @@
         app:layout_constraintVertical_bias="0.017" />
 
     <TextView
-        android:id="@+id/bookAuthor"
+        android:id="@+id/wishlistauthor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/bookTitle"
-        android:layout_alignStart="@+id/bookTitle"
-        android:layout_below="@+id/bookTitle"
+        android:layout_alignLeft="@+id/wishlisttitle"
+        android:layout_alignStart="@+id/wishlisttitle"
+        android:layout_below="@+id/wishlisttitle"
         android:layout_marginTop="11dp"
         android:text="TextView"
         android:textColor="@android:color/black"
@@ -46,13 +47,12 @@
         app:layout_constraintVertical_bias="0.117" />
 
     <TextView
-        android:id="@+id/bookpg"
+        android:id="@+id/wishlistpagecount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/bookAuthor"
-        android:layout_alignStart="@+id/bookAuthor"
-        android:layout_below="@+id/bookAuthor"
-        android:layout_marginTop="12dp"
+        android:layout_alignBottom="@+id/wishlistimage"
+        android:layout_alignLeft="@+id/wishlistauthor"
+        android:layout_alignStart="@+id/wishlistauthor"
         android:text="TextView"
         android:textColor="@android:color/black"
         android:textSize="16sp"
@@ -64,44 +64,41 @@
         app:layout_constraintVertical_bias="0.189" />
 
     <ImageView
-        android:id="@+id/bookimage"
+        android:id="@+id/wishlistimage"
+        tools:layout_editor_absoluteX="173dp"
+        tools:layout_editor_absoluteY="148dp"
         android:layout_width="84dp"
         android:layout_height="104dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/bookTitle"
-        android:layout_marginEnd="12dp"
-        android:layout_marginRight="12dp"
-        app:srcCompat="@drawable/common_google_signin_btn_icon_dark"
-        tools:layout_editor_absoluteX="173dp"
-        tools:layout_editor_absoluteY="148dp" />
+        android:layout_marginEnd="19dp"
+        android:layout_marginRight="19dp"
+        app:srcCompat="@drawable/common_google_signin_btn_icon_dark" />
 
     <TextView
-        android:id="@+id/bookCategory"
+        android:id="@+id/wishlistcategory"
         android:layout_width="166dp"
         android:layout_height="27dp"
-        android:layout_alignEnd="@+id/bookimage"
-        android:layout_alignRight="@+id/bookimage"
-        android:layout_alignTop="@+id/bookpg"
-        android:layout_marginEnd="37dp"
-        android:layout_marginRight="37dp"
+        android:layout_above="@+id/removebutton"
+        android:layout_marginLeft="49dp"
+        android:layout_marginStart="49dp"
+        android:layout_toEndOf="@+id/wishlisttitle"
+        android:layout_toRightOf="@+id/wishlisttitle"
         android:text="TextView"
         tools:layout_editor_absoluteX="121dp"
         tools:layout_editor_absoluteY="25dp" />
 
     <Button
-        android:id="@+id/button2"
-        android:layout_width="85dp"
-        android:layout_height="53dp"
-        android:layout_above="@+id/bookCategory"
-        android:layout_alignLeft="@+id/bookCategory"
-        android:layout_alignStart="@+id/bookCategory"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
+        android:id="@+id/removebutton"
+        android:layout_width="88dp"
+        android:layout_height="41dp"
+        android:layout_alignBottom="@+id/wishlistimage"
+        android:layout_centerHorizontal="true"
         android:focusableInTouchMode="true"
-        android:text="Add to wishlist"
+        android:text="Remove"
         android:textSize="12sp"
-        tools:layout_editor_absoluteX="166dp"
-        tools:layout_editor_absoluteY="298dp" />
+        tools:layout_editor_absoluteX="135dp"
+        tools:layout_editor_absoluteY="139dp" />
 
 </RelativeLayout>

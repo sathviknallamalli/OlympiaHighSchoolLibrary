@@ -4,21 +4,15 @@ package com.example.sathv.olympiahighschoollibrary;
  * Created by sathv on 12/15/2017.
  */
 
-public class Book {
+public class ReminderBook {
     public String title;
-    public String author;
-    public String category;
-    public int pageCount;
     public int imageid;
-    public String added;
+    public String duedatephrase;
 
-    public Book(String title, String author, int pageCount, int imageid, String category, String added) {
+    public ReminderBook(String title, int imageid, String duedatephrase) {
         this.title = title;
-        this.author = author;
-        this.pageCount = pageCount;
         this.imageid = imageid;
-        this.category = category;
-        this.added = added;
+        this.duedatephrase = duedatephrase;
     }
 
     /*public String getTitle() {

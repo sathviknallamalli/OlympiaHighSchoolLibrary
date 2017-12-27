@@ -35,9 +35,9 @@ public class CheckedBooksAdapter extends ArrayAdapter<CheckedBook> {
             convertView = LayoutInflater.from(context).inflate(R.layout.itemforchecked, parent, false);
         }
 
-        TextView bookTitle = (TextView) convertView.findViewById(R.id.titleofbookinreserved);
+        TextView bookTitle = (TextView) convertView.findViewById(R.id.bookTitle);
         TextView dateinchecked = (TextView) convertView.findViewById(R.id.checkedoutdateforrowitem);
-        ImageView bookImage = (ImageView) convertView.findViewById(R.id.reservedimage);
+        ImageView bookImage = (ImageView) convertView.findViewById(R.id.bookimage);
 
         bookTitle.setText(checkedBook.title);
         dateinchecked.setText("DUE DATE: "+ checkedBook.date);

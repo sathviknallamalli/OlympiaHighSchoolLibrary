@@ -1,10 +1,14 @@
 package com.example.sathv.olympiahighschoollibrary;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 /**
@@ -17,6 +21,7 @@ public class ProfileFragment extends Fragment {
 
     }
 
+    EditText input;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -40,8 +45,33 @@ public class ProfileFragment extends Fragment {
         reserval.setText(BookInformation.reservedcount + "");
         getActivity().setTitle("Your profile");
 
+        Button b = (Button) view.findViewById(R.id.changeaccount);
+        Button b2 = (Button) view.findViewById(R.id.changepd);
+
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentManager fragmentManager = getFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.frameLayout, new AccountFragment()).commit();
+            }
+        });
+
+        b2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent activities = new Intent(getActivity(), ChangePassword.class);
+                startActivity(activities);
+
+            }
+        });
+
 
         return view;
+    }
+
+    public void changepd(View view) {
+
     }
 
 

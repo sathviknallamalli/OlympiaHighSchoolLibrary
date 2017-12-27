@@ -22,7 +22,7 @@ public class InformationFragment extends Fragment {
         super.onCreate(savedInstanceState);
         LayoutInflater lf = getActivity().getLayoutInflater();
 
-        View view = inflater.inflate(R.layout.contact, container, false);
+        View view = inflater.inflate(R.layout.information, container, false);
 
 
         getActivity().setTitle("Information");

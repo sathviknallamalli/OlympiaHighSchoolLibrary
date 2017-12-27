@@ -22,6 +22,8 @@ public class Activities extends AppCompatActivity
     NavigationView navigationView = null;
     Toolbar toolbar;
     Login l = new Login();
+    TextView studentName;
+    TextView email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,15 +57,15 @@ public class Activities extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         View v = navigationView.getHeaderView(0);
-        TextView studentName = (TextView) v.findViewById(R.id.name);
 
-
+        studentName = (TextView) v.findViewById(R.id.name);
         studentName.setText(l.getFullName());
-        Log.d("BAD", "NAME HEADER SET" + l.getFullName());
 
-        TextView email = (TextView) v.findViewById(R.id.email);
+        email = (TextView) v.findViewById(R.id.email);
         email.setText(l.getEmail());
+
         Log.d("BAD", "EMAIL HEADER SET" + l.getEmail());
+        Log.d("BAD", "NAME HEADER SET" + l.getFullName());
 
     }
 
@@ -83,7 +85,7 @@ public class Activities extends AppCompatActivity
         getMenuInflater().inflate(R.menu.activities, menu);
         return true;
 
-        
+
     }
 
     @Override
@@ -119,11 +121,13 @@ public class Activities extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new SettingsFragment()).commit();
         } else if (id == R.id.nav_reminders) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new RemindersFragment()).commit();
-        }  else if (id == R.id.nav_account) {
+        } else if (id == R.id.nav_account) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new AccountFragment()).commit();
         } else if (id == R.id.nav_information) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new InformationFragment()).commit();
-        }else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_wishlist) {
+            fragmentManager.beginTransaction().replace(R.id.frameLayout, new WishlistFragment()).commit();
+        } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
 

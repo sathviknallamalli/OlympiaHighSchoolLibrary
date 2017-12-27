@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:allowBackup="true"
@@ -27,7 +28,31 @@
             android:name=".Login"
             android:label="@string/title_activity_login"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
-        <activity android:name=".Home"></activity>
+        <activity
+            android:name=".SignUp"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
+            android:name=".Activities"
+            android:label="@string/title_activity_activities"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".BookInformation"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light" />
+        <activity
+            android:name=".CheckedOutConfirmation"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light" />
+        <activity
+            android:name=".ReservedConfirmation"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light" />
+        <activity
+            android:name=".ChangePassword"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light"></activity>
     </application>
 
 </manifest>

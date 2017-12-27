@@ -36,9 +36,9 @@ public class ReservedBooksAdapter extends ArrayAdapter<ReservedBook> {
             convertView = LayoutInflater.from(context).inflate(R.layout.itemforreserved, parent, false);
         }
 
-        TextView bookTitle = (TextView) convertView.findViewById(R.id.titleofbookinreserved);
+        TextView bookTitle = (TextView) convertView.findViewById(R.id.bookTitle);
         TextView authorinreserved = (TextView) convertView.findViewById(R.id.reservedauthor);
-        ImageView bookImage = (ImageView) convertView.findViewById(R.id.reservedimage);
+        ImageView bookImage = (ImageView) convertView.findViewById(R.id.bookimage);
         Button deleteButton = (Button) convertView.findViewById(R.id.remove);
 
         bookTitle.setText(reservedBook.title);
@@ -50,30 +50,14 @@ public class ReservedBooksAdapter extends ArrayAdapter<ReservedBook> {
         deleteButton.setOnClickListener(
                 new Button.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(final View v) {
+
                         Integer index = (Integer) v.getTag();
                         arraylistreservedbooks.remove(index.intValue());
+                        BookInformation.reservedbooktitles.remove(index.intValue());
+                        BookInformation.reservedbookimages.remove(index.intValue());
+                        BookInformation.reservedbookauthor.remove(index.intValue());
                         notifyDataSetChanged();
-                        /*AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                        builder.setCancelable(true);
-                        builder.setTitle("Deletion");
-                        builder.setMessage("Are you sure you want to cancel this reservation");
-                        builder.setPositiveButton("Confirm",
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-
-                                    }
-                                });
-                        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
-
-                        AlertDialog dialog = builder.create();
-                        dialog.show();*/
 
                     }
                 }
@@ -81,4 +65,5 @@ public class ReservedBooksAdapter extends ArrayAdapter<ReservedBook> {
 
         return convertView;
     }
+
 }

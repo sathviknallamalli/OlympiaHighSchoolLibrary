@@ -26,7 +26,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-public class SendMail extends AsyncTask<Void,Void,Void> {
+public class SendMail extends AsyncTask<Void, Void, Void> {
 
     //Declaring Variables
     private Context context;
@@ -44,7 +44,7 @@ public class SendMail extends AsyncTask<Void,Void,Void> {
     private ProgressDialog progressDialog;
 
     //Class Constructor
-    public SendMail(Context context, String email, String subject, String message, String code){
+    public SendMail(Context context, String email, String subject, String message, String code) {
         //Initializing variables
         this.context = context;
         this.email = email;
@@ -57,7 +57,7 @@ public class SendMail extends AsyncTask<Void,Void,Void> {
     protected void onPreExecute() {
         super.onPreExecute();
         //Showing progress dialog while sending email
-        progressDialog = ProgressDialog.show(context,"Sending message","Please wait...",false,false);
+        progressDialog = ProgressDialog.show(context, "Sending message", "Please wait...", false, false);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class SendMail extends AsyncTask<Void,Void,Void> {
         //Dismissing the progress dialog
         progressDialog.dismiss();
         //Showing a success message
-        Toast.makeText(context,"Please check the sent email for the activation code ",Toast.LENGTH_LONG).show();
+        Toast.makeText(context, "Please check the sent email for the activation code ", Toast.LENGTH_LONG).show();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Verification code");
@@ -83,13 +83,15 @@ public class SendMail extends AsyncTask<Void,Void,Void> {
 
                 String enteredCode = input.getText().toString();
 
-                if(enteredCode.equals(code)) {
+                if (enteredCode.equals(code)) {
                     Intent activities = new Intent(context, Activities.class);
                     context.startActivity(activities);
+
+                    Toast.makeText(context, "Welcome to the Olympia High School Library app!", Toast.LENGTH_LONG).show();
+
                     ((Activity) context).finish();
-                }
-                else{
-                    Toast.makeText(context,"code is incorrect",Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(context, "code is incorrect", Toast.LENGTH_LONG).show();
                     input.setText("");
                 }
 
