@@ -7,16 +7,14 @@ package com.example.sathv.olympiahighschoollibrary;
 public class WishlistBook {
     public String title;
     public String author;
-    public int pagecount;
     public String category;
     public int imageid;
 
-    public WishlistBook(String title, String author, int pagecount, String category, int imageid) {
+    public WishlistBook(String title, String author, String category, int imageid) {
         this.title = title;
         this.author = author;
         this.imageid = imageid;
         this.category = category;
-        this.pagecount = pagecount;
     }
 
     /*public String getTitle() {

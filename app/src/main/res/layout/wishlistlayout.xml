@@ -47,21 +47,22 @@
         app:layout_constraintVertical_bias="0.117" />
 
     <TextView
-        android:id="@+id/wishlistpagecount"
+        android:id="@+id/removebutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/wishlistimage"
         android:layout_alignLeft="@+id/wishlistauthor"
         android:layout_alignStart="@+id/wishlistauthor"
-        android:text="TextView"
+        android:text="Remove"
         android:textColor="@android:color/black"
         android:textSize="16sp"
+        android:textStyle="bold|italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.027"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.189" />
+        app:layout_constraintVertical_bias="0.117" />
 
     <ImageView
         android:id="@+id/wishlistimage"
@@ -80,25 +81,13 @@
         android:id="@+id/wishlistcategory"
         android:layout_width="166dp"
         android:layout_height="27dp"
-        android:layout_above="@+id/removebutton"
-        android:layout_marginLeft="49dp"
-        android:layout_marginStart="49dp"
+        android:layout_alignBottom="@+id/wishlistauthor"
+        android:layout_marginLeft="42dp"
+        android:layout_marginStart="42dp"
         android:layout_toEndOf="@+id/wishlisttitle"
         android:layout_toRightOf="@+id/wishlisttitle"
         android:text="TextView"
         tools:layout_editor_absoluteX="121dp"
         tools:layout_editor_absoluteY="25dp" />
-
-    <Button
-        android:id="@+id/removebutton"
-        android:layout_width="88dp"
-        android:layout_height="41dp"
-        android:layout_alignBottom="@+id/wishlistimage"
-        android:layout_centerHorizontal="true"
-        android:focusableInTouchMode="true"
-        android:text="Remove"
-        android:textSize="12sp"
-        tools:layout_editor_absoluteX="135dp"
-        tools:layout_editor_absoluteY="139dp" />
 
 </RelativeLayout>

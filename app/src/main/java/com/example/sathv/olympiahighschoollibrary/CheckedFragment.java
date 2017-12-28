@@ -74,7 +74,6 @@ public class CheckedFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.activities, menu);
         MenuItem searchItem = menu.findItem(R.id.item_search);
         android.support.v7.widget.SearchView searchView = (SearchView) searchItem.getActionView();
         SearchView.OnQueryTextListener listener = new SearchView.OnQueryTextListener() {
@@ -110,7 +109,6 @@ public class CheckedFragment extends Fragment {
 
         super.onCreateOptionsMenu(menu, inflater);
 
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     public void resetSearch() {

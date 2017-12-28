@@ -71,6 +71,7 @@ public class RemindersFragment extends Fragment {
         Date currentDate = new Date();
         calendar.setTime(currentDate);
 
+        boolean isreminder = false;
 
         if (BookInformation.reminderdates.isEmpty()) {
             Log.d("BAD", "arraylists are empty in reminder fragment");
@@ -85,10 +86,17 @@ public class RemindersFragment extends Fragment {
                     reminderBooks.add(new ReminderBook(BookInformation.checkedoutbookstitles.get(i).toString(), (int) BookInformation.checkedoutbooksimages.get(i)
                             , "Book is DUE IN 2 DAYS"));
 
+                    isreminder = true;
+
                     // Log.d("BAD", "arraylist are full");
                 }
+                adapter = new ReminderBooksAdapter(getActivity().getApplicationContext(), R.layout.reminderlayout, reminderBooks);
+                lvn.setAdapter(adapter);
             }
 
+        }
+        if (isreminder == false) {
+            message.setText("No reminders currently");
         }
         // notification = new NotificationCompat.Builder(getActivity());
         // notification.setAutoCancel(true);

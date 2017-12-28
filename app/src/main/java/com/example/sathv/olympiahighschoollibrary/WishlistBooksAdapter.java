@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,7 +28,7 @@ public class WishlistBooksAdapter extends ArrayAdapter<WishlistBook> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         WishlistBook wishlistBook = arraylistwishlistbooks.get(position);
 
         if (convertView == null) {
@@ -38,14 +37,12 @@ public class WishlistBooksAdapter extends ArrayAdapter<WishlistBook> {
 
         TextView bookTitle = (TextView) convertView.findViewById(R.id.wishlisttitle);
         TextView authorinreserved = (TextView) convertView.findViewById(R.id.wishlistauthor);
-        TextView pagecountwishlist = (TextView) convertView.findViewById(R.id.wishlistpagecount);
         TextView categorywishlist = (TextView) convertView.findViewById(R.id.wishlistcategory);
         ImageView bookImage = (ImageView) convertView.findViewById(R.id.wishlistimage);
-        Button remove = (Button) convertView.findViewById(R.id.removebutton);
+        TextView remove = (TextView) convertView.findViewById(R.id.removebutton);
 
         bookTitle.setText(wishlistBook.title);
         authorinreserved.setText(wishlistBook.author);
-        pagecountwishlist.setText(wishlistBook.pagecount + "");
         categorywishlist.setText(wishlistBook.category);
         bookImage.setImageResource(wishlistBook.imageid);
 
@@ -57,6 +54,9 @@ public class WishlistBooksAdapter extends ArrayAdapter<WishlistBook> {
                 Integer index = (Integer) view.getTag();
                 arraylistwishlistbooks.remove(index.intValue());
                 notifyDataSetChanged();
+                BookAdapter.wishlistbooks.remove(position);
+                CatalogFragment.addedornot[position] = "Add to wishlist";
+                CatalogFragment.addedornotorig[position] = "Add to wishlist";
 
                 //BookAdapter.add.setText("Add to wishlist");
             }

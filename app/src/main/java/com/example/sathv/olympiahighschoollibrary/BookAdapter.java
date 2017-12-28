@@ -55,7 +55,7 @@ public class BookAdapter extends ArrayAdapter<Book> {
         add = (Button) convertView.findViewById(R.id.button2);
         bookTitle.setText(book.title);
         bookAuthor.setText(book.author);
-        bookCount.setText("Pagecount: " + book.pageCount + "");
+        bookCount.setText("Pagecount: " + book.pageCount);
         bookCategory.setText(book.category);
         bookImage.setImageResource(book.imageid);
 
@@ -74,22 +74,16 @@ public class BookAdapter extends ArrayAdapter<Book> {
 
                     CatalogFragment.addedornot[position] = "Added";
                     CatalogFragment.addedornotorig[position] = "Added";
+                    book.added = "Added";
 
                     add.setText("Added");
-                    //books.set(index, book);
-                    // notifyDataSetChanged();
 
                     Log.d("ABC", "title " + book.title);
                     Log.d("ABC", "author " + book.author);
                     Log.d("ABC", "pagecount " + book.pageCount);
                     Log.d("ABC", "categoru" + book.category);
                     Log.d("ABC", "imageid" + book.imageid);
-                    wishlistbooks.add(new WishlistBook(book.title, book.author, book.pageCount, book.category, book.imageid));
-
-                    // add.setText("Added");
-                    //add.setClickable(false);
-
-                    Toast.makeText(getContext(), "added", Toast.LENGTH_SHORT).show();
+                    wishlistbooks.add(new WishlistBook(book.title, book.author, book.category, book.imageid));
                 }
 
             }

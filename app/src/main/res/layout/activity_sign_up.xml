@@ -70,7 +70,7 @@
             android:ems="10"
             android:fontFamily="sans-serif"
             android:hint="Password - student id"
-            android:inputType="numberPassword" />
+            android:inputType="textPassword" />
 
         <EditText
             android:id="@+id/confirmPassword"
@@ -79,7 +79,7 @@
             android:ems="10"
             android:fontFamily="sans-serif"
             android:hint="Confirm password"
-            android:inputType="numberPassword" />
+            android:inputType="textPassword" />
 
         <EditText
             android:id="@+id/email"

@@ -18,11 +18,12 @@
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            android:layout_width="432dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/black"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
+            android:layout_weight="1"
+            android:background="@color/colorBlue"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme" />
     </android.support.design.widget.AppBarLayout>
 
     <FrameLayout

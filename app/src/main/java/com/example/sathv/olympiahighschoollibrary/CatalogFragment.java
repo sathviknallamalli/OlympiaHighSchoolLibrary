@@ -48,7 +48,7 @@ public class CatalogFragment extends Fragment {
     public int[] picids = {R.drawable.owellbook, R.drawable.candymakers, R.drawable.tkam, R.drawable.lotf, R.drawable.quants, R.drawable.house
             , R.drawable.cpd, R.drawable.cb, R.drawable.rq, R.drawable.selection, R.drawable.ungifted};
 
-    static String[] addedornot = new String[title.length];
+    static String[] addedornot = {"Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist"};
 
     //ORIGINAL DUPLICATES
     String[] titleorig = {"1984", "candymakers", "to kill a mockingbird", "Lord of the Flies", "The Quants", "Bringing Down the House",
@@ -73,7 +73,8 @@ public class CatalogFragment extends Fragment {
     public int[] picidsorig = {R.drawable.owellbook, R.drawable.candymakers, R.drawable.tkam, R.drawable.lotf, R.drawable.quants, R.drawable.house
             , R.drawable.cpd, R.drawable.cb, R.drawable.rq, R.drawable.selection, R.drawable.ungifted};
 
-    static String[] addedornotorig = new String[title.length];
+    static String[] addedornotorig = {"Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist"};
+
 
     private ListView lvBook;
     private BookAdapter adapter;
@@ -113,24 +114,9 @@ public class CatalogFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
-        for (int i = 0; i < title.length; i++) {
-            addedornot[i] = "Add to wishlist";
-            addedornotorig[i] = "Add to wishlist";
-        }
-
         lvBook = (ListView) view.findViewById(R.id.listofbooks);
         books = new ArrayList<Book>();
         bookstwo = new ArrayList<Book>();
-
-        for (int i = 0; i < title.length; i++) {
-            books.add(new Book(capitalzeTitle(titleorig[i]), capitalizeauthor(authororig[i]), pageCountorig[i], picidsorig[i], capitalizeauthor(categoriesorig[i]), addedornotorig[i]));
-            bookstwo.add(new Book(capitalzeTitle(titleorig[i]), capitalizeauthor(authororig[i]), pageCountorig[i], picidsorig[i], capitalizeauthor(categoriesorig[i]), addedornotorig[i]));
-            lvBook.setTextFilterEnabled(true);
-
-        }
-
-        adapter = new BookAdapter(getActivity().getApplicationContext(), R.layout.customlayout, books);
-        lvBook.setAdapter(adapter);
 
         for (int i = 0; i < statuses.length; i++) {
             if (statuses[i].equals("0")) {
@@ -141,6 +127,17 @@ public class CatalogFragment extends Fragment {
                 statusesorig[i] = "Unavailable";
             }
         }
+
+        for (int i = 0; i < title.length; i++) {
+            books.add(new Book(capitalzeTitle(titleorig[i]), capitalizeauthor(authororig[i]), pageCountorig[i], picidsorig[i], capitalizeauthor(categoriesorig[i]), addedornotorig[i], isbns[i], statuses[i], summaries[i]));
+            bookstwo.add(new Book(capitalzeTitle(titleorig[i]), capitalizeauthor(authororig[i]), pageCountorig[i], picidsorig[i], capitalizeauthor(categoriesorig[i]), addedornotorig[i], isbns[i], statuses[i], summaries[i]));
+            lvBook.setTextFilterEnabled(true);
+
+        }
+
+        adapter = new BookAdapter(getActivity().getApplicationContext(), R.layout.customlayout, books);
+        lvBook.setAdapter(adapter);
+
 
         lvBook.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -178,7 +175,7 @@ public class CatalogFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.activities, menu);
+        //inflater.inflate(R.menu.activities, menu);
         MenuItem searchItem = menu.findItem(R.id.item_search);
         android.support.v7.widget.SearchView searchView = (SearchView) searchItem.getActionView();
         SearchView.OnQueryTextListener listener = new SearchView.OnQueryTextListener() {
@@ -194,7 +191,7 @@ public class CatalogFragment extends Fragment {
                     return false;
                 }
 
-                ArrayList<Book> filteredValues = new ArrayList<Book>(books);
+                final ArrayList<Book> filteredValues = new ArrayList<Book>(books);
 
                 for (int i = 0; i < books.size(); i++) {
 
@@ -207,20 +204,12 @@ public class CatalogFragment extends Fragment {
                         picids = removeEltInt(picids, i);
                         isbns = removeeltString(isbns, i);
                         summaries = removeeltString(summaries, i);
+                        statuses = removeeltString(statuses, i);
                         addedornot = removeeltString(addedornot, i);
                         adaptertwo = new BookAdapter(getActivity().getApplicationContext(), R.layout.customlayout, filteredValues);
                     }
                 }
 
-                for (int i = 0; i < statuses.length; i++) {
-                    if (statuses[i].equals("0")) {
-                        statuses[i] = "Available";
-                        statusesorig[i] = "Available";
-                    } else if (statuses[i].equals("1")) {
-                        statuses[i] = "Unavailable";
-                        statusesorig[i] = "Unavailable";
-                    }
-                }
 
                 lvBook.setAdapter(adaptertwo);
 
@@ -232,14 +221,14 @@ public class CatalogFragment extends Fragment {
                         for (int i = 0; i < title.length; i++) {
                             if (position == i) {
 
-                                titleofthebook = capitalzeTitle(title[i]);
-                                authorofthebook = capitalizeauthor(author[i]);
-                                category = capitalizeauthor(categories[i]);
-                                pg = pageCount[i];
-                                id = picids[i];
-                                isbn = isbns[i];
-                                summary = summaries[i];
-                                setStatus(statuses[i], i);
+                                titleofthebook = capitalzeTitle(filteredValues.get(i).title);
+                                authorofthebook = capitalizeauthor(filteredValues.get(i).author);
+                                category = capitalizeauthor(filteredValues.get(i).category);
+                                pg = filteredValues.get(i).pageCount;
+                                id = filteredValues.get(i).imageid;
+                                isbn = filteredValues.get(i).isbn;
+                                summary = filteredValues.get(i).summary;
+                                setStatus(filteredValues.get(i).status, i);
                                 pos = i;
 
                                 Intent appInfo = new Intent(view.getContext(), BookInformation.class);
@@ -262,8 +251,6 @@ public class CatalogFragment extends Fragment {
         searchView.setQueryHint("Search a book by title");
 
         super.onCreateOptionsMenu(menu, inflater);
-
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     public void resetSearch() {
@@ -275,6 +262,16 @@ public class CatalogFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapter, View view, int position, long val) {
 
+
+                /*for (int i = 0; i < statuses.length; i++) {
+                    if (statuses[i].equals("0")) {
+                        statuses[i] = "Available";
+                        statusesorig[i] = "Available";
+                    } else if (statuses[i].equals("1")) {
+                        statuses[i] = "Unavailable";
+                        statusesorig[i] = "Unavailable";
+                    }
+                }*/
 
                 for (int i = 0; i < title.length; i++) {
                     if (position == i) {

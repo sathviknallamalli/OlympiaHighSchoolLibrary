@@ -11,14 +11,20 @@ public class Book {
     public int pageCount;
     public int imageid;
     public String added;
+    public String isbn;
+    public String status;
+    public String summary;
 
-    public Book(String title, String author, int pageCount, int imageid, String category, String added) {
+    public Book(String title, String author, int pageCount, int imageid, String category, String added, String isbn, String status, String summary) {
         this.title = title;
         this.author = author;
         this.pageCount = pageCount;
         this.imageid = imageid;
         this.category = category;
         this.added = added;
+        this.isbn = isbn;
+        this.status = status;
+        this.summary = summary;
     }
 
     /*public String getTitle() {

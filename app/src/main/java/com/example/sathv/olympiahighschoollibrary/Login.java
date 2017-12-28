@@ -224,7 +224,6 @@ public class Login extends Activity {
 
         requestQueue.add(stringRequest);
 
-
     }
 
     public void getNameFromHost() {
