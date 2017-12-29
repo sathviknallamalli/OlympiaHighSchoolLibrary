@@ -9,33 +9,10 @@ public class ReservedBook {
     public String author;
     public int imageid;
 
+    //returned book constructor and necessary parameter
     public ReservedBook(String title, String author, int imageid) {
         this.title = title;
         this.author = author;
         this.imageid = imageid;
     }
-
-    /*public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public int getPageCount() {
-        return pageCount;
-    }
-
-    public void setPageCount(int pageCount) {
-        this.pageCount = pageCount;
-    }*/
 }

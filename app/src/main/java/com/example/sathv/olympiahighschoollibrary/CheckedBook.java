@@ -5,37 +5,16 @@ package com.example.sathv.olympiahighschoollibrary;
  */
 
 public class CheckedBook {
+
+    //checked book necessary fields
     public String title;
     public String date;
     public int imageid;
 
+    //constructor
     public CheckedBook(String title, String date, int imageid) {
         this.title = title;
         this.date = date;
         this.imageid = imageid;
     }
-
-    /*public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public int getPageCount() {
-        return pageCount;
-    }
-
-    public void setPageCount(int pageCount) {
-        this.pageCount = pageCount;
-    }*/
 }

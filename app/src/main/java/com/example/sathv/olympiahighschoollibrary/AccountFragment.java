@@ -25,24 +25,22 @@ public class AccountFragment extends Fragment {
     EditText nametemp;
     EditText emailtemp;
     EditText usernametemp;
-    Button change;
-    Button save;
     TextView nametitle;
     TextView emailtitle;
     TextView usernametitle;
-
-    EditText input;
+    Button change;
+    Button save;
+    Button edit;
 
     @Override
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LayoutInflater lf = getActivity().getLayoutInflater();
-
         View view = inflater.inflate(R.layout.account, container, false);
-
         getActivity().setTitle("Manage account");
 
+        //retrieve views
         nametemp = (EditText) view.findViewById(R.id.nametemp);
         emailtemp = (EditText) view.findViewById(R.id.emailtemp);
         usernametemp = (EditText) view.findViewById(R.id.usernametemp);
@@ -51,7 +49,9 @@ public class AccountFragment extends Fragment {
         nametitle = (TextView) view.findViewById(R.id.nametitle);
         emailtitle = (TextView) view.findViewById(R.id.emailtitle);
         usernametitle = (TextView) view.findViewById(R.id.usernametitle);
+        edit = (Button) view.findViewById(R.id.edit);
 
+        //set visibility
         nametemp.setVisibility(View.GONE);
         usernametemp.setVisibility(View.GONE);
         emailtemp.setVisibility(View.GONE);
@@ -61,8 +61,7 @@ public class AccountFragment extends Fragment {
         nametitle.setVisibility(View.GONE);
         emailtitle.setVisibility(View.GONE);
 
-        Button edit = (Button) view.findViewById(R.id.edit);
-
+        //edit button onclick
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -75,15 +74,18 @@ public class AccountFragment extends Fragment {
                 nametitle.setVisibility(View.VISIBLE);
                 emailtitle.setVisibility(View.VISIBLE);
 
+                //set textfields with current info
                 nametemp.setText(l.getFullName());
                 emailtemp.setText(l.getEmail());
                 usernametemp.setText(l.getUsername());
             }
         });
 
+        //save button onclick
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //set the variables with updated fields
                 l.setFullName(nametemp.getText().toString());
                 l.setEmail(emailtemp.getText().toString());
                 Login.setUsername(usernametemp.getText().toString());
@@ -94,13 +96,18 @@ public class AccountFragment extends Fragment {
                 //  a.email.setText(l.getEmail());
 
                 //UPDATE TO DATABASE
+
+
+
                 Toast.makeText(getActivity().getApplicationContext(), "Saved. Restart the app to see the changes", Toast.LENGTH_SHORT).show();
             }
         });
 
+        //change button onclick
         change.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //open activity to change password
                 Intent activities = new Intent(getActivity(), ChangePassword.class);
                 startActivity(activities);
             }

@@ -30,34 +30,30 @@ public class Activities extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activities);
 
+        //set which page should first display once acitivities is launched after login
         CatalogFragment fragment = new CatalogFragment();
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, fragment);
         fragmentTransaction.commit();
 
+        //set toolbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-      setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);
 
-       /* FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
-
+        //drawer layout
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        //set the navigation view
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         View v = navigationView.getHeaderView(0);
 
+        //set the values for textviews in navheader
         studentName = (TextView) v.findViewById(R.id.name);
         studentName.setText(l.getFullName());
 
@@ -69,6 +65,7 @@ public class Activities extends AppCompatActivity
 
     }
 
+    //when back is pressed on android phone
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -79,13 +76,12 @@ public class Activities extends AppCompatActivity
         }
     }
 
+    //inflate the navigationview activities view
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.activities, menu);
         return true;
-
-
     }
 
     @Override

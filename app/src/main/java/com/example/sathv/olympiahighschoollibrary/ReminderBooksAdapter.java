@@ -20,6 +20,7 @@ public class ReminderBooksAdapter extends ArrayAdapter<ReminderBook> {
     int resource;
     ArrayList<ReminderBook> arrayreminderbooks = null;
 
+    //reminder adapter contructor
     public ReminderBooksAdapter(Context context, int resource, ArrayList<ReminderBook> arrayreminderbooks) {
         super(context, resource, arrayreminderbooks);
         this.context = context;
@@ -27,6 +28,7 @@ public class ReminderBooksAdapter extends ArrayAdapter<ReminderBook> {
         this.arrayreminderbooks = arrayreminderbooks;
     }
 
+    //action for each listview item
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ReminderBook reminderBook = arrayreminderbooks.get(position);
@@ -35,10 +37,12 @@ public class ReminderBooksAdapter extends ArrayAdapter<ReminderBook> {
             convertView = LayoutInflater.from(context).inflate(R.layout.reminderlayout, parent, false);
         }
 
+        //retrieve fields
         TextView bookTitle = (TextView) convertView.findViewById(R.id.reminderbookname);
         TextView dueDatePhrase = (TextView) convertView.findViewById(R.id.reminderduephrase);
         ImageView bookImage = (ImageView) convertView.findViewById(R.id.reminderduephrase);
 
+        //set each field with appropriate fields, using the book created retrieve the variables because they are global
         bookTitle.setText(reminderBook.title);
         bookImage.setImageResource(reminderBook.imageid);
         dueDatePhrase.setText(reminderBook.duedatephrase);

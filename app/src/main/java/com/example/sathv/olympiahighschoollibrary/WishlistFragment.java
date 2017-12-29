@@ -31,39 +31,28 @@ public class WishlistFragment extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LayoutInflater lf = getActivity().getLayoutInflater();
-
         View view = inflater.inflate(R.layout.wishlist, container, false);
-
         getActivity().setTitle("Wishlist");
 
+        //assign varible
         lvw = (ListView) view.findViewById(R.id.listofwishlistbooks);
         wishlistBooks = new ArrayList<WishlistBook>();
         message = (TextView) view.findViewById(R.id.nowishlist);
 
-        //setHasOptionsMenu(true);
-
+        //if wishlistbooks array is empty, then display message to no books in wishlist
         if (BookAdapter.wishlistbooks.isEmpty()) {
-            Log.d("BAD", "arraylists are empty in wishlist fragment");
-
             message.setText("You currently have no books in your wishlist");
-
 
         } else {
             for (int i = 0; i < BookAdapter.wishlistbooks.size(); i++) {
 
+                //add each book into the wishlistBooks arraylist
                 wishlistBooks.add(BookAdapter.wishlistbooks.get(i));
-
-                Log.d("BAD", "arraylist are full in wishlist");
-
             }
-
-            adapter = new WishlistBooksAdapter(getActivity().getApplicationContext(), R.layout.wishlistlayout, wishlistBooks);
+            //set as adapter
+            adapter = new WishlistBooksAdapter(getActivity().getApplicationContext(), R.layout.wishlistlayout, BookAdapter.wishlistbooks);
             lvw.setAdapter(adapter);
         }
-
         return view;
     }
-
-
 }

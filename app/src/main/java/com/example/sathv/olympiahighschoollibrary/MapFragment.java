@@ -18,31 +18,34 @@ public class MapFragment extends Fragment {
     public MapFragment() {
 
     }
+
     GyroscopeObserver gyroscopeObserver;
 
     @Override
-    public View onCreateView(LayoutInflater inflater,  ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        gyroscopeObserver = new GyroscopeObserver();
-        gyroscopeObserver.setMaxRotateRadian(Math.PI/5);
-
         View view = inflater.inflate(R.layout.map, container, false);
+        getActivity().setTitle("Map of the OHS library");
 
+        //create gyroscope observer object
+        gyroscopeObserver = new GyroscopeObserver();
+        gyroscopeObserver.setMaxRotateRadian(Math.PI / 5);
+
+        //set the panorama image for gyro observer
         PanoramaImageView panoramaImageView = (PanoramaImageView) view.findViewById(R.id.panorama_image_view);
         panoramaImageView.setGyroscopeObserver(gyroscopeObserver);
-
-        getActivity().setTitle("Map of the OHS library");
 
         return view;
     }
 
+    //move along the panorama when resumed
     @Override
     public void onResume() {
         super.onResume();
         gyroscopeObserver.register(getActivity());
     }
 
+    //stop the gyroscope movement if paused
     @Override
     public void onPause() {
         super.onPause();

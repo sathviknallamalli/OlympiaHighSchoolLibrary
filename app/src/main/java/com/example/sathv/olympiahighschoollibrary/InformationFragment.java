@@ -17,16 +17,12 @@ public class InformationFragment extends Fragment {
     }
 
     @Override
-
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LayoutInflater lf = getActivity().getLayoutInflater();
 
+        //set the appropriate layout to diplay when the fragment is clicked
         View view = inflater.inflate(R.layout.information, container, false);
-
-
         getActivity().setTitle("Information");
-
 
         return view;
     }

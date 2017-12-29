@@ -1,13 +1,8 @@
 package com.example.sathv.olympiahighschoollibrary;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.text.InputType;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,7 +21,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,13 +32,10 @@ public class Login extends Activity {
     // UI references.
     private EditText usernameField;
     private EditText passwordField;
-    private View mLoginFormView;
 
     EditText input;
 
-    Connection connection;
-
-
+    //create getters and setters for each variable
     public String getName() {
         return name;
     }
@@ -112,7 +103,6 @@ public class Login extends Activity {
     Button buttons;
     ProgressBar pb;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,6 +116,7 @@ public class Login extends Activity {
         pb = (ProgressBar) findViewById(R.id.pb);
         pb.setVisibility(View.GONE);
 
+        //onclick listener when the done button is pressed on keyboard
         passwordField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -133,8 +124,11 @@ public class Login extends Activity {
                     if (usernameField.getText().toString().trim().isEmpty() || passwordField.getText().toString().trim().isEmpty()) {
                         Toast.makeText(getApplicationContext(), "Missing field(s)", Toast.LENGTH_SHORT).show();
                     } else {
+                        //let the progressbar to load
                         pb.setVisibility(View.VISIBLE);
+                        //veryify the login
                         loginCheck();
+                        //retrieve the name and email
                         getNameFromHost();
                     }
                 }
@@ -142,33 +136,34 @@ public class Login extends Activity {
             }
         });
 
-        //COPY GET NAME CODE INTO SIGN UP AFTER REGISTER, FIX PROFILE PAGE GETTING NAME FROM LOGIN PAGE
-        //TRY TO CONDENSE SQL METHODS AND MAKE REUSABLE
-
         Button login = (Button) findViewById(R.id.logIn);
+        //onclick for actual login button
         login.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                //make sure both the login fields are filled
                 if (usernameField.getText().toString().trim().isEmpty() || passwordField.getText().toString().trim().isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Missing field(s)", Toast.LENGTH_SHORT).show();
                 } else {
+                    //set progressbar to load
                     pb.setVisibility(View.VISIBLE);
+                    //verify login
                     loginCheck();
+                    //retrieve name and email
                     getNameFromHost();
                 }
             }
         });
-
     }
 
-
+    //signup button action onclick
     public void action(View view) {
+        //start the signup intent
         Intent dashboard = new Intent(this, SignUp.class);
         startActivity(dashboard);
-        //finish();
     }
 
+    //verify login method
     public void loginCheck() {
         String url = "https://sathviknallamalli.000webhostapp.com/loginwebhost.php";
 
@@ -177,22 +172,23 @@ public class Login extends Activity {
             @Override
             public void onResponse(String response) {
                 if (response.trim().equals("success")) {
+                    //if the php scropt that is in the url return success
                     Toast.makeText(getApplicationContext(), "login success!", Toast.LENGTH_SHORT).show();
 
-
+                    //set the password variable and username variable appropriately
                     setPassword(passwordField.getText().toString());
                     setUsername(usernameField.getText().toString());
-                    Log.d("BAD", "password set in login field" + getPassword());
 
-                    Log.d("BAD", "first inent of activities called when done is pressed");
-
+                    //because login is valid, setvisibility of the l=progress bar to gone
                     pb.setVisibility(View.GONE);
+
+                    //start the actvities activity for navigation view
                     Intent activities = new Intent(getApplicationContext(), Activities.class);
                     startActivity(activities);
                     finish();
 
-
                 } else {
+                    //else the login is incorrect
                     Toast.makeText(getApplicationContext(), "login incorrect", Toast.LENGTH_SHORT).show();
                     pb.setVisibility(View.GONE);
                 }
@@ -200,7 +196,8 @@ public class Login extends Activity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), "error " + error.toString(), Toast.LENGTH_SHORT).show();
+                //if the php script returns an error, set visibility to gone and print
+                Toast.makeText(getApplicationContext(), "ERROR " + error.toString(), Toast.LENGTH_SHORT).show();
 
                 pb.setVisibility(View.GONE);
             }
@@ -212,20 +209,18 @@ public class Login extends Activity {
 
                 Map<String, String> params = new HashMap<>();
 
+                //put necessary parameters for the php script using the hashmap
                 params.put("username", usernameField.getText().toString().trim());
                 params.put("password", passwordField.getText().toString().trim());
 
                 return params;
-
             }
-
-
         };
 
         requestQueue.add(stringRequest);
-
     }
 
+    //get name method
     public void getNameFromHost() {
         String url = "https://sathviknallamalli.000webhostapp.com/namefromwebhost.php";
 
@@ -236,29 +231,25 @@ public class Login extends Activity {
                 if (!response.trim().equals("incorrect") && response.length() >= 4) {
                     name = response.trim();
 
+                    //the php script will return all the variables and will be spaced by a space
+                    // this will break each string by the space and set it into the appropriate variables
                     String[] splitStr = name.split("\\s+");
                     String firstname = splitStr[0];
-                    //Log.d("BAD", firstname);
                     String lastname = splitStr[1];
-                    // Log.d("BAD", lastname);
                     String emailRaw = splitStr[2];
-                    // Log.d("BAD", emailRaw);
                     String gradeRaw = splitStr[3];
-                    // Log.d("BAD", gradeRaw);
 
                     setFullName(firstname + " " + lastname);
-                    //  Log.d("BAD", getFullName());
+                    //use the setters to set the variable
                     setEmail(emailRaw + "");
-                    // Log.d("BAD", getEmail());
                     setGrade(gradeRaw + "");
-                    // Log.d("BAD", getGrade());
-
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), "error" + error.toString(), Toast.LENGTH_SHORT).show();
+                //display the error
+                Toast.makeText(getApplicationContext(), "ERROR WHEN RETRIEVING NAME" + error.toString(), Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -266,9 +257,9 @@ public class Login extends Activity {
 
                 Map<String, String> params = new HashMap<>();
 
+                //run the php scipt using the url and input the parameters using the hasmap
                 params.put("username", usernameField.getText().toString().trim());
                 params.put("password", passwordField.getText().toString().trim());
-
 
                 return params;
 
@@ -276,48 +267,7 @@ public class Login extends Activity {
         };
 
         requestQueue.add(stringRequest);
-
     }
-
-    public void changepd(View v) {
-        final Context context = v.getContext();
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Please enter your current password to proceed");
-
-        input = new EditText(context);
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
-        builder.setView(input);
-
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                String entered = input.getText().toString();
-
-                if (entered.equals(Login.getPassword())) {
-
-                    Intent activities = new Intent(context, ChangePassword.class);
-                    startActivity(activities);
-
-                } else {
-                    Toast.makeText(context, "password is incorrect", Toast.LENGTH_LONG).show();
-                    input.setText("");
-                }
-
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
-    }
-
 }
 
 

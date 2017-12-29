@@ -20,6 +20,7 @@ public class WishlistBooksAdapter extends ArrayAdapter<WishlistBook> {
     int resource;
     ArrayList<WishlistBook> arraylistwishlistbooks = null;
 
+    //wishlistbook adapter constructor
     public WishlistBooksAdapter(Context context, int resource, ArrayList<WishlistBook> arraylistreservedbooks) {
         super(context, resource, arraylistreservedbooks);
         this.context = context;
@@ -27,6 +28,7 @@ public class WishlistBooksAdapter extends ArrayAdapter<WishlistBook> {
         this.arraylistwishlistbooks = arraylistreservedbooks;
     }
 
+    //laoad each row into the list view and setting fields
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         WishlistBook wishlistBook = arraylistwishlistbooks.get(position);
@@ -35,33 +37,37 @@ public class WishlistBooksAdapter extends ArrayAdapter<WishlistBook> {
             convertView = LayoutInflater.from(context).inflate(R.layout.wishlistlayout, parent, false);
         }
 
+        //retrieve each field
         TextView bookTitle = (TextView) convertView.findViewById(R.id.wishlisttitle);
         TextView authorinreserved = (TextView) convertView.findViewById(R.id.wishlistauthor);
         TextView categorywishlist = (TextView) convertView.findViewById(R.id.wishlistcategory);
         ImageView bookImage = (ImageView) convertView.findViewById(R.id.wishlistimage);
         TextView remove = (TextView) convertView.findViewById(R.id.removebutton);
 
+        //set each field with appropriate string through the wishlistBook currently being loaded and get the globalvarables
         bookTitle.setText(wishlistBook.title);
         authorinreserved.setText(wishlistBook.author);
         categorywishlist.setText(wishlistBook.category);
         bookImage.setImageResource(wishlistBook.imageid);
 
+        //set the button in the row the appropriate tag
         remove.setTag(position);
 
+        //remove button onclick action
         remove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Integer index = (Integer) view.getTag();
+                //remove the appropriate index object from the arraylist being used
                 arraylistwishlistbooks.remove(index.intValue());
                 notifyDataSetChanged();
+                //remove from the array as well
                 BookAdapter.wishlistbooks.remove(position);
+                //update the addedornot and change to the option of being able to add to wishlist
                 CatalogFragment.addedornot[position] = "Add to wishlist";
                 CatalogFragment.addedornotorig[position] = "Add to wishlist";
-
-                //BookAdapter.add.setText("Add to wishlist");
             }
         });
-
         return convertView;
     }
 

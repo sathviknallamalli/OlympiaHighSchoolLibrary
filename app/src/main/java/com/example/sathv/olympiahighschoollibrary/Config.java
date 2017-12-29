@@ -5,6 +5,7 @@ package com.example.sathv.olympiahighschoollibrary;
  */
 
 public class Config {
+    //Sender email password and username
     public static final String EMAIL ="sathviknallamalli";
     public static final String PASSWORD ="Saibaba$$25";
 }

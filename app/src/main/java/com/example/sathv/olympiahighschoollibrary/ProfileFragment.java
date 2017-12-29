@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 /**
@@ -21,58 +20,53 @@ public class ProfileFragment extends Fragment {
 
     }
 
-    EditText input;
+    TextView name;
+    TextView gr;
+    TextView val;
+    TextView reserval;
+    Button b2;
+    Button b;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LayoutInflater lf = getActivity().getLayoutInflater();
-
         View view = inflater.inflate(R.layout.profile, container, false);
+        getActivity().setTitle("Your profile");
 
         Login l2 = new Login();
 
-        TextView name = (TextView) view.findViewById(R.id.fullName);
+        name = (TextView) view.findViewById(R.id.fullName);
+        gr = (TextView) view.findViewById(R.id.grade);
+        val = (TextView) view.findViewById(R.id.value);
+        reserval = (TextView) view.findViewById(R.id.reservedval);
+        b2 = (Button) view.findViewById(R.id.changepd);
+        b = (Button) view.findViewById(R.id.changeaccount);
+
+        //assign each field the proper information by retrieving variables; username, name, checkedoutcount, and reservedcount
         name.setText(l2.getFullName());
-
-        TextView gr = (TextView) view.findViewById(R.id.grade);
         gr.setText("Grade: " + l2.getGrade());
-
-        TextView val = (TextView) view.findViewById(R.id.value);
         val.setText(BookInformation.checkedoutcount + "");
-
-        TextView reserval = (TextView) view.findViewById(R.id.reservedval);
         reserval.setText(BookInformation.reservedcount + "");
-        getActivity().setTitle("Your profile");
 
-        Button b = (Button) view.findViewById(R.id.changeaccount);
-        Button b2 = (Button) view.findViewById(R.id.changepd);
-
+        //changeaccount onclick
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //start the fragment of manage acount
                 FragmentManager fragmentManager = getFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frameLayout, new AccountFragment()).commit();
             }
         });
 
+        //change pd onclick
         b2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                //start the activity to change password
                 Intent activities = new Intent(getActivity(), ChangePassword.class);
                 startActivity(activities);
-
             }
         });
-
-
         return view;
     }
-
-    public void changepd(View view) {
-
-    }
-
-
 }

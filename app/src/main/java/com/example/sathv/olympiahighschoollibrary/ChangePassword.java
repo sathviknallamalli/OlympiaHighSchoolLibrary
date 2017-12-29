@@ -32,12 +32,14 @@ public class ChangePassword extends AppCompatActivity {
         pdtitle = (TextView) findViewById(R.id.pdtitle);
         cpdtitle = (TextView) findViewById(R.id.cpdtitle);
 
+        //set the visibility of all fields to gone so the alert dialog can build
         cpdtitle.setVisibility(View.GONE);
         pdtitle.setVisibility(View.GONE);
         submit.setVisibility(View.GONE);
         pd.setVisibility(View.GONE);
         confirm.setVisibility(View.GONE);
 
+        //build alert dialog
         final AlertDialog.Builder builder = new AlertDialog.Builder(ChangePassword.this);
         builder.setTitle("Please enter your current password to continue");
 
@@ -45,6 +47,7 @@ public class ChangePassword extends AppCompatActivity {
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
         builder.setView(input);
 
+        //set ok button
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
             @Override
@@ -52,19 +55,25 @@ public class ChangePassword extends AppCompatActivity {
 
                 String entered = input.getText().toString();
 
+                //enter the current password first
                 if (entered.equals(Login.getPassword())) {
+                    //if equal then set all fields to visible and let the user enter new password
                     cpdtitle.setVisibility(View.VISIBLE);
                     pdtitle.setVisibility(View.VISIBLE);
                     submit.setVisibility(View.VISIBLE);
                     pd.setVisibility(View.VISIBLE);
                     confirm.setVisibility(View.VISIBLE);
 
+                    //submit onclick listener
                     submit.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            //make sure that the passwords are identical
                             if (!confirm.getText().toString().equals(pd.getText().toString())) {
                                 Toast.makeText(getApplicationContext(), "passwords are not indentical", Toast.LENGTH_SHORT).show();
-                            } else {
+                            }
+                            //then update the password change into database
+                            else {
 
                                 Login.setPassword(confirm.getText().toString());
                                 //UPDATE TO DATABASE
@@ -73,9 +82,10 @@ public class ChangePassword extends AppCompatActivity {
                             }
                         }
                     });
-                } else {
+                }
+                // if the entered current password is not same then set all fields to gone
+                else {
                     input.setText("");
-
 
                     cpdtitle.setVisibility(View.GONE);
                     pdtitle.setVisibility(View.GONE);
@@ -84,22 +94,18 @@ public class ChangePassword extends AppCompatActivity {
                     confirm.setVisibility(View.GONE);
 
                     Toast.makeText(getApplicationContext(), "passwords incorrect", Toast.LENGTH_SHORT).show();
-
-                   // builder.show();
-
                 }
 
             }
         });
+
+        //alert dialog negative cancel button
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
             }
         });
-
         builder.show();
-
-
     }
 }

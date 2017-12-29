@@ -18,7 +18,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="21dp"
         android:text="TextView"
-        android:textColor="@color/colorGreen"
+        android:textColor="@color/forestgreeen"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

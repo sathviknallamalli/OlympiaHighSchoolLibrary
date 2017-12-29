@@ -26,6 +26,7 @@ public class RemindersFragment extends Fragment {
 
     }
 
+    //notification variables
     NotificationCompat.Builder notification;
     private static final int uniqueid = 11125;
 
@@ -35,44 +36,50 @@ public class RemindersFragment extends Fragment {
 
     ArrayList<ReminderBook> reminderBooks;
 
+    Button bcheck;
+    Button breserve;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        LayoutInflater lf = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.reminders, container, false);
         getActivity().setTitle("Reminders");
 
+        //assign variables
         lvn = (ListView) view.findViewById(R.id.reminderbooks);
         reminderBooks = new ArrayList<ReminderBook>();
         message = (TextView) view.findViewById(R.id.noremind);
 
-        Button bcheck = (Button) view.findViewById(R.id.vcheck);
-        Button breserve = (Button) view.findViewById(R.id.vreserve);
+        bcheck = (Button) view.findViewById(R.id.vcheck);
+        breserve = (Button) view.findViewById(R.id.vreserve);
 
+        //view checked out books button
         bcheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //open checked fragment
                 FragmentManager fragmentManager = getFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frameLayout, new CheckedFragment()).commit();
             }
         });
 
+        //view reserved books button
         breserve.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //open reserved fragment
                 FragmentManager fragmentManager = getFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frameLayout, new ReservedFragment()).commit();
             }
         });
 
-        //setHasOptionsMenu(true);
-
+        //get current date
         Calendar calendar = Calendar.getInstance();
         Date currentDate = new Date();
         calendar.setTime(currentDate);
 
         boolean isreminder = false;
 
+        //check if any books were checked out that a reminder was set
         if (BookInformation.reminderdates.isEmpty()) {
             Log.d("BAD", "arraylists are empty in reminder fragment");
 
@@ -80,47 +87,35 @@ public class RemindersFragment extends Fragment {
 
         } else {
             for (int i = 0; i < BookInformation.reminderdates.size(); i++) {
-                //a reminder needs to be made for this book
+                //check if the current date matches the date for a reminder
                 if (currentDate.equals(BookInformation.reminderdates.get(i))) {
 
+                    //add book to the reminder books arraylist for listview
                     reminderBooks.add(new ReminderBook(BookInformation.checkedoutbookstitles.get(i).toString(), (int) BookInformation.checkedoutbooksimages.get(i)
                             , "Book is DUE IN 2 DAYS"));
 
                     isreminder = true;
-
-                    // Log.d("BAD", "arraylist are full");
                 }
+                //set adapter to listview
                 adapter = new ReminderBooksAdapter(getActivity().getApplicationContext(), R.layout.reminderlayout, reminderBooks);
                 lvn.setAdapter(adapter);
             }
 
         }
+        //if books were checked out but current date is not same as reminder sate
         if (isreminder == false) {
             message.setText("No reminders currently");
         }
-        // notification = new NotificationCompat.Builder(getActivity());
-        // notification.setAutoCancel(true);
 
         return view;
     }
 
+    //notifcationer button onclick
     public void notifyonclick(View view) {
         notification.setSmallIcon(R.drawable.bear);
         notification.setTicker("this is the ticker");
         notification.setWhen(System.currentTimeMillis());
         notification.setContentTitle("this is the title");
         notification.setContentText("body of the notifcation");
-
-        /*FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.frameLayout, new AccountFragment()).commit();
-
-        Intent intent = new Intent(this, Activities.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        notification.setContentIntent(pendingIntent);
-
-        //Builds notification and issues it
-        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.notify(uniqueID, notification.build());*/
-
     }
 }

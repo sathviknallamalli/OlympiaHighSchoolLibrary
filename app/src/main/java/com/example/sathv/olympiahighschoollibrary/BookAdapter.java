@@ -24,11 +24,10 @@ public class BookAdapter extends ArrayAdapter<Book> {
     ArrayList<Book> books = null;
 
     static ArrayList<WishlistBook> wishlistbooks = new ArrayList<>();
-
     Book book;
-
     Button add;
 
+    //book adapter contructor
     public BookAdapter(Context context, int resource, ArrayList<Book> books) {
         super(context, resource, books);
         this.context = context;
@@ -36,6 +35,7 @@ public class BookAdapter extends ArrayAdapter<Book> {
         this.books = books;
     }
 
+    //set the layouts and fill the layout for each book in getView method
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         book = books.get(position);
@@ -52,6 +52,7 @@ public class BookAdapter extends ArrayAdapter<Book> {
         TextView bookCategory = (TextView) convertView.findViewById(R.id.bookCategory);
         ImageView bookImage = (ImageView) convertView.findViewById(R.id.bookimage);
 
+        //setting each field
         add = (Button) convertView.findViewById(R.id.button2);
         bookTitle.setText(book.title);
         bookAuthor.setText(book.author);
@@ -61,15 +62,16 @@ public class BookAdapter extends ArrayAdapter<Book> {
 
         add.setText(book.added);
 
-        add.setTag(position);
-
+        //button onClick for add to wishlist button in each row based on tags
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+                //if button sauys "Added" dont let adding
                 if (add.getText().toString().equals("Added")) {
                     Toast.makeText(getContext(), "Already added to your wishlist", Toast.LENGTH_SHORT).show();
                 } else {
+                    //update the variable for the Book
                     Integer index = (Integer) view.getTag();
 
                     CatalogFragment.addedornot[position] = "Added";
@@ -78,20 +80,12 @@ public class BookAdapter extends ArrayAdapter<Book> {
 
                     add.setText("Added");
 
-                    Log.d("ABC", "title " + book.title);
-                    Log.d("ABC", "author " + book.author);
-                    Log.d("ABC", "pagecount " + book.pageCount);
-                    Log.d("ABC", "categoru" + book.category);
-                    Log.d("ABC", "imageid" + book.imageid);
+                    //and add to the wishlist arraylist
                     wishlistbooks.add(new WishlistBook(book.title, book.author, book.category, book.imageid));
                 }
 
             }
         });
-
-
         return convertView;
     }
-
-
 }

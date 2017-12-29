@@ -20,6 +20,7 @@ public class CheckedBooksAdapter extends ArrayAdapter<CheckedBook> {
     int resource;
     ArrayList<CheckedBook> arraylistcheckedbooks = null;
 
+    //checked books adapter contructor
     public CheckedBooksAdapter(Context context, int resource, ArrayList<CheckedBook> arraylistcheckedbooks ) {
         super(context, resource, arraylistcheckedbooks);
         this.context = context;
@@ -35,12 +36,15 @@ public class CheckedBooksAdapter extends ArrayAdapter<CheckedBook> {
             convertView = LayoutInflater.from(context).inflate(R.layout.itemforchecked, parent, false);
         }
 
+        //retrieve the fields
         TextView bookTitle = (TextView) convertView.findViewById(R.id.bookTitle);
         TextView dateinchecked = (TextView) convertView.findViewById(R.id.checkedoutdateforrowitem);
         ImageView bookImage = (ImageView) convertView.findViewById(R.id.bookimage);
 
+        //set the appropriate fields with the appropriate info
         bookTitle.setText(checkedBook.title);
         dateinchecked.setText("DUE DATE: "+ checkedBook.date);
+        //change color od due date to be prominent
         dateinchecked.setTextColor(convertView.getResources().getColor(R.color.crimson));
         bookImage.setImageResource(checkedBook.imageid);
 

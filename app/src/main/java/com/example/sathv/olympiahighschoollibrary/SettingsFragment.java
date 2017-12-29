@@ -19,9 +19,9 @@ public class SettingsFragment extends Fragment {
     @Override
 
     public View onCreateView(LayoutInflater inflater,  ViewGroup container, Bundle savedInstanceState) {
-
         getActivity().setTitle("Settings");
-
         return inflater.inflate(R.layout.settings,container,false);
+
+        //set appropriate layout to inflate
     }
 }

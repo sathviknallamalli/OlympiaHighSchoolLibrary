@@ -11,12 +11,14 @@ public class SplashScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-        Thread thread = new Thread(){
+        //allow screen to run on thread for set amounf of time based on sleep
+        Thread thread = new Thread() {
 
             @Override
             public void run() {
                 try {
                     sleep(1500);
+                    //then start the next activity
                     Intent intent = new Intent(getApplicationContext(), Login.class);
                     startActivity(intent);
                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
@@ -27,7 +29,5 @@ public class SplashScreen extends AppCompatActivity {
             }
         };
         thread.start();
-
-
     }
 }

@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,20 +21,35 @@ import java.util.Date;
 public class BookInformation extends AppCompatActivity {
 
     TextView status;
+    TextView title;
+    TextView author;
+    TextView category;
+    TextView isbn;
+    TextView pg;
+    TextView summary;
     EditText input;
+    ImageView bookCover;
+    Button checkOut;
+    Button reserve;
 
     static int checkedoutcount = 0;
     static int reservedcount = 0;
 
+    //arraylist to store checked out books when clicked to load in the checked fragment
     static ArrayList checkedoutbookstitles = new ArrayList();
     static ArrayList checkedoutbooksdates = new ArrayList();
     static ArrayList checkedoutbooksimages = new ArrayList();
+
+    //the dates when reminders need to be given based on checked out date
     static ArrayList<Date> reminderdates = new ArrayList<Date>();
 
+    //arraylust to store reserved books when to load in the reserved fragment
     static ArrayList reservedbooktitles = new ArrayList();
     static ArrayList reservedbookauthor = new ArrayList();
     static ArrayList reservedbookimages = new ArrayList();
 
+    //getters and setters for datestring
+    static String datetoputinconfirmation;
 
     public static String getDatetoputinconfirmation() {
         return datetoputinconfirmation;
@@ -45,27 +59,28 @@ public class BookInformation extends AppCompatActivity {
         BookInformation.datetoputinconfirmation = datetoputinconfirmation;
     }
 
-    static String datetoputinconfirmation;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_information);
+
+        //based on the selected book in catalog, title is set for activity
         setTitle(CatalogFragment.titleofthebook);
 
-        TextView title = (TextView) findViewById(R.id.infoTitle);
-        TextView author = (TextView) findViewById(R.id.infoAuthor);
-        TextView category = (TextView) findViewById(R.id.infoCategory);
-        TextView isbn = (TextView) findViewById(R.id.isbn);
-        TextView pg = (TextView) findViewById(R.id.infopg);
-        TextView summary = (TextView) findViewById(R.id.summary);
+        title = (TextView) findViewById(R.id.infoTitle);
+        author = (TextView) findViewById(R.id.infoAuthor);
+        category = (TextView) findViewById(R.id.infoCategory);
+        isbn = (TextView) findViewById(R.id.isbn);
+        pg = (TextView) findViewById(R.id.infopg);
+        summary = (TextView) findViewById(R.id.summary);
         status = (TextView) findViewById(R.id.status);
 
-        ImageView bookCover = (ImageView) findViewById(R.id.bigimageofbook);
+        bookCover = (ImageView) findViewById(R.id.bigimageofbook);
 
-        Button checkOut = (Button) findViewById(R.id.checkOut);
-        Button reserve = (Button) findViewById(R.id.reserve);
+        checkOut = (Button) findViewById(R.id.checkOut);
+        reserve = (Button) findViewById(R.id.reserve);
 
+        //set the bookinfo fields with appropriate text based on selected book in catalog fragment
         title.setText(CatalogFragment.titleofthebook);
         author.setText(CatalogFragment.authorofthebook);
         category.setText(category.getText().toString() + " " + CatalogFragment.category);
@@ -76,6 +91,7 @@ public class BookInformation extends AppCompatActivity {
 
         bookCover.setImageResource(CatalogFragment.id);
 
+        //based on the status, set color text
         if (CatalogFragment.getStatus().equals("Available")) {
             status.setTextColor(getResources().getColor(R.color.forestgreeen));
         } else if (CatalogFragment.getStatus().equals("Unavailable")) {
@@ -84,11 +100,15 @@ public class BookInformation extends AppCompatActivity {
 
     }
 
+    //onclick action for checking out in bookinfo
     public void checkoutOnClick(View view) {
+
+        //only allow checkout when status is available
         if (status.getText().toString().contains("Available")) {
 
             final Context context = view.getContext();
 
+            //set up an alertdialog so that uer enters password to checkout the book
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle("Please enter your password to proceed");
 
@@ -103,19 +123,18 @@ public class BookInformation extends AppCompatActivity {
 
                     String entered = input.getText().toString();
 
-                    Log.d("BAD", "password in bookinfo confirmation" + Login.getPassword());
-
+                    //make sure that password is correct
                     if (entered.equals(Login.getPassword())) {
 
+                        //increase count so that in Profile fragment stats are shown
                         checkedoutcount++;
 
-
+                        //add this to the checkedoutarraylists to display in checked fragment
                         checkedoutbookstitles.add(CatalogFragment.titleofthebook);
 
-                        Log.d("BAD", "titles array " + checkedoutbookstitles.toString());
-
+                        //set and determine the due date
                         int noOfDays = 14; //i.e two weeks
-                        int daysbeforedue= 2;
+                        int daysbeforedue = 2;
 
                         //current date
                         Calendar calendar = Calendar.getInstance();
@@ -133,14 +152,13 @@ public class BookInformation extends AppCompatActivity {
                         reminderdates.add(reminderdate);
                         setDatetoputinconfirmation(duedate.toString());
 
+                        //add
                         checkedoutbooksdates.add(getDatetoputinconfirmation());
 
-                        Log.d("BAD", "dates array " + checkedoutbookstitles.toString());
-
+                        //add
                         checkedoutbooksimages.add(CatalogFragment.id);
 
-                        Log.d("BAD", "images array " + checkedoutbooksimages.toString());
-
+                        //start checked out confirmation activity for user
                         Intent activities = new Intent(context, CheckedOutConfirmation.class);
                         startActivity(activities);
                         finish();
@@ -152,6 +170,7 @@ public class BookInformation extends AppCompatActivity {
 
                 }
             });
+            //cancel button for alert dialog to dismiss
             builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -166,12 +185,19 @@ public class BookInformation extends AppCompatActivity {
         }
     }
 
+    //reserve button onclick
     public void reserveOnClick(View view) {
+
+        //only allow reservations to be made when book is unavailable
         if (status.getText().toString().contains("Unavailable")) {
             final Context context = view.getContext();
+
+            //make sure book is not already reserved
             if (reservedbooktitles.contains(CatalogFragment.titleofthebook) || reservedbookimages.contains(CatalogFragment.id) || reservedbookauthor.contains(CatalogFragment.authorofthebook)) {
                 Toast.makeText(context, "Book is already reserved", Toast.LENGTH_LONG).show();
             } else {
+
+                //build alertdialog for user to enter password in order to reserve book
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("Please enter your password to proceed");
 
@@ -186,16 +212,18 @@ public class BookInformation extends AppCompatActivity {
 
                         String entered = input.getText().toString();
 
-                        Log.d("BAD", "password in bookinfo confirmation for reserve" + Login.getPassword());
-
+                        //make sure password is correct
                         if (entered.equals(Login.getPassword())) {
 
+                            //increase reserved count for Profile fragment to recrod count
                             reservedcount++;
 
+                            //add info to the reserved arraylists for reserved fragment
                             reservedbooktitles.add(CatalogFragment.titleofthebook);
                             reservedbookauthor.add(CatalogFragment.authorofthebook);
                             reservedbookimages.add(CatalogFragment.id);
 
+                            //start the activity for confirm reservation
                             Intent activities = new Intent(context, ReservedConfirmation.class);
                             startActivity(activities);
                             finish();
@@ -204,9 +232,9 @@ public class BookInformation extends AppCompatActivity {
                             Toast.makeText(context, "password is incorrect", Toast.LENGTH_LONG).show();
                             input.setText("");
                         }
-
                     }
                 });
+                //builder second button for negative
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -216,9 +244,9 @@ public class BookInformation extends AppCompatActivity {
 
                 builder.show();
             }
-
-
-        } else {
+        }
+        //if book is available then dont reserve and instead check out the book
+        else {
             Toast.makeText(getApplicationContext(), "Please check out the book instead", Toast.LENGTH_SHORT).show();
 
         }

@@ -83,10 +83,13 @@ public class SendMail extends AsyncTask<Void, Void, Void> {
 
                 String enteredCode = input.getText().toString();
 
+                //make sure verification code is same as what entered
                 if (enteredCode.equals(code)) {
+                    // start the activities class
                     Intent activities = new Intent(context, Activities.class);
                     context.startActivity(activities);
 
+                    //motify user
                     Toast.makeText(context, "Welcome to the Olympia High School Library app!", Toast.LENGTH_LONG).show();
 
                     ((Activity) context).finish();
@@ -97,6 +100,7 @@ public class SendMail extends AsyncTask<Void, Void, Void> {
 
             }
         });
+        //builder button two negative button
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

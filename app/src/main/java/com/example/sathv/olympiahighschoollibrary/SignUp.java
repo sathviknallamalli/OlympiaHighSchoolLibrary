@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.InputType;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -41,12 +40,8 @@ public class SignUp extends Activity {
     Button register;
     EditText confirm;
 
-    EditText change;
-
     ProgressDialog mDialog;
     FirebaseAuth mAuth;
-
-    String name;
 
     ArrayAdapter<CharSequence> adapter;
 
@@ -55,6 +50,7 @@ public class SignUp extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
+        //retrieve each field
         username = (EditText) findViewById(R.id.username);
         firstName = (EditText) findViewById(R.id.firstName);
         firstName.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
@@ -93,6 +89,7 @@ public class SignUp extends Activity {
 
     }
 
+    //register button onClick
     public void registerAction(View view) {
         //check is all fields are entered correctly
         if (username.getText().toString().trim().isEmpty() || firstName.getText().toString().trim().isEmpty() || lastName.getText().toString().trim().isEmpty() || password.getText().toString().trim().isEmpty() || email.getText().toString().trim().isEmpty() ||
@@ -131,6 +128,7 @@ public class SignUp extends Activity {
 
     }
 
+    //method to update and insert into database
     public void registerToDatabase() {
         String url = "https://sathviknallamalli.000webhostapp.com/registerwebhost.php";
 
@@ -138,23 +136,22 @@ public class SignUp extends Activity {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                //start and initialize the dialog with message
                 mDialog.setMessage("Signing up...");
                 mDialog.show();
                 if (response.trim().equals("success")) {
-                    //Toast.makeText(getApplicationContext(), "Your account has been created!", Toast.LENGTH_SHORT).show();
-
+                    //if the php script returns "success" token then let user know and send email
                     Login l = new Login();
 
+                    //set appropriate full namel email and username and password
                     l.setFullName(firstName.getText().toString() + " " + lastName.getText().toString());
-                    Log.d("BAD", "after setting in SIGN UP " + l.getFullName());
                     l.setEmail(email.getText().toString());
-                    Log.d("BAD", "email is after register" + l.getEmail());
                     mDialog.dismiss();
 
                     String emailRaw = l.getEmail();
-                    Log.d("BAD", "email" + emailRaw);
                     String code = generateRandomString();
 
+                    //set subject and message for the email beign sent
                     String subject = "Confirm your email address for Olympia High School Library";
                     String message = "Thank you for signing up for Olympia High School. Please enter this verification code in the app " + code;
 
@@ -179,6 +176,7 @@ public class SignUp extends Activity {
 
                 String grade = (String) gradeOptions.getSelectedItem();
 
+                //send the appropriate hashmap vairables as parameters into the php script
                 params.put("username", username.getText().toString().trim().replace(" ", ""));
                 params.put("password", password.getText().toString().trim());
                 params.put("firstname", firstName.getText().toString().trim().replace(" ", ""));
@@ -187,39 +185,25 @@ public class SignUp extends Activity {
                 params.put("grade", grade);
 
                 return params;
-
             }
         };
 
         requestQueue.add(stringRequest);
-
     }
 
-    public void sendEmail() {
-        Login l = new Login();
-
-        String emailRaw = l.getEmail();
-        Log.d("BAD", "email" + emailRaw);
-        String code = generateRandomString();
-
-        String subject = "Confirm your email address for Olympia High School Library";
-        String message = "from android studio";
-
-        SendMail sm = new SendMail(this, emailRaw, subject, message, code);
-
-        sm.execute();
-    }
-
+    //generate random code for user to enter
     public String generateRandomString() {
+        //possible characters that are avilable
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
         StringBuilder randomString = new StringBuilder();
         Random rnd = new Random();
+        //use while loop to select random index
         while (randomString.length() < 6) { // length of the random string.
             int index = (int) (rnd.nextFloat() * characters.length());
             randomString.append(characters.charAt(index));
         }
         String saltStr = randomString.toString();
+        //concatentate 6 times and return string
         return saltStr;
-
     }
 }
