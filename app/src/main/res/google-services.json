@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "366789203239",
+    "project_id": "olympia-high-school-library"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:366789203239:android:4aff7233526613f0",
+        "android_client_info": {
+          "package_name": "com.example.sathv.olympiahighschoollibrary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "366789203239-om054jdvr7l45ktoefuun4f5lcb9i7vp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sathv.olympiahighschoollibrary",
+            "certificate_hash": "2fe745f40e26c26f0bda4c676347e10e86bc32c6"
+          }
+        },
+        {
+          "client_id": "366789203239-2h1j115ism56rdt5h9vekgv01ojfq8jd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7jwdHrvjVaXEprD1NF9wj38CPt724b-8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

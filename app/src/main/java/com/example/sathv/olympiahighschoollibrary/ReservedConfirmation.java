@@ -1,9 +1,11 @@
 package com.example.sathv.olympiahighschoollibrary;
 
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class ReservedConfirmation extends AppCompatActivity {
 
@@ -13,15 +15,24 @@ public class ReservedConfirmation extends AppCompatActivity {
         setContentView(R.layout.activity_reserved_confirmation);
         setTitle("Confirm reservation");
 
-        //notify user using toast to let them know reservation was successful
-        Toast.makeText(getApplicationContext(), "This book is reserved and you will be notified when the book is available for pickup", Toast.LENGTH_LONG).show();
+        CatalogFragment cf = new CatalogFragment();
+
+        View view = (ConstraintLayout) findViewById(R.id.rlayout);
+        final Snackbar snackbar = Snackbar.make(view, cf.capitalzeTitle(CatalogFragment.titleofthebook) + "has been reserved and you will be notified when the book is avilable for pickup", Snackbar.LENGTH_LONG);
+        snackbar.setAction("Dismiss", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                snackbar.dismiss();
+            }
+        });
+        snackbar.show();
 
         //retireve variables
         TextView reserveBook = (TextView) findViewById(R.id.reservename);
         TextView reservedto = (TextView) findViewById(R.id.reserveusernmae);
 
         //set each field with appropriate variables by retrieving as static variables
-        reserveBook.setText("Book name: " + CatalogFragment.titleofthebook);
+        reserveBook.setText("Book name: " + cf.capitalzeTitle(CatalogFragment.titleofthebook));
         reservedto.setText("Reserved to " + Login.getUsername());
     }
 }

@@ -1,9 +1,11 @@
 package com.example.sathv.olympiahighschoollibrary;
 
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class CheckedOutConfirmation extends AppCompatActivity {
 
@@ -13,8 +15,17 @@ public class CheckedOutConfirmation extends AppCompatActivity {
         setContentView(R.layout.activity_checked_out_confirmation);
         setTitle("Confirm check out");
 
-        //make toast to allow the user to be notified that book has been successfully checked out
-        Toast.makeText(getApplicationContext(), "This book is checked out to your account and avaiable for pickup.", Toast.LENGTH_LONG).show();
+        CatalogFragment cf = new CatalogFragment();
+
+        View view = (ConstraintLayout) findViewById(R.id.clayout);
+        final Snackbar snackbar = Snackbar.make(view, cf.capitalzeTitle(CatalogFragment.titleofthebook) + "has been checked out and available for pickup", Snackbar.LENGTH_LONG);
+        snackbar.setAction("Dismiss", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                snackbar.dismiss();
+            }
+        });
+        snackbar.show();
 
         //update the status of the book to unavailable
         CatalogFragment.setStatus("Unavailable", CatalogFragment.pos);
@@ -24,7 +35,7 @@ public class CheckedOutConfirmation extends AppCompatActivity {
         TextView checkedoutto = (TextView) findViewById(R.id.checkedoutto);
         TextView dueDate = (TextView) findViewById(R.id.dueDate);
 
-        bookName.setText("Book name: " + CatalogFragment.titleofthebook);
+        bookName.setText("Book name: " + cf.capitalzeTitle(CatalogFragment.titleofthebook));
         checkedoutto.setText("Checked out to " + Login.getUsername());
         dueDate.setText("Due date: " + BookInformation.getDatetoputinconfirmation());
     }

@@ -39,6 +39,7 @@ public class AccountFragment extends Fragment {
         LayoutInflater lf = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.account, container, false);
         getActivity().setTitle("Manage account");
+        setHasOptionsMenu(false);
 
         //retrieve views
         nametemp = (EditText) view.findViewById(R.id.nametemp);

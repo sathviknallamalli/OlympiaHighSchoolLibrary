@@ -79,11 +79,12 @@
 
     <TextView
         android:id="@+id/wishlistcategory"
-        android:layout_width="166dp"
+        android:layout_width="75dp"
         android:layout_height="27dp"
+        android:layout_alignBaseline="@+id/wishlistauthor"
         android:layout_alignBottom="@+id/wishlistauthor"
-        android:layout_marginLeft="42dp"
-        android:layout_marginStart="42dp"
+        android:layout_marginLeft="44dp"
+        android:layout_marginStart="44dp"
         android:layout_toEndOf="@+id/wishlisttitle"
         android:layout_toRightOf="@+id/wishlisttitle"
         android:text="TextView"

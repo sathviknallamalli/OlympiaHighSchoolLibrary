@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,7 +23,7 @@ import java.util.Date;
 public class BookInformation extends AppCompatActivity {
 
     TextView status;
-    TextView title;
+    // TextView title;
     TextView author;
     TextView category;
     TextView isbn;
@@ -31,6 +33,7 @@ public class BookInformation extends AppCompatActivity {
     ImageView bookCover;
     Button checkOut;
     Button reserve;
+    Button ratebut;
 
     static int checkedoutcount = 0;
     static int reservedcount = 0;
@@ -67,7 +70,7 @@ public class BookInformation extends AppCompatActivity {
         //based on the selected book in catalog, title is set for activity
         setTitle(CatalogFragment.titleofthebook);
 
-        title = (TextView) findViewById(R.id.infoTitle);
+        //  title = (TextView) findViewById(R.id.infoTitle);
         author = (TextView) findViewById(R.id.infoAuthor);
         category = (TextView) findViewById(R.id.infoCategory);
         isbn = (TextView) findViewById(R.id.isbn);
@@ -79,15 +82,18 @@ public class BookInformation extends AppCompatActivity {
 
         checkOut = (Button) findViewById(R.id.checkOut);
         reserve = (Button) findViewById(R.id.reserve);
+        ratebut = (Button) findViewById(R.id.ratebut);
 
         //set the bookinfo fields with appropriate text based on selected book in catalog fragment
-        title.setText(CatalogFragment.titleofthebook);
+        //  title.setText(CatalogFragment.titleofthebook);
         author.setText(CatalogFragment.authorofthebook);
         category.setText(category.getText().toString() + " " + CatalogFragment.category);
         isbn.setText("ISBN: " + CatalogFragment.isbn);
         pg.setText("Pagecount: " + CatalogFragment.pg + "");
         summary.setText(CatalogFragment.summary);
-        status.setText(status.getText().toString() + CatalogFragment.getStatus());
+        status.setText(status.getText().toString() + " " + CatalogFragment.getStatus());
+
+        final RatingBar rb = (RatingBar) findViewById(R.id.ratingBar);
 
         bookCover.setImageResource(CatalogFragment.id);
 
@@ -97,6 +103,21 @@ public class BookInformation extends AppCompatActivity {
         } else if (CatalogFragment.getStatus().equals("Unavailable")) {
             status.setTextColor(getResources().getColor(R.color.crimson));
         }
+
+        ratebut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                final Snackbar snackbar = Snackbar.make(view, "Your rating " + rb.getRating(), Snackbar.LENGTH_LONG);
+                snackbar.setAction("Dismiss", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        snackbar.dismiss();
+                    }
+                });
+                snackbar.show();
+            }
+        });
 
     }
 

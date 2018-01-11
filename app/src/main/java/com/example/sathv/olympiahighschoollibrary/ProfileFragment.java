@@ -32,6 +32,7 @@ public class ProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.profile, container, false);
         getActivity().setTitle("Your profile");
+        setHasOptionsMenu(false);
 
         Login l2 = new Login();
 

@@ -9,10 +9,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -24,6 +24,8 @@ public class Activities extends AppCompatActivity
     Login l = new Login();
     TextView studentName;
     TextView email;
+
+    ImageView profilepic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +62,6 @@ public class Activities extends AppCompatActivity
         email = (TextView) v.findViewById(R.id.email);
         email.setText(l.getEmail());
 
-        Log.d("BAD", "EMAIL HEADER SET" + l.getEmail());
-        Log.d("BAD", "NAME HEADER SET" + l.getFullName());
 
     }
 
@@ -113,9 +113,7 @@ public class Activities extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new MapFragment()).commit();
         } else if (id == R.id.nav_profile) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new ProfileFragment()).commit();
-        } else if (id == R.id.nav_settings) {
-            fragmentManager.beginTransaction().replace(R.id.frameLayout, new SettingsFragment()).commit();
-        } else if (id == R.id.nav_reminders) {
+        }  else if (id == R.id.nav_reminders) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new RemindersFragment()).commit();
         } else if (id == R.id.nav_account) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new AccountFragment()).commit();
@@ -124,7 +122,7 @@ public class Activities extends AppCompatActivity
         } else if (id == R.id.nav_wishlist) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new WishlistFragment()).commit();
         } else if (id == R.id.nav_share) {
-
+            fragmentManager.beginTransaction().replace(R.id.frameLayout, new ShareFragment()).commit();
         } else if (id == R.id.nav_send) {
 
         }

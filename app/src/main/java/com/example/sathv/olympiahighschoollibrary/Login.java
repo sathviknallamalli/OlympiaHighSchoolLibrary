@@ -1,8 +1,10 @@
 package com.example.sathv.olympiahighschoollibrary;
 
-import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,20 +22,32 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class Login extends Activity {
+public class Login extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
     // UI references.
     private EditText usernameField;
     private EditText passwordField;
-
-    EditText input;
 
     //create getters and setters for each variable
     public String getName() {
@@ -100,18 +114,87 @@ public class Login extends Activity {
 
     static String username;
 
+    public static Uri getUri() {
+        return uri;
+    }
+
+    public static void setUri(Uri uri) {
+        Login.uri = uri;
+    }
+
+    static Uri uri;
+
     Button buttons;
     ProgressBar pb;
+
+    private static final int REQ_CODE = 9001;
+    private GoogleApiClient googleApiClient;
+
+    LoginButton fblogin;
+    CallbackManager callbackManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
+
+        fblogin = (LoginButton) findViewById(R.id.fblogin);
+        fblogin.setText("Log in with Facebook");
         // Set up the login form.
         usernameField = (EditText) findViewById(R.id.username);
         passwordField = (EditText) findViewById(R.id.password);
 
+        GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        googleApiClient = new GoogleApiClient.Builder(this).enableAutoManage(this, this).addApi(Auth.GOOGLE_SIGN_IN_API, signInOptions).build();
+
+        findViewById(R.id.sign_in_button).setOnClickListener(this);
+
+        SignInButton thing = (SignInButton) findViewById(R.id.sign_in_button);
+
+        TextView textView = (TextView) thing.getChildAt(0);
+        textView.setText("Log in with Google");
+        textView.setTextSize(14);
+
         buttons = (Button) findViewById(R.id.signUp);
+
+        fblogin.setReadPermissions(Arrays.asList(
+                "public_profile", "email"));
+
+        callbackManager = CallbackManager.Factory.create();
+        fblogin.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+
+                Toast.makeText(getApplicationContext(), "Log success", Toast.LENGTH_SHORT).show();
+                pb.setVisibility(View.GONE);
+
+                String name = loginResult.getAccessToken().getUserId();
+                String email = loginResult.getAccessToken().getToken();
+
+                setFullName(name);
+                setEmail(email);
+
+                fblogin.setText("Log in with Facebook");
+                Intent activities = new Intent(getApplicationContext(), Activities.class);
+                startActivity(activities);
+                finish();
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(getApplicationContext(), "Log cancel", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+
+            }
+        });
+
 
         pb = (ProgressBar) findViewById(R.id.pb);
         pb.setVisibility(View.GONE);
@@ -173,7 +256,7 @@ public class Login extends Activity {
             public void onResponse(String response) {
                 if (response.trim().equals("success")) {
                     //if the php scropt that is in the url return success
-                    Toast.makeText(getApplicationContext(), "login success!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Logged in", Toast.LENGTH_SHORT).show();
 
                     //set the password variable and username variable appropriately
                     setPassword(passwordField.getText().toString());
@@ -189,7 +272,7 @@ public class Login extends Activity {
 
                 } else {
                     //else the login is incorrect
-                    Toast.makeText(getApplicationContext(), "login incorrect", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Login fail", Toast.LENGTH_SHORT).show();
                     pb.setVisibility(View.GONE);
                 }
             }
@@ -268,7 +351,75 @@ public class Login extends Activity {
 
         requestQueue.add(stringRequest);
     }
+
+    private void updateUI(boolean isLogin) {
+        if (isLogin) {
+
+            Toast.makeText(getApplicationContext(), "Logged in", Toast.LENGTH_SHORT).show();
+            pb.setVisibility(View.GONE);
+            Intent activities = new Intent(getApplicationContext(), Activities.class);
+            startActivity(activities);
+            finish();
+
+        } else {
+            Toast.makeText(getApplicationContext(), "Logged fail", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.sign_in_button:
+                signIn();
+                break;
+        }
+    }
+
+    private void signIn() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+        pb.setVisibility(View.VISIBLE);
+        startActivityForResult(signInIntent, REQ_CODE);
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQ_CODE) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleResult(result);
+        } else {
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+            pb.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void handleResult(GoogleSignInResult result) {
+        if (result.isSuccess()) {
+            GoogleSignInAccount account = result.getSignInAccount();
+
+            setFullName(account.getDisplayName());
+            String name = account.getDisplayName();
+            String email = account.getEmail();
+            setEmail(account.getEmail());
+            String username = account.getId();
+            Uri personPhoto = account.getPhotoUrl();
+            setUsername(username);
+            setUri(personPhoto);
+            // String img_url = account.getPhotoUrl().toString();
+            updateUI(true);
+        } else {
+            updateUI(false);
+        }
+    }
+
 }
+
+//RUN THE APP
 
 
 

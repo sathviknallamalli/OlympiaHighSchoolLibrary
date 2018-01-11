@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.gjiazhe.panoramaimageview.GyroscopeObserver;
 import com.gjiazhe.panoramaimageview.PanoramaImageView;
@@ -26,15 +27,34 @@ public class MapFragment extends Fragment {
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.map, container, false);
         getActivity().setTitle("Map of the OHS library");
+        setHasOptionsMenu(false);
 
         //create gyroscope observer object
         gyroscopeObserver = new GyroscopeObserver();
         gyroscopeObserver.setMaxRotateRadian(Math.PI / 5);
 
         //set the panorama image for gyro observer
-        PanoramaImageView panoramaImageView = (PanoramaImageView) view.findViewById(R.id.panorama_image_view);
+        final PanoramaImageView panoramaImageView = (PanoramaImageView) view.findViewById(R.id.panorama_image_view);
         panoramaImageView.setGyroscopeObserver(gyroscopeObserver);
 
+        Button libbutton = (Button) view.findViewById(R.id.libbutton);
+        Button hbutton = (Button) view.findViewById(R.id.helpbutton);
+
+        libbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                panoramaImageView.setImageDrawable(getResources().getDrawable(R.drawable.ohslibrary360));
+                panoramaImageView.setGyroscopeObserver(gyroscopeObserver);
+            }
+        });
+
+        hbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                panoramaImageView.setImageDrawable(getResources().getDrawable(R.drawable.helpdesk360));
+                panoramaImageView.setGyroscopeObserver(gyroscopeObserver);
+            }
+        });
         return view;
     }
 

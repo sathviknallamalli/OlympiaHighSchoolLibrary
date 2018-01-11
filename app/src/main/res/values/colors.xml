@@ -3,8 +3,8 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#ff4081</color>
-    <color name="colorBlue">#1e90ff</color>
-    <color name="colorGreen">#078907</color>
+    <color name="colorBlue">#1E90FF</color>
+    <color name="colorGreen">#06af06</color>
     <color name="forestgreeen">#228b22</color>
     <color name="crimson">#DC143C</color>
 </resources>

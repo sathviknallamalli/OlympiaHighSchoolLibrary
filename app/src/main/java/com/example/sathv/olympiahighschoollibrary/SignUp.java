@@ -3,7 +3,6 @@ package com.example.sathv.olympiahighschoollibrary;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.text.InputType;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,10 +19,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +36,6 @@ public class SignUp extends Activity {
     EditText confirm;
 
     ProgressDialog mDialog;
-    FirebaseAuth mAuth;
 
     ArrayAdapter<CharSequence> adapter;
 
@@ -66,7 +60,6 @@ public class SignUp extends Activity {
         register = (Button) findViewById(R.id.signUp);
 
         mDialog = new ProgressDialog(this);
-        mAuth = FirebaseAuth.getInstance();
 
         //selecting the grade on spinner
         adapter = ArrayAdapter.createFromResource(this, R.array.grade, android.R.layout.simple_spinner_item);
@@ -110,23 +103,6 @@ public class SignUp extends Activity {
 
     }
 
-    private void sendEmailVerification() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (user != null) {
-
-            user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(SignUp.this, "Check email for verification", Toast.LENGTH_SHORT).show();
-                        FirebaseAuth.getInstance().signOut();
-                    }
-                }
-            });
-        }
-
-    }
 
     //method to update and insert into database
     public void registerToDatabase() {

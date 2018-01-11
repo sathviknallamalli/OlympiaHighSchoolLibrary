@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "149640019453",
+    "firebase_url": "https://olyhighlibrary.firebaseio.com",
+    "project_id": "olyhighlibrary",
+    "storage_bucket": "olyhighlibrary.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:149640019453:android:4aff7233526613f0",
+        "android_client_info": {
+          "package_name": "com.example.sathv.olympiahighschoollibrary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "149640019453-4crcov0st49i2k87gq8u9h388j7ljvkh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sathv.olympiahighschoollibrary",
+            "certificate_hash": "2fe745f40e26c26f0bda4c676347e10e86bc32c6"
+          }
+        },
+        {
+          "client_id": "149640019453-qp8cq8534cfovlh4lq01ep8u39t0019n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApEDfdlkeVJ1YcTPkFdWgsMo3udW__cB4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "149640019453-qp8cq8534cfovlh4lq01ep8u39t0019n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,12 +1,14 @@
 package com.example.sathv.olympiahighschoollibrary;
 
 import android.content.Context;
-import android.util.Log;
+import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,7 +27,11 @@ public class BookAdapter extends ArrayAdapter<Book> {
 
     static ArrayList<WishlistBook> wishlistbooks = new ArrayList<>();
     Book book;
-    Button add;
+    Button add, share;
+    EditText input;
+
+    static String t, au, c, s;
+    static int pg;
 
     //book adapter contructor
     public BookAdapter(Context context, int resource, ArrayList<Book> books) {
@@ -40,8 +46,6 @@ public class BookAdapter extends ArrayAdapter<Book> {
     public View getView(final int position, View convertView, ViewGroup parent) {
         book = books.get(position);
 
-        Log.d("ABC", "pos " + position);
-
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.customlayout, parent, false);
         }
@@ -54,13 +58,22 @@ public class BookAdapter extends ArrayAdapter<Book> {
 
         //setting each field
         add = (Button) convertView.findViewById(R.id.button2);
+        share = (Button) convertView.findViewById(R.id.share);
         bookTitle.setText(book.title);
         bookAuthor.setText(book.author);
         bookCount.setText("Pagecount: " + book.pageCount);
         bookCategory.setText(book.category);
         bookImage.setImageResource(book.imageid);
 
-        add.setText(book.added);
+        t = book.title;
+        au = book.author;
+        pg = book.pageCount;
+        c = book.category;
+        s = book.summary;
+
+        //add.setText(book.added);
+        add.setText("Add to wishlist");
+
 
         //button onClick for add to wishlist button in each row based on tags
         add.setOnClickListener(new View.OnClickListener() {
@@ -68,7 +81,7 @@ public class BookAdapter extends ArrayAdapter<Book> {
             public void onClick(View view) {
 
                 //if button sauys "Added" dont let adding
-                if (add.getText().toString().equals("Added")) {
+                if (CatalogFragment.addedornot[position].equals("Added")) {
                     Toast.makeText(getContext(), "Already added to your wishlist", Toast.LENGTH_SHORT).show();
                 } else {
                     //update the variable for the Book
@@ -76,16 +89,37 @@ public class BookAdapter extends ArrayAdapter<Book> {
 
                     CatalogFragment.addedornot[position] = "Added";
                     CatalogFragment.addedornotorig[position] = "Added";
-                    book.added = "Added";
+                   // book.added = "Added";
 
-                    add.setText("Added");
+                    //add.setText("Added");
+
+                    CatalogFragment cf = new CatalogFragment();
 
                     //and add to the wishlist arraylist
-                    wishlistbooks.add(new WishlistBook(book.title, book.author, book.category, book.imageid));
+                    wishlistbooks.add(new WishlistBook(cf.capitalzeTitle(cf.titleorig[position]), cf.capitalizeauthor(cf.authororig[position])
+                            , cf.capitalizeauthor(cf.categoriesorig[position]), cf.picidsorig[position]));
+
+                    final Snackbar snackbar = Snackbar.make(view, cf.capitalzeTitle(cf.titleorig[position]) + "has been added to your wishlist", Snackbar.LENGTH_LONG);
+                    snackbar.setAction("Dismiss", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            snackbar.dismiss();
+                        }
+                    });
+                    snackbar.show();
                 }
 
             }
         });
+
+        share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent activities = new Intent(getContext(), EmailReccommend.class);
+                context.startActivity(activities);
+            }
+        });
+
         return convertView;
     }
 }
