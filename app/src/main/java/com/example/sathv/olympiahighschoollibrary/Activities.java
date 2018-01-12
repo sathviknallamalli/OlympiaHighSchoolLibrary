@@ -123,8 +123,8 @@ public class Activities extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new WishlistFragment()).commit();
         } else if (id == R.id.nav_share) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new ShareFragment()).commit();
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.nav_contact) {
+            fragmentManager.beginTransaction().replace(R.id.frameLayout, new ContactFragment()).commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

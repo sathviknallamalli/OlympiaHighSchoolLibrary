@@ -8,6 +8,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -91,6 +92,9 @@ public class BookInformation extends AppCompatActivity {
         isbn.setText("ISBN: " + CatalogFragment.isbn);
         pg.setText("Pagecount: " + CatalogFragment.pg + "");
         summary.setText(CatalogFragment.summary);
+        summary.setMovementMethod(new ScrollingMovementMethod());
+        summary.setVerticalScrollBarEnabled(true);
+
         status.setText(status.getText().toString() + " " + CatalogFragment.getStatus());
 
         final RatingBar rb = (RatingBar) findViewById(R.id.ratingBar);

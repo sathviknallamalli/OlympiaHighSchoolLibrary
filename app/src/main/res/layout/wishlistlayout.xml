@@ -46,17 +46,32 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.117" />
 
+    <ImageView
+        android:id="@+id/wishlistimage"
+        android:layout_width="84dp"
+        android:layout_height="104dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/wishlisttitle"
+        android:layout_marginEnd="21dp"
+        android:layout_marginRight="21dp"
+        app:srcCompat="@drawable/common_google_signin_btn_icon_dark"
+        tools:layout_editor_absoluteX="173dp"
+        tools:layout_editor_absoluteY="148dp" />
+
     <TextView
-        android:id="@+id/removebutton"
+        android:id="@+id/wishlistcategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/wishlistimage"
-        android:layout_alignLeft="@+id/wishlistauthor"
-        android:layout_alignStart="@+id/wishlistauthor"
-        android:text="Remove"
-        android:textColor="@android:color/black"
+        android:layout_above="@+id/removebutton"
+        android:layout_marginLeft="43dp"
+        android:layout_marginStart="43dp"
+        android:layout_toEndOf="@+id/wishlisttitle"
+        android:layout_toRightOf="@+id/wishlisttitle"
+        android:text="TextView"
+        android:textColor="@color/common_plus_signin_btn_text_light_default"
         android:textSize="16sp"
-        android:textStyle="bold|italic"
+        android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.027"
@@ -64,31 +79,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.117" />
 
-    <ImageView
-        android:id="@+id/wishlistimage"
-        tools:layout_editor_absoluteX="173dp"
-        tools:layout_editor_absoluteY="148dp"
-        android:layout_width="84dp"
-        android:layout_height="104dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/bookTitle"
-        android:layout_marginEnd="19dp"
-        android:layout_marginRight="19dp"
-        app:srcCompat="@drawable/common_google_signin_btn_icon_dark" />
-
-    <TextView
-        android:id="@+id/wishlistcategory"
+    <Button
+        android:id="@+id/removebutton"
         android:layout_width="75dp"
-        android:layout_height="27dp"
-        android:layout_alignBaseline="@+id/wishlistauthor"
-        android:layout_alignBottom="@+id/wishlistauthor"
-        android:layout_marginLeft="44dp"
-        android:layout_marginStart="44dp"
-        android:layout_toEndOf="@+id/wishlisttitle"
-        android:layout_toRightOf="@+id/wishlisttitle"
-        android:text="TextView"
-        tools:layout_editor_absoluteX="121dp"
-        tools:layout_editor_absoluteY="25dp" />
+        android:layout_height="50dp"
+        android:layout_alignLeft="@+id/wishlistauthor"
+        android:layout_alignStart="@+id/wishlistauthor"
+        android:layout_below="@+id/wishlistauthor"
+        android:layout_marginTop="11dp"
+        android:text="Remove"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textStyle="bold|italic" />
 
 </RelativeLayout>

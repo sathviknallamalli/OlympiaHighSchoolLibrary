@@ -156,7 +156,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
         SignInButton thing = (SignInButton) findViewById(R.id.sign_in_button);
 
         TextView textView = (TextView) thing.getChildAt(0);
-        textView.setText("Log in with Google");
+        textView.setText("Log in using Gmail");
         textView.setTextSize(14);
 
         buttons = (Button) findViewById(R.id.signUp);
@@ -169,7 +169,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
             @Override
             public void onSuccess(LoginResult loginResult) {
 
-                Toast.makeText(getApplicationContext(), "Log success", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Log success"
+                        , Toast.LENGTH_SHORT).show();
                 pb.setVisibility(View.GONE);
 
                 String name = loginResult.getAccessToken().getUserId();

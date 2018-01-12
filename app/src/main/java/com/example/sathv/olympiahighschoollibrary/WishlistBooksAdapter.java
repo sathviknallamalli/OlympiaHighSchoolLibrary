@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,11 +22,11 @@ public class WishlistBooksAdapter extends ArrayAdapter<WishlistBook> {
     ArrayList<WishlistBook> arraylistwishlistbooks = null;
 
     //wishlistbook adapter constructor
-    public WishlistBooksAdapter(Context context, int resource, ArrayList<WishlistBook> arraylistreservedbooks) {
-        super(context, resource, arraylistreservedbooks);
+    public WishlistBooksAdapter(Context context, int resource, ArrayList<WishlistBook> arraylistwishlistbooks) {
+        super(context, resource, arraylistwishlistbooks);
         this.context = context;
         this.resource = resource;
-        this.arraylistwishlistbooks = arraylistreservedbooks;
+        this.arraylistwishlistbooks = arraylistwishlistbooks;
     }
 
     //laoad each row into the list view and setting fields
@@ -42,7 +43,7 @@ public class WishlistBooksAdapter extends ArrayAdapter<WishlistBook> {
         TextView authorinreserved = (TextView) convertView.findViewById(R.id.wishlistauthor);
         TextView categorywishlist = (TextView) convertView.findViewById(R.id.wishlistcategory);
         ImageView bookImage = (ImageView) convertView.findViewById(R.id.wishlistimage);
-        TextView remove = (TextView) convertView.findViewById(R.id.removebutton);
+        Button remove = (Button) convertView.findViewById(R.id.removebutton);
 
         //set each field with appropriate string through the wishlistBook currently being loaded and get the globalvarables
         bookTitle.setText(wishlistBook.title);
@@ -60,12 +61,13 @@ public class WishlistBooksAdapter extends ArrayAdapter<WishlistBook> {
                 Integer index = (Integer) view.getTag();
                 //remove the appropriate index object from the arraylist being used
                 arraylistwishlistbooks.remove(index.intValue());
-                notifyDataSetChanged();
+
                 //remove from the array as well
-                BookAdapter.wishlistbooks.remove(position);
+                BookAdapter.wishlistbooks.remove(index.intValue());
                 //update the addedornot and change to the option of being able to add to wishlist
                 CatalogFragment.addedornot[position] = "Add to wishlist";
                 CatalogFragment.addedornotorig[position] = "Add to wishlist";
+                notifyDataSetChanged();
             }
         });
         return convertView;

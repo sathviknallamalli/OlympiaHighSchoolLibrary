@@ -57,7 +57,6 @@ public class ReservedBooksAdapter extends ArrayAdapter<ReservedBook> {
                 new Button.OnClickListener() {
                     @Override
                     public void onClick(final View v) {
-
                         Integer index = (Integer) v.getTag();
                         //delete the appropriate index from arraylist
                         arraylistreservedbooks.remove(index.intValue());

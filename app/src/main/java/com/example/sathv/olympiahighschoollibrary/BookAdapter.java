@@ -99,7 +99,7 @@ public class BookAdapter extends ArrayAdapter<Book> {
                     wishlistbooks.add(new WishlistBook(cf.capitalzeTitle(cf.titleorig[position]), cf.capitalizeauthor(cf.authororig[position])
                             , cf.capitalizeauthor(cf.categoriesorig[position]), cf.picidsorig[position]));
 
-                    final Snackbar snackbar = Snackbar.make(view, cf.capitalzeTitle(cf.titleorig[position]) + "has been added to your wishlist", Snackbar.LENGTH_LONG);
+                    final Snackbar snackbar = Snackbar.make(view,  cf.capitalzeTitle(cf.titleorig[position])  + "has been added to your wishlist", Snackbar.LENGTH_LONG);
                     snackbar.setAction("Dismiss", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {

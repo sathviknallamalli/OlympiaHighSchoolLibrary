@@ -39,6 +39,7 @@ public class MapFragment extends Fragment {
 
         Button libbutton = (Button) view.findViewById(R.id.libbutton);
         Button hbutton = (Button) view.findViewById(R.id.helpbutton);
+        Button fiction = (Button) view.findViewById(R.id.fiction);
 
         libbutton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,6 +53,14 @@ public class MapFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 panoramaImageView.setImageDrawable(getResources().getDrawable(R.drawable.helpdesk360));
+                panoramaImageView.setGyroscopeObserver(gyroscopeObserver);
+            }
+        });
+
+        fiction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                panoramaImageView.setImageDrawable(getResources().getDrawable(R.drawable.fictionsection));
                 panoramaImageView.setGyroscopeObserver(gyroscopeObserver);
             }
         });
