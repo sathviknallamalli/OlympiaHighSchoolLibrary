@@ -96,13 +96,12 @@ public class SignUp extends Activity {
             }
             //passwords are identical
             else {
-                //ACCOUNT CREATED!!
+                //begin the process of adding to database
                 registerToDatabase();
             }
         }
 
     }
-
 
     //method to update and insert into database
     public void registerToDatabase() {

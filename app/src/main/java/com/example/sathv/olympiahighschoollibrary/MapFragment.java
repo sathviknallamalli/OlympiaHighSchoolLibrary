@@ -40,6 +40,7 @@ public class MapFragment extends Fragment {
         Button libbutton = (Button) view.findViewById(R.id.libbutton);
         Button hbutton = (Button) view.findViewById(R.id.helpbutton);
         Button fiction = (Button) view.findViewById(R.id.fiction);
+        Button work = (Button) view.findViewById(R.id.work);
 
         libbutton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +61,15 @@ public class MapFragment extends Fragment {
         fiction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                panoramaImageView.setImageDrawable(getResources().getDrawable(R.drawable.fictionsection));
+                panoramaImageView.setImageDrawable(getResources().getDrawable(R.mipmap.fictionsection));
+                panoramaImageView.setGyroscopeObserver(gyroscopeObserver);
+            }
+        });
+
+        work.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                panoramaImageView.setImageDrawable(getResources().getDrawable(R.mipmap.workarea));
                 panoramaImageView.setGyroscopeObserver(gyroscopeObserver);
             }
         });

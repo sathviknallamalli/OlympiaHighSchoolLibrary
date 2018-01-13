@@ -9,7 +9,7 @@
 
     <com.gjiazhe.panoramaimageview.PanoramaImageView
         android:id="@+id/panorama_image_view"
-        android:layout_width="392dp"
+        android:layout_width="369dp"
         android:layout_height="430dp"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="40dp"
@@ -25,7 +25,7 @@
 
     <Button
         android:id="@+id/button3"
-        android:layout_width="160dp"
+        android:layout_width="158dp"
         android:layout_height="46dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
@@ -36,7 +36,7 @@
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.038"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.033" />
@@ -60,7 +60,7 @@
         app:layout_constraintVertical_bias="0.033" />
 
     <Button
-        android:id="@+id/helpbutton2"
+        android:id="@+id/work"
         android:layout_width="95dp"
         android:layout_height="46dp"
         android:layout_marginBottom="8dp"
@@ -126,7 +126,7 @@
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.026"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.124" />

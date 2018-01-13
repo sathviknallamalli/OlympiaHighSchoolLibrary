@@ -45,7 +45,13 @@ public class ProfileFragment extends Fragment {
 
         //assign each field the proper information by retrieving variables; username, name, checkedoutcount, and reservedcount
         name.setText(l2.getFullName());
-        gr.setText("Grade: " + l2.getGrade());
+
+        if (l2.getGrade() == null) {
+            gr.setText("Grade: " + "Unknown");
+        } else {
+            gr.setText("Grade: " + l2.getGrade());
+
+        }
         val.setText(BookInformation.checkedoutcount + "");
         reserval.setText(BookInformation.reservedcount + "");
 

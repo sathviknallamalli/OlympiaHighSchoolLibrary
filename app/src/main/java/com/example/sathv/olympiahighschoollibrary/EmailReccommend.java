@@ -49,7 +49,7 @@ public class EmailReccommend extends AppCompatActivity {
                     String message = first + " from Olympia High School has sent a book to you. Check out what the book is! \n" + "\nBook Title: " +
                             BookAdapter.t + "\nAuthor: " + BookAdapter.au + "\nPagecount: " + BookAdapter.pg + "\nGenre: " + BookAdapter.c + "\nSummary: " + BookAdapter.s + "\n" + "\nPlease do not reply to this email because it is an unchecked inbox";
 
-                    SendMailShare sm = new SendMailShare(EmailReccommend.this, emailRaw, subject, message);
+                    SendMailShare sm = new SendMailShare(EmailReccommend.this, emailRaw, subject, message, "Your reccommendation has been sent");
                     sm.execute();
 
                 }

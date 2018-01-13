@@ -30,6 +30,7 @@ public class SendMailShare extends AsyncTask<Void, Void, Void> {
     private String email;
     private String subject;
     private String message;
+    private String toast;
 
     EditText input;
 
@@ -37,12 +38,13 @@ public class SendMailShare extends AsyncTask<Void, Void, Void> {
     private ProgressDialog progressDialog;
 
     //Class Constructor
-    public SendMailShare(Context context, String email, String subject, String message) {
+    public SendMailShare(Context context, String email, String subject, String message, String toast) {
         //Initializing variables
         this.context = context;
         this.email = email;
         this.subject = subject;
         this.message = message;
+        this.toast = toast;
     }
 
     @Override
@@ -58,7 +60,7 @@ public class SendMailShare extends AsyncTask<Void, Void, Void> {
         //Dismissing the progress dialog
         progressDialog.dismiss();
         //Showing a success message
-        Toast.makeText(context, "Your reccommendation has been sent", Toast.LENGTH_LONG).show();
+        Toast.makeText(context, toast, Toast.LENGTH_LONG).show();
     }
 
     @Override
