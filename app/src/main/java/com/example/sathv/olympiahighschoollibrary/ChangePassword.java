@@ -1,5 +1,6 @@
 package com.example.sathv.olympiahighschoollibrary;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -12,12 +13,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class ChangePassword extends AppCompatActivity {
     EditText input;
     Button submit;
     EditText pd;
     EditText confirm;
     TextView pdtitle, cpdtitle;
+    ProgressDialog mDialog;
+    String entered;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +53,8 @@ public class ChangePassword extends AppCompatActivity {
         pd.setVisibility(View.GONE);
         confirm.setVisibility(View.GONE);
 
+        mDialog = new ProgressDialog(this);
+
         //build alert dialog
         final AlertDialog.Builder builder = new AlertDialog.Builder(ChangePassword.this);
         builder.setTitle("Please enter your current password to continue");
@@ -53,7 +69,7 @@ public class ChangePassword extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                String entered = input.getText().toString();
+                entered = input.getText().toString();
 
                 //enter the current password first
                 if (entered.equals(Login.getPassword())) {
@@ -76,9 +92,8 @@ public class ChangePassword extends AppCompatActivity {
                             else {
 
                                 Login.setPassword(confirm.getText().toString());
-                                //UPDATE TO DATABASE
-                                Toast.makeText(getApplicationContext(), "Saved. Restart the app for changes", Toast.LENGTH_SHORT).show();
 
+                                updatepd();
                             }
                         }
                     });
@@ -107,5 +122,60 @@ public class ChangePassword extends AppCompatActivity {
             }
         });
         builder.show();
+    }
+
+    private void updatepd() {
+        String url = "https://sathviknallamalli.000webhostapp.com/updatepassword.php";
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                //start and initialize the dialog with message
+                mDialog.setMessage("Changing password...");
+                mDialog.show();
+                if (response.trim().equals("success")) {
+                    //if the php script returns "success" token then let user know and send email
+
+                    Login l = new Login();
+
+                    Login.setPassword(confirm.getText().toString());
+
+                    mDialog.dismiss();
+
+                    String emailRaw = l.getEmail();
+
+                    //set subject and message for the email beign sent
+                    String subject = "Password has been changed";
+                    String message = "You have changed your password using the Olympia High School Library app";
+
+                    SendMailShare sm = new SendMailShare(ChangePassword.this, emailRaw, subject, message, "Saved. Restart the app put the password change into effect");
+
+                    sm.execute();
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "Oops something went wrong" + response, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(), "error" + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+
+                Map<String, String> params = new HashMap<>();
+
+                //send the appropriate hashmap vairables as parameters into the php script
+                params.put("currentpassword", entered);
+                params.put("newpassword", confirm.getText().toString().trim());
+
+                return params;
+            }
+        };
+
+        requestQueue.add(stringRequest);
     }
 }

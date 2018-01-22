@@ -1,25 +1,42 @@
 package com.example.sathv.olympiahighschoollibrary;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.ScrollingMovementMethod;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BookInformation extends AppCompatActivity {
 
@@ -35,6 +52,12 @@ public class BookInformation extends AppCompatActivity {
     Button checkOut;
     Button reserve;
     Button ratebut;
+
+    ProgressBar pbj;
+
+    NavigationView navigationView = null;
+
+    TextView rc, cc;
 
     static int checkedoutcount = 0;
     static int reservedcount = 0;
@@ -54,6 +77,9 @@ public class BookInformation extends AppCompatActivity {
 
     //getters and setters for datestring
     static String datetoputinconfirmation;
+
+    NotificationCompat.Builder notification;
+    private static final int uniqueid = 45612;
 
     public static String getDatetoputinconfirmation() {
         return datetoputinconfirmation;
@@ -84,6 +110,15 @@ public class BookInformation extends AppCompatActivity {
         checkOut = (Button) findViewById(R.id.checkOut);
         reserve = (Button) findViewById(R.id.reserve);
         ratebut = (Button) findViewById(R.id.ratebut);
+
+        pbj = (ProgressBar) findViewById(R.id.pbj);
+        pbj.setVisibility(View.GONE);
+
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+//        cc = (TextView) MenuItemCompat.getActionView(navigationView.getMenu().findItem(R.id.nav_checkedbooks));
+
+//        rc = (TextView) MenuItemCompat.getActionView(navigationView.getMenu().findItem(R.id.nav_reservedbooks));
 
         //set the bookinfo fields with appropriate text based on selected book in catalog fragment
         //  title.setText(CatalogFragment.titleofthebook);
@@ -183,6 +218,26 @@ public class BookInformation extends AppCompatActivity {
                         //add
                         checkedoutbooksimages.add(CatalogFragment.id);
 
+                        notification = new NotificationCompat.Builder(BookInformation.this);
+                        notification.setAutoCancel(true);
+
+                        notification.setSmallIcon(R.mipmap.ic_launcher);
+                        notification.setWhen(System.currentTimeMillis());
+                        notification.setContentTitle("Book checked out");
+                        notification.setContentText("You have successfully checked out the following book: " + CatalogFragment.titleofthebook);
+
+                        Intent intent = new Intent(context, BookInformation.class);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(BookInformation.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                        notification.setContentIntent(pendingIntent);
+
+                        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                        nm.notify(uniqueid, notification.build());
+
+                        pbj.setVisibility(View.VISIBLE);
+                        updatecheckout();
+
+                        //initializeCountDrawerchecke();
+
                         //start checked out confirmation activity for user
                         Intent activities = new Intent(context, CheckedOutConfirmation.class);
                         startActivity(activities);
@@ -208,6 +263,48 @@ public class BookInformation extends AppCompatActivity {
         } else {
             Toast.makeText(getApplicationContext(), "This book is currently unavailable for check out now. You can reserve this book however", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void updatecheckout() {
+        String url = "https://sathviknallamalli.000webhostapp.com/updatecheckedoutstatus.php";
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                if (response.trim().equals("success")) {
+                    //if the php scropt that is in the url return success
+
+                    pbj.setVisibility(View.GONE);
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //if the php script returns an error, set visibility to gone and print
+                Toast.makeText(getApplicationContext(), "ERROR " + error.toString(), Toast.LENGTH_SHORT).show();
+
+                pbj.setVisibility(View.GONE);
+            }
+        })
+
+        {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+
+                Map<String, String> params = new HashMap<>();
+
+                //put necessary parameters for the php script using the hashmap
+                params.put("booktitle", CatalogFragment.titleofthebook);
+
+                return params;
+            }
+        };
+
+        requestQueue.add(stringRequest);
+
+
     }
 
     //reserve button onclick
@@ -248,6 +345,24 @@ public class BookInformation extends AppCompatActivity {
                             reservedbookauthor.add(CatalogFragment.authorofthebook);
                             reservedbookimages.add(CatalogFragment.id);
 
+
+                            notification = new NotificationCompat.Builder(BookInformation.this);
+                            notification.setAutoCancel(true);
+
+                            notification.setSmallIcon(R.mipmap.ic_launcher);
+                            notification.setWhen(System.currentTimeMillis());
+                            notification.setContentTitle("Book reserved");
+                            notification.setContentText("You have successfully reserved the following book: " + CatalogFragment.titleofthebook);
+
+                            Intent intent = new Intent(context, BookInformation.class);
+                            PendingIntent pendingIntent = PendingIntent.getActivity(BookInformation.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                            notification.setContentIntent(pendingIntent);
+
+                            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                            nm.notify(uniqueid, notification.build());
+
+                            //initializeCountDrawerreserve();
+
                             //start the activity for confirm reservation
                             Intent activities = new Intent(context, ReservedConfirmation.class);
                             startActivity(activities);
@@ -276,4 +391,24 @@ public class BookInformation extends AppCompatActivity {
 
         }
     }
+
+    private void initializeCountDrawerreserve() {
+        //Gravity property aligns the text
+        rc.setGravity(Gravity.CENTER_VERTICAL);
+        rc.setTypeface(null, Typeface.BOLD);
+        rc.setTextColor(getResources().getColor(R.color.colorAccent));
+        rc.setText(BookInformation.reservedcount + "");
+
+
+    }
+
+    private void initializeCountDrawerchecke() {
+        //Gravity property aligns the text
+        cc.setGravity(Gravity.CENTER_VERTICAL);
+        cc.setTypeface(null, Typeface.BOLD);
+        cc.setTextColor(getResources().getColor(R.color.colorAccent));
+        cc.setText(BookInformation.checkedoutcount + "");
+    }
 }
+
+

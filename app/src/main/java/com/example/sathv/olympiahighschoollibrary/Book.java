@@ -8,7 +8,7 @@ public class Book {
     public String title;
     public String author;
     public String category;
-    public int pageCount;
+    public String pageCount;
     public int imageid;
     public String added;
     public String isbn;
@@ -16,7 +16,7 @@ public class Book {
     public String summary;
 
     //parameters for Book contructor
-    public Book(String title, String author, int pageCount, int imageid, String category, String added, String isbn, String status, String summary) {
+    public Book(String title, String author, String pageCount, int imageid, String category, String added, String isbn, String status, String summary) {
         this.title = title;
         this.author = author;
         this.pageCount = pageCount;

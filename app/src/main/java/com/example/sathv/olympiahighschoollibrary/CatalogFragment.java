@@ -26,72 +26,32 @@ public class CatalogFragment extends Fragment {
     }
 
     //load all the information for book display and put into arrays; titles, authors, pagecount, isbns, summaries, statuses, picids, addedornot
-    static String[] title = {"1984", "candymakers", "to kill a mockingbird", "Lord of the Flies", "The Quants", "Bringing Down the House",
-            "Captain Underpants", "City of Bones", "Red queen", "Selection", "Ungifted", "Physical science for eight grade with some absurdly long name",
-            "Chemistry, Loose-leaf Version, 9th Edition", "21st Century Astronomy: The Solar System / Edition 4"};
-    String[] author = {"George Owell", "wendy Mass", "harper Lee", "william golding", "stephen bradley",
-            "ehtan somehitng", "Dav pilkey", "cassandra clare", "victoria aveyard", "kierra cass", "gordon korman", "some dudde",
-            "Zumdahl/Zumdahl", "Laura Kay"};
-    int[] pageCount = {268, 464, 284, 158, 258, 698, 300, 485, 388, 327, 280, 1523, 10000, 2568};
-    String[] categories = {"fiction", "fiction", "historical fiction", "fiction", "nonfiction", "nonfiction", "fiction",
-            "supernatural", "fiction", "fiction", "fiction", "textbook", "textbook", "textbook"};
-    String[] isbns = {"9780451518651", "9781306765190", "9788373015470", "9780807218181", "9781847940599",
-            "9780434011247", "9788543809717", "978-1-41691428-0", "978-0-06-231063-7", "978-0-06-205994-9", "978-0-06-174266-8",
-            "isbn number", "1-305-25671-9", "9780393920581"};
-    String[] summaries = {"In George Orwell's 1984, Winston Smith wrestles with oppression in Oceania, a place where the Party scrutinizes human actions with ever-watchful Big Brother.",
-            "candymakers synonyms", "tkam summary", "ord of the flies summmary", "the quants synonym",
-            "Bringing down the house summary", "captain summary", "Suddenly able to see demons and the Darkhunters who are dedicated to returning them to their own dimension, fifteen-year-old Clary Fray is drawn into this " +
-            "bizarre world when her mother disappears and Clary herself is almost killed by a monster.", "In a world divided by blood--those with common, Red blood serve the Silver-blooded elite," +
-            "who are gifted with superhuman abilities--seventeen-year-old Mare, a Red, discovers she has an ability of her own.",
-            "Sixteen-year-old America Singer is living in the caste-divided nation of Illea, which formed after the war that destroyed the United States. America is chosen to compete" +
-                    "in the Selection--a contest to see which girl can win the heart of Illea's prince", "Due to an administrative mix-up, troublemaker Donovan Curtis is sent to the Academy of Scholastic Distinction," +
-            "a special program for gifted and talented students, after pulling a major prank at middle school.",
-            "the summary for the physical science eight grade textbook", "Learn how to approach and solve chemical problems so you " +
-            "can apply the process of problem solving to all aspects of your life with CHEMISTRY, Ninth Edition. " +
-            "This student-friendly chemistry text helps you ask and answer your own questions, and, instead of " +
-            "focusing on memorization, emphasizes hands-on learning and problem solving. With the book's easy-to-use" +
-            " media program, you'll master chemistry concepts and problem solving skills in no time and learn to think " +
-            "like a chemist: asking questions, applying rules, developing models, and evaluating outcomes.", "Seller Comments:" + "Help save a tree. Buy all your used books from Green Earth Books. Read. Recycle and Reuse."+
-            "Ships from: Saint Louis, MO Usually ships in 1-2 business days"};
-    static String[] statuses = {"0", "1", "1", "0", "0", "1", "0", "1", "0", "1", "1", "1", "1", "0"};
-    public int[] picids = {R.drawable.owellbook, R.drawable.candymakers, R.drawable.tkam, R.drawable.lotf, R.drawable.quants, R.drawable.house
-            , R.drawable.cpd, R.drawable.cb, R.drawable.rq, R.drawable.selection, R.drawable.ungifted, R.drawable.bear,
-            R.drawable.bear, R.drawable.bear};
-    static String[] addedornot = {"Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist"};
 
     //the first set of arrays will get manipulated during the search, so the original copy is kept too
-    static String[] titleorig = {"1984", "candymakers", "to kill a mockingbird", "Lord of the Flies", "The Quants", "Bringing Down the House",
-            "Captain Underpants", "City of Bones", "Red queen", "Selection", "Ungifted", "Physical science for eight grade with some absurdly long name",
-            "Chemistry, Loose-leaf Version, 9th Edition", "21st Century Astronomy: The Solar System / Edition 4"};
-    String[] authororig = {"George Owell", "wendy Mass", "harper Lee", "william golding", "stephen bradley",
-            "ehtan somehitng", "Dav pilkey", "cassandra clare", "victoria aveyard", "kierra cass", "gordon korman", "some dudde",
-            "Zumdahl/Zumdahl", "Laura Kay"};
-    int[] pageCountorig = {268, 464, 284, 158, 258, 698, 300, 485, 388, 327, 280, 1523, 10000, 2568};
-    String[] categoriesorig = {"fiction", "fiction", "historical fiction", "fiction", "nonfiction", "nonfiction", "fiction",
-            "supernatural", "fiction", "fiction", "fiction", "textbook", "textbook", "textbook"};
-    String[] isbnsorig = {"9780451518651", "9781306765190", "9788373015470", "9780807218181", "9781847940599",
-            "9780434011247", "9788543809717", "978-1-41691428-0", "978-0-06-231063-7", "978-0-06-205994-9", "978-0-06-174266-8",
-            "isbn number", "1-305-25671-9", "9780393920581"};
-    String[] summariesorig = {"In George Orwell's 1984, Winston Smith wrestles with oppression in Oceania, a place where the Party scrutinizes human actions with ever-watchful Big Brother.",
-            "candymakers synonyms", "tkam summary", "ord of the flies summmary", "the quants synonym",
-            "Bringing down the house summary", "captain summary", "Suddenly able to see demons and the Darkhunters who are dedicated to returning them to their own dimension, fifteen-year-old Clary Fray is drawn into this " +
-            "bizarre world when her mother disappears and Clary herself is almost killed by a monster.", "In a world divided by blood--those with common, Red blood serve the Silver-blooded elite," +
-            "who are gifted with superhuman abilities--seventeen-year-old Mare, a Red, discovers she has an ability of her own.",
-            "Sixteen-year-old America Singer is living in the caste-divided nation of Illea, which formed after the war that destroyed the United States. America is chosen to compete" +
-                    "in the Selection--a contest to see which girl can win the heart of Illea's prince", "Due to an administrative mix-up, troublemaker Donovan Curtis is sent to the Academy of Scholastic Distinction," +
-            "a special program for gifted and talented students, after pulling a major prank at middle school.",
-            "the summary for the physical science eight grade textbook", "Learn how to approach and solve chemical problems so you " +
-            "can apply the process of problem solving to all aspects of your life with CHEMISTRY, Ninth Edition. " +
-            "This student-friendly chemistry text helps you ask and answer your own questions, and, instead of " +
-            "focusing on memorization, emphasizes hands-on learning and problem solving. With the book's easy-to-use" +
-            " media program, you'll master chemistry concepts and problem solving skills in no time and learn to think " +
-            "like a chemist: asking questions, applying rules, developing models, and evaluating outcomes.", "Seller Comments:" + "Help save a tree. Buy all your used books from Green Earth Books. Read. Recycle and Reuse."+
-            "Ships from: Saint Louis, MO Usually ships in 1-2 business days"};
-    static String[] statusesorig = {"0", "1", "1", "0", "0", "1", "0", "1", "0", "1", "1", "1", "1", "0"};
+    static String[] title = Login.getTils();
+    String[] author = Login.getAuths();
+    String[] pageCount = Login.getPgs();
+    String[] categories = Login.getCs();
+    String[] isbns = Login.getIss();
+    String[] summaries = Login.getSs();
+    static String[] statuses = Login.getStatuss();
+    public int[] picids = {R.drawable.owellbook, R.drawable.candymakers, R.drawable.tkam, R.drawable.lotf, R.drawable.quants, R.drawable.house
+            , R.drawable.cpd, R.drawable.cb, R.drawable.rq, R.drawable.selection, R.drawable.ungifted, R.drawable.bear,
+            R.drawable.bear};
+    static String[] addedornot = new String[title.length];
+
+    //the first set of arrays will get manipulated during the search, so the original copy is kept too
+    static String[] titleorig = Login.getTils();
+    String[] authororig = Login.getAuths();
+    String[] pageCountorig = Login.getPgs();
+    String[] categoriesorig = Login.getCs();
+    String[] isbnsorig = Login.getIss();
+    String[] summariesorig = Login.getSs();
+    static String[] statusesorig = Login.getStatuss();
     public int[] picidsorig = {R.drawable.owellbook, R.drawable.candymakers, R.drawable.tkam, R.drawable.lotf, R.drawable.quants, R.drawable.house
             , R.drawable.cpd, R.drawable.cb, R.drawable.rq, R.drawable.selection, R.drawable.ungifted, R.drawable.bear,
-            R.drawable.bear, R.drawable.bear};
-    static String[] addedornotorig = {"Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist", "Add to wishlist"};
+            R.drawable.bear, R.drawable.bear, R.drawable.bear};
+    static String[] addedornotorig = new String[title.length];
 
     private ListView lvBook;
     private BookAdapter adapter;
@@ -101,7 +61,7 @@ public class CatalogFragment extends Fragment {
     public static String titleofthebook;
     public static String authorofthebook;
     public static String category;
-    public static int pg;
+    public static String pg;
     public static int id;
     public static String isbn;
     public static String summary;
@@ -148,9 +108,14 @@ public class CatalogFragment extends Fragment {
                 statusesorig[i] = "Unavailable";
             }
         }
+        for (int i = 0; i < addedornotorig.length; i++) {
+            addedornotorig[i] = "Add to wishlist";
+            addedornot[i] = "Add to wishlist";
+        }
+
 
         //make a Book for each title,author,pagecount,isbb,status,image id and load into arraylist
-        for (int i = 0; i < title.length; i++) {
+        for (int i = 0; i < titleorig.length; i++) {
             books.add(new Book(capitalzeTitle(titleorig[i]), capitalizeauthor(authororig[i]), pageCountorig[i], picidsorig[i], capitalizeauthor(categoriesorig[i]), addedornotorig[i], isbns[i], statuses[i], summaries[i]));
             bookstwo.add(new Book(capitalzeTitle(titleorig[i]), capitalizeauthor(authororig[i]), pageCountorig[i], picidsorig[i], capitalizeauthor(categoriesorig[i]), addedornotorig[i], isbns[i], statuses[i], summaries[i]));
             lvBook.setTextFilterEnabled(true);
@@ -192,6 +157,7 @@ public class CatalogFragment extends Fragment {
         return view;
     }
 
+
     //the options menu that contains search action
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -228,7 +194,7 @@ public class CatalogFragment extends Fragment {
                         title = removeeltString(title, i);
                         author = removeeltString(author, i);
                         categories = removeeltString(categories, i);
-                        pageCount = removeEltInt(pageCount, i);
+                        pageCount = removeeltString(pageCount, i);
                         picids = removeEltInt(picids, i);
                         isbns = removeeltString(isbns, i);
                         summaries = removeeltString(summaries, i);
@@ -368,5 +334,7 @@ public class CatalogFragment extends Fragment {
         // Return string.
         return new String(array);
     }
+
+
 }
 

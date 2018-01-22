@@ -2,13 +2,16 @@ package com.example.sathv.olympiahighschoollibrary;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,7 +26,7 @@ public class Activities extends AppCompatActivity
     Toolbar toolbar;
     Login l = new Login();
     TextView studentName;
-    TextView email;
+    TextView email, rcount, ccount;
 
     ImageView profilepic;
 
@@ -62,6 +65,13 @@ public class Activities extends AppCompatActivity
         email = (TextView) v.findViewById(R.id.email);
         email.setText(l.getEmail());
 
+        rcount = (TextView) MenuItemCompat.getActionView(navigationView.getMenu().
+                findItem(R.id.nav_reservedbooks));
+
+        ccount = (TextView) MenuItemCompat.getActionView(navigationView.getMenu().
+                findItem(R.id.nav_checkedbooks));
+
+        initializeCountDrawer();
 
     }
 
@@ -75,6 +85,7 @@ public class Activities extends AppCompatActivity
             super.onBackPressed();
         }
     }
+
 
     //inflate the navigationview activities view
     @Override
@@ -113,7 +124,7 @@ public class Activities extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new MapFragment()).commit();
         } else if (id == R.id.nav_profile) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new ProfileFragment()).commit();
-        }  else if (id == R.id.nav_reminders) {
+        } else if (id == R.id.nav_reminders) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new RemindersFragment()).commit();
         } else if (id == R.id.nav_account) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new AccountFragment()).commit();
@@ -130,5 +141,18 @@ public class Activities extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void initializeCountDrawer() {
+        //Gravity property aligns the text
+        rcount.setGravity(Gravity.CENTER_VERTICAL);
+        rcount.setTypeface(null, Typeface.BOLD);
+        rcount.setTextColor(getResources().getColor(R.color.colorAccent));
+        rcount.setText(BookInformation.reservedcount + "");
+
+        ccount.setGravity(Gravity.CENTER_VERTICAL);
+        ccount.setTypeface(null, Typeface.BOLD);
+        ccount.setTextColor(getResources().getColor(R.color.colorAccent));
+        ccount.setText(BookInformation.checkedoutcount + "");
     }
 }

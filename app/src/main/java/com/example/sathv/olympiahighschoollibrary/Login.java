@@ -49,6 +49,76 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
     private EditText usernameField;
     private EditText passwordField;
 
+    public static String[] getTils() {
+        return tils;
+    }
+
+    public static void setTils(String[] tils) {
+        Login.tils = tils;
+    }
+
+    static String[] tils;
+
+    public static String[] getAuths() {
+        return auths;
+    }
+
+    public static void setAuths(String[] auths) {
+        Login.auths = auths;
+    }
+
+    static String[] auths;
+
+    public static String[] getPgs() {
+        return pgs;
+    }
+
+    public static void setPgs(String[] pgs) {
+        Login.pgs = pgs;
+    }
+
+    static String[] pgs;
+
+    public static String[] getCs() {
+        return cs;
+    }
+
+    public static void setCs(String[] cs) {
+        Login.cs = cs;
+    }
+
+    static String[] cs;
+
+    public static String[] getIss() {
+        return iss;
+    }
+
+    public static void setIss(String[] iss) {
+        Login.iss = iss;
+    }
+
+    static String[] iss;
+
+    public static String[] getSs() {
+        return ss;
+    }
+
+    public static void setSs(String[] ss) {
+        Login.ss = ss;
+    }
+
+    static String[] ss;
+
+    public static String[] getStatuss() {
+        return statuss;
+    }
+
+    public static void setStatuss(String[] statuss) {
+        Login.statuss = statuss;
+    }
+
+    static String[] statuss;
+
     //create getters and setters for each variable
     public String getName() {
         return name;
@@ -179,10 +249,12 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                 setFullName(name);
                 setEmail(email);
 
+
                 fblogin.setText("Log in with Facebook");
                 Intent activities = new Intent(getApplicationContext(), Activities.class);
                 startActivity(activities);
                 finish();
+
             }
 
             @Override
@@ -212,8 +284,16 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                         pb.setVisibility(View.VISIBLE);
                         //veryify the login
                         loginCheck();
-                        //retrieve the name and email
-                        getNameFromHost();
+                        pb.setVisibility(View.VISIBLE);
+                        loadbooks();
+                        loadauthors();
+                        loadpg();
+                        loadcategories();
+                        loadisbns();
+                        loadstatus();
+                        loadsummaries();
+
+                        //  loadbooks();
                     }
                 }
                 return false;
@@ -233,12 +313,23 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                     pb.setVisibility(View.VISIBLE);
                     //verify login
                     loginCheck();
+
+                    pb.setVisibility(View.VISIBLE);
+                    loadbooks();
+                    loadauthors();
+                    loadpg();
+                    loadcategories();
+                    loadisbns();
+                    loadstatus();
+                    loadsummaries();
                     //retrieve name and email
-                    getNameFromHost();
+
+                    // loadbooks();
                 }
             }
         });
     }
+
 
     //signup button action onclick
     public void action(View view) {
@@ -255,7 +346,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                if (response.trim().equals("success")) {
+                if (!response.trim().equals("incorrect") && response.length() >= 4) {
                     //if the php scropt that is in the url return success
                     Toast.makeText(getApplicationContext(), "Logged in", Toast.LENGTH_SHORT).show();
 
@@ -263,10 +354,22 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                     setPassword(passwordField.getText().toString());
                     setUsername(usernameField.getText().toString());
 
-                    //because login is valid, setvisibility of the l=progress bar to gone
-                    pb.setVisibility(View.GONE);
+                    name = response.trim();
 
-                    //start the actvities activity for navigation view
+                    //the php script will return all the variables and will be spaced by a space
+                    // this will break each string by the space and set it into the appropriate variables
+                    String[] splitStr = name.split("\\s+");
+                    String firstname = splitStr[0];
+                    String lastname = splitStr[1];
+                    String emailRaw = splitStr[2];
+                    String gradeRaw = splitStr[3];
+
+                    setFullName(firstname + " " + lastname);
+                    //use the setters to set the variable
+                    setEmail(emailRaw + "");
+                    setGrade(gradeRaw + "");
+
+                    pb.setVisibility(View.GONE);
                     Intent activities = new Intent(getApplicationContext(), Activities.class);
                     startActivity(activities);
                     finish();
@@ -304,63 +407,19 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
         requestQueue.add(stringRequest);
     }
 
-    //get name method
-    public void getNameFromHost() {
-        String url = "https://sathviknallamalli.000webhostapp.com/namefromwebhost.php";
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                if (!response.trim().equals("incorrect") && response.length() >= 4) {
-                    name = response.trim();
-
-                    //the php script will return all the variables and will be spaced by a space
-                    // this will break each string by the space and set it into the appropriate variables
-                    String[] splitStr = name.split("\\s+");
-                    String firstname = splitStr[0];
-                    String lastname = splitStr[1];
-                    String emailRaw = splitStr[2];
-                    String gradeRaw = splitStr[3];
-
-                    setFullName(firstname + " " + lastname);
-                    //use the setters to set the variable
-                    setEmail(emailRaw + "");
-                    setGrade(gradeRaw + "");
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //display the error
-                Toast.makeText(getApplicationContext(), "ERROR WHEN RETRIEVING NAME" + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-
-                Map<String, String> params = new HashMap<>();
-
-                //run the php scipt using the url and input the parameters using the hasmap
-                params.put("username", usernameField.getText().toString().trim());
-                params.put("password", passwordField.getText().toString().trim());
-
-                return params;
-
-            }
-        };
-
-        requestQueue.add(stringRequest);
-    }
 
     private void updateUI(boolean isLogin) {
         if (isLogin) {
+
 
             Toast.makeText(getApplicationContext(), "Logged in", Toast.LENGTH_SHORT).show();
             pb.setVisibility(View.GONE);
             Intent activities = new Intent(getApplicationContext(), Activities.class);
             startActivity(activities);
             finish();
+
+
+
 
         } else {
             Toast.makeText(getApplicationContext(), "Logged fail", Toast.LENGTH_SHORT).show();
@@ -418,6 +477,200 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
         }
     }
 
+    public void loadbooks() {
+        String url = "https://sathviknallamalli.000webhostapp.com/getbooks.php";
+
+        RequestQueue requestQueue = Volley.newRequestQueue(Login.this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                //pbdos.setVisibility(View.VISIBLE);
+                if (!response.trim().equals("incorrect")) {
+
+                    String booktitles = response;
+                    setTils(booktitles.split(", "));
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //display the error
+                Toast.makeText(getApplicationContext(), "ERROR WHEN RETRIEVING TTILES" + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        }) {
+        };
+
+        requestQueue.add(stringRequest);
+    }
+
+    public void loadauthors() {
+        String url = "https://sathviknallamalli.000webhostapp.com/getauthors.php";
+
+        RequestQueue requestQueue = Volley.newRequestQueue(Login.this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                //pbdos.setVisibility(View.VISIBLE);
+                if (!response.trim().equals("incorrect")) {
+
+                    String authtitles = response;
+                    setAuths(authtitles.split(", "));
+
+                    pb.setVisibility(View.GONE);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //display the error
+                Toast.makeText(getApplicationContext(), "ERROR WHEN RETRIEVING ATUHS" + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        }) {
+        };
+
+        requestQueue.add(stringRequest);
+    }
+
+    public void loadpg() {
+        String url = "https://sathviknallamalli.000webhostapp.com/getpagecount.php";
+
+        RequestQueue requestQueue = Volley.newRequestQueue(Login.this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                //pbdos.setVisibility(View.VISIBLE);
+                if (!response.trim().equals("incorrect")) {
+
+                    String pgs = response;
+                    setPgs(pgs.split(", "));
+
+                    pb.setVisibility(View.GONE);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //display the error
+                Toast.makeText(getApplicationContext(), "ERROR WHEN RETRIEVING ATUHS" + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        }) {
+        };
+
+        requestQueue.add(stringRequest);
+    }
+
+    public void loadcategories() {
+        String url = "https://sathviknallamalli.000webhostapp.com/getcategories.php";
+
+        RequestQueue requestQueue = Volley.newRequestQueue(Login.this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                //pbdos.setVisibility(View.VISIBLE);
+                if (!response.trim().equals("incorrect")) {
+
+                    String cs = response;
+                    setCs(cs.split(", "));
+
+                    pb.setVisibility(View.GONE);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //display the error
+                Toast.makeText(getApplicationContext(), "ERROR WHEN RETRIEVING ATUHS" + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        }) {
+        };
+
+        requestQueue.add(stringRequest);
+    }
+
+    public void loadisbns() {
+        String url = "https://sathviknallamalli.000webhostapp.com/getisbns.php";
+
+        RequestQueue requestQueue = Volley.newRequestQueue(Login.this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                //pbdos.setVisibility(View.VISIBLE);
+                if (!response.trim().equals("incorrect")) {
+
+                    String iss = response;
+                    setIss(iss.split(", "));
+
+                    pb.setVisibility(View.GONE);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //display the error
+                Toast.makeText(getApplicationContext(), "ERROR WHEN RETRIEVING ATUHS" + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        }) {
+        };
+
+        requestQueue.add(stringRequest);
+    }
+
+    public void loadsummaries() {
+        String url = "https://sathviknallamalli.000webhostapp.com/getsummaries.php";
+
+        RequestQueue requestQueue = Volley.newRequestQueue(Login.this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                //pbdos.setVisibility(View.VISIBLE);
+                if (!response.trim().equals("incorrect")) {
+
+                    String sss = response;
+                    setSs(sss.split("<br />"));
+
+                    pb.setVisibility(View.GONE);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //display the error
+                Toast.makeText(getApplicationContext(), "ERROR WHEN RETRIEVING ATUHS" + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        }) {
+        };
+
+        requestQueue.add(stringRequest);
+    }
+
+    public void loadstatus() {
+        String url = "https://sathviknallamalli.000webhostapp.com/getstatus.php";
+
+        RequestQueue requestQueue = Volley.newRequestQueue(Login.this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                //pbdos.setVisibility(View.VISIBLE);
+                if (!response.trim().equals("incorrect")) {
+
+                    String status = response;
+                    setStatuss(status.split(", "));
+
+                    pb.setVisibility(View.GONE);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //display the error
+                Toast.makeText(getApplicationContext(), "ERROR WHEN RETRIEVING ATUHS" + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        }) {
+        };
+
+        requestQueue.add(stringRequest);
+    }
 }
 
 //RUN THE APP

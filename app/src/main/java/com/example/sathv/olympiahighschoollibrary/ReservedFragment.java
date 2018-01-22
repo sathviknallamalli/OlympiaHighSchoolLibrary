@@ -113,4 +113,6 @@ public class ReservedFragment extends Fragment {
         adapter = new ReservedBooksAdapter(getActivity().getApplicationContext(), R.layout.itemforreserved, reservedBooks);
         lvr.setAdapter(adapter);
     }
+
+
 }

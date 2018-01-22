@@ -30,8 +30,7 @@ public class BookAdapter extends ArrayAdapter<Book> {
     Button add, share;
     EditText input;
 
-    static String t, au, c, s;
-    static int pg;
+    static String t, au, c, s, pg;
 
     //book adapter contructor
     public BookAdapter(Context context, int resource, ArrayList<Book> books) {

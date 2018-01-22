@@ -95,6 +95,22 @@ public class RemindersFragment extends Fragment {
                             , "Book is DUE IN 2 DAYS"));
 
                     isreminder = true;
+
+                    notification = new NotificationCompat.Builder(view.getContext());
+                    notification.setAutoCancel(true);
+
+                    notification.setSmallIcon(R.mipmap.ic_launcher);
+                    notification.setWhen(System.currentTimeMillis());
+                    notification.setContentTitle("REMINDER");
+                    notification.setContentText("This book is due in 2 days" + BookInformation.checkedoutbookstitles.get(i).toString());
+
+                    //Intent intent = new Intent(view.getContext(), );
+                    //PendingIntent pendingIntent = PendingIntent.getActivity(view.getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    //notification.setContentIntent(pendingIntent);
+
+                    //NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                    //nm.notify(uniqueid, notification.build());
+
                 }
                 //set adapter to listview
                 adapter = new ReminderBooksAdapter(getActivity().getApplicationContext(), R.layout.reminderlayout, reminderBooks);
