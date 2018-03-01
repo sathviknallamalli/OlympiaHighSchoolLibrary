@@ -2,8 +2,12 @@ package com.example.sathv.olympiahighschoollibrary;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.InputType;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -12,17 +16,13 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import com.firebase.client.Firebase;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseUser;
 
 public class SignUp extends Activity {
 
@@ -34,8 +34,13 @@ public class SignUp extends Activity {
     Spinner gradeOptions;
     Button register;
     EditText confirm;
+    String userid;
+
+    FirebaseAuth mAuth;
 
     ProgressDialog mDialog;
+    private Firebase mRootRef;
+
 
     ArrayAdapter<CharSequence> adapter;
 
@@ -43,6 +48,11 @@ public class SignUp extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+        mAuth = FirebaseAuth.getInstance();
+
+
+        mRootRef = new Firebase("https://libeary-8d044.firebaseio.com/Users");
+
 
         //retrieve each field
         username = (EditText) findViewById(R.id.username);
@@ -93,92 +103,65 @@ public class SignUp extends Activity {
             //check if passwords are identical
             if (!password.getText().toString().equals(confirm.getText().toString())) {
                 Toast.makeText(getApplicationContext(), "Passwords are not identical", Toast.LENGTH_SHORT).show();
-            }
-            //passwords are identical
-            else {
+            } else if (!Patterns.EMAIL_ADDRESS.matcher(email.getText().toString()).matches()) {
+                Toast.makeText(getApplicationContext(), "Email is invalid", Toast.LENGTH_SHORT).show();
+            } else {
                 //begin the process of adding to database
-                registerToDatabase();
+                String fname = firstName.getText().toString();
+                String lname = lastName.getText().toString();
+                String un = username.getText().toString();
+                String pd = password.getText().toString();
+                String grade = gradeOptions.getSelectedItem().toString();
+
+                register(email.getText().toString(), pd, fname, lname, un, grade);
+                Login l = new Login();
+                l.getallbooks();
             }
         }
 
     }
 
-    //method to update and insert into database
-    public void registerToDatabase() {
-        String url = "https://sathviknallamalli.000webhostapp.com/registerwebhost.php";
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+    private void register(final String email, final String password, final String fname, final String lname, final String un, final String grade) {
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
-            public void onResponse(String response) {
-                //start and initialize the dialog with message
-                mDialog.setMessage("Signing up...");
-                mDialog.show();
-                if (response.trim().equals("success")) {
-                    //if the php script returns "success" token then let user know and send email
-                    Login l = new Login();
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    finish();
+                    Log.d("TAG", "signed in");
 
-                    //set appropriate full namel email and username and password
-                    l.setFullName(firstName.getText().toString() + " " + lastName.getText().toString());
-                    l.setEmail(email.getText().toString());
-                    mDialog.dismiss();
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    userid = user.getUid();
 
-                    String emailRaw = l.getEmail();
-                    String code = generateRandomString();
+                    UserInformation userInformation = new UserInformation(fname, lname, un, password, email, grade);
+                    mRootRef.child(userid).setValue(userInformation);
 
-                    //set subject and message for the email beign sent
-                    String subject = "Confirm your email address for Olympia High School Library";
-                    String message = "Thank you for signing up for Olympia High School. Please enter this verification code in the app " + code;
 
-                    SendMail sm = new SendMail(SignUp.this, emailRaw, subject, message, code);
 
-                    sm.execute();
+                    Login.setPassword(password);
+                    Login.setFullName(fname + " " + lname);
+                    Login.setUsername(un);
+                    Login.setEmail(email);
+                    Login.setGrade(grade);
 
+                    Intent activities = new Intent(getApplicationContext(), Activities.class);
+                    startActivity(activities);
+                    finish();
+
+                    Toast.makeText(getApplicationContext(), "Welcome to LiBEARy", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Oops something went wrong" + response, Toast.LENGTH_SHORT).show();
+                    if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                        Toast.makeText(getApplicationContext(), "You are already registered", Toast.LENGTH_SHORT).show();
+
+                    } else {
+                        Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+
                 }
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), "error" + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
+        });
 
-                Map<String, String> params = new HashMap<>();
 
-                String grade = (String) gradeOptions.getSelectedItem();
-
-                //send the appropriate hashmap vairables as parameters into the php script
-                params.put("username", username.getText().toString().trim().replace(" ", ""));
-                params.put("password", password.getText().toString().trim());
-                params.put("firstname", firstName.getText().toString().trim().replace(" ", ""));
-                params.put("lastname", lastName.getText().toString().trim().replace(" ", ""));
-                params.put("email", email.getText().toString().trim());
-                params.put("grade", grade);
-
-                return params;
-            }
-        };
-
-        requestQueue.add(stringRequest);
     }
 
-    //generate random code for user to enter
-    public String generateRandomString() {
-        //possible characters that are avilable
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-        StringBuilder randomString = new StringBuilder();
-        Random rnd = new Random();
-        //use while loop to select random index
-        while (randomString.length() < 6) { // length of the random string.
-            int index = (int) (rnd.nextFloat() * characters.length());
-            randomString.append(characters.charAt(index));
-        }
-        String saltStr = randomString.toString();
-        //concatentate 6 times and return string
-        return saltStr;
-    }
+
 }

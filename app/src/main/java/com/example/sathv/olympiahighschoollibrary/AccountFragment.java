@@ -10,18 +10,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.firebase.client.Firebase;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 /**
  * Created by sathv on 11/28/2017.
@@ -34,8 +26,10 @@ public class AccountFragment extends Fragment {
     }
 
     Login l = new Login();
+    //UI References
     EditText fnametemp;
     EditText lnametemp;
+    FirebaseAuth mAuth;
     EditText emailtemp;
     EditText usernametemp;
     TextView fnametitle;
@@ -45,14 +39,13 @@ public class AccountFragment extends Fragment {
     Button change;
     Button save;
     Button edit;
-
     ProgressDialog mDialog;
 
     @Override
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LayoutInflater lf = getActivity().getLayoutInflater();
+        //create view and set title of activity
         View view = inflater.inflate(R.layout.account, container, false);
         getActivity().setTitle("Manage account");
         setHasOptionsMenu(false);
@@ -67,7 +60,7 @@ public class AccountFragment extends Fragment {
         fnametitle = (TextView) view.findViewById(R.id.firstnametitle);
         emailtitle = (TextView) view.findViewById(R.id.emailtitle);
         usernametitle = (TextView) view.findViewById(R.id.usernametitle);
-        lnametitle =  (TextView) view.findViewById(R.id.lastnametitle);
+        lnametitle = (TextView) view.findViewById(R.id.lastnametitle);
         edit = (Button) view.findViewById(R.id.edit);
 
         //set visibility
@@ -132,63 +125,39 @@ public class AccountFragment extends Fragment {
         return view;
     }
 
-    public void updateinfo() {
-        String url = "https://sathviknallamalli.000webhostapp.com/updateaccountfragment.php";
 
-        RequestQueue requestQueue = Volley.newRequestQueue(getView().getContext());
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //start and initialize the dialog with message
-                mDialog.setMessage("Making changes...");
-                mDialog.show();
-                if (response.trim().equals("success")) {
-                    //if the php script returns "success" token then let user know and send email
-                    Login l = new Login();
+    private void updateinfo() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        String userid = user.getUid();
 
-                    String fullnamenew = fnametemp.getText().toString() + " " + lnametemp.getText().toString();
-                    l.setFullName(fullnamenew);
-                    l.setEmail(emailtemp.getText().toString());
-                    Login.setUsername(usernametemp.getText().toString());
+        //save and update all the changes to Firebase
+        Firebase ref = new Firebase("https://libeary-8d044.firebaseio.com/Users/" + userid);
+        Firebase childref = ref.child("email");
+        childref.setValue(emailtemp.getText().toString().trim().replace(" ", ""));
+        Firebase newduedate = ref.child("fname");
+        newduedate.setValue(fnametemp.getText().toString().trim());
+        Firebase person = ref.child("lname");
+        person.setValue(lnametemp.getText().toString().trim());
+        Firebase u = ref.child("username");
+        person.setValue(usernametemp.getText().toString().trim().replace(" ", ""));
 
-                    mDialog.dismiss();
+        //set methods
+        Login.setEmail(emailtemp.getText().toString().trim().replace(" ", ""));
+        Login.setUsername(usernametemp.getText().toString().trim().replace(" ", ""));
+        Login.setFullName(fnametemp.getText().toString().trim() + " " + lnametemp.getText().toString().trim());
 
-                    String emailRaw = l.getEmail();
+        //send an email regarding the changes to the account
+        mDialog.dismiss();
 
-                    //set subject and message for the email beign sent
-                    String subject = "Account changes";
-                    String message = "You have changed your account settings using the Olympia High School Library app and here is the latest information " + "\nUsername " + usernametemp.getText() + "\nFull name " + fnametemp.getText() + " " + lnametemp.getText() + "\nEmail " + emailtemp.getText();
+        String emailRaw = l.getEmail();
 
-                    SendMailShare sm = new SendMailShare(getContext(), emailRaw, subject, message, "Saved. Restart the app to see the changes");
+        //set subject and message for the email beign sent
+        String subject = "Account changes";
+        String message = "You have changed your account settings using the Olympia High School Library app and here is the latest information " + "\nUsername " + usernametemp.getText() + "\nFull name " + fnametemp.getText() + " " + lnametemp.getText() + "\nEmail " + emailtemp.getText();
 
-                    sm.execute();
+        SendMailShare sm = new SendMailShare(getView().getContext(), emailRaw, subject, message, "Saved. Restart the app to see the changes");
 
-                } else {
-                    Toast.makeText(getContext(), "Oops something went wrong" + response, Toast.LENGTH_SHORT).show();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), "error" + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-
-                Map<String, String> params = new HashMap<>();
-
-                //send the appropriate hashmap vairables as parameters into the php script
-                params.put("username", usernametemp.getText().toString().trim().replace(" ", ""));
-                params.put("firstname", fnametemp.getText().toString().trim());
-                params.put("lastname", lnametemp.getText().toString().trim());
-                params.put("email", emailtemp.getText().toString().trim().replace(" ", ""));
-
-                return params;
-            }
-        };
-
-        requestQueue.add(stringRequest);
+        sm.execute();
     }
 
 

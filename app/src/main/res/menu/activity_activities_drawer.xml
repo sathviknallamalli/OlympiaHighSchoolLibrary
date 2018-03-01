@@ -11,6 +11,11 @@
             android:iconTint="#FF000000"
             android:title="Catalog" />
         <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_about"
+            android:iconTint="#FF000000"
+            android:title="About" />
+        <item
             android:id="@+id/nav_checkedbooks"
             android:icon="@drawable/ic_check"
             app:actionViewClass="android.widget.TextView"
@@ -31,7 +36,7 @@
             android:id="@+id/nav_reminders"
             android:icon="@drawable/ic_notify"
             android:iconTint="#FF000000"
-            android:title="Reminders" />
+            android:title="Notifications" />
         <item
             android:id="@+id/nav_map"
             android:icon="@drawable/ic_map_name"
@@ -48,16 +53,13 @@
             android:icon="@drawable/ic_edit"
             android:iconTint="#FF000000"
             android:title="Manage account" />
+
         <item
             android:id="@+id/nav_information"
             android:icon="@drawable/ic_contact_info"
             android:iconTint="#FF000000"
             android:title="Information" />
 
-        <item
-            android:id="@+id/nav_share"
-            android:icon="@drawable/ic_menu_share"
-            android:title="Share" />
         <item
             android:id="@+id/nav_contact"
             android:icon="@drawable/contact"

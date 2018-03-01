@@ -10,21 +10,23 @@ import android.view.ViewGroup;
  * Created by sathv on 11/28/2017.
  */
 
-public class ShareFragment extends Fragment {
+public class AboutFragment extends Fragment {
 
-    public ShareFragment() {
+    public AboutFragment() {
 
     }
 
-    @Override
 
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View view = inflater.inflate(R.layout.share, container, false);
-        getActivity().setTitle("Share Fragment");
+        //create a view of the appropriate xml file and display it
+        View view = inflater.inflate(R.layout.about, container, false);
+        //set the title of the screen
+        getActivity().setTitle("Olympia High School Library");
+        setHasOptionsMenu(false);
 
         return view;
     }
-
-
 }

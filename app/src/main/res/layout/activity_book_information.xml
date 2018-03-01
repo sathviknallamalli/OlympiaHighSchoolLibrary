@@ -9,7 +9,7 @@
 
     <TextView
         android:id="@+id/infoAuthor"
-        android:layout_width="155dp"
+        android:layout_width="190dp"
         android:layout_height="26dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
@@ -20,7 +20,7 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.732"
+        app:layout_constraintHorizontal_bias="0.848"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.017" />
@@ -108,7 +108,7 @@
         android:layout_marginTop="8dp"
         android:text="summary"
         android:textColor="@android:color/holo_orange_light"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -142,7 +142,7 @@
         android:layout_marginTop="8dp"
         android:onClick="checkoutOnClick"
         android:text="Check out Now!"
-        android:textSize="12sp"
+        android:textAppearance="@style/TextAppearance.AppCompat"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.036"
@@ -160,7 +160,7 @@
         android:layout_marginTop="8dp"
         android:onClick="reserveOnClick"
         android:text="Reserve book"
-        android:textSize="12sp"
+        android:textAppearance="@style/TextAppearance.AppCompat"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.881"
@@ -168,73 +168,35 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.793" />
 
-    <Button
-        android:id="@+id/ratebut"
-        android:layout_width="79dp"
-        android:layout_height="37dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Rate"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.818"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.899" />
-
-    <RatingBar
-        android:id="@+id/ratingBar"
-        style="@style/Base.CardView"
-        android:layout_width="wrap_content"
-        android:layout_height="45dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:numStars="4"
-        android:scaleX="0.75"
-        android:scaleY="0.75"
-        android:stepSize=".5"
-        android:transformPivotX="1dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.289"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.915" />
-
-    <TextView
-        android:id="@+id/ratetext"
-        android:layout_width="266dp"
-        android:layout_height="29dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Rate this book if you have read it!"
-        android:textColor="@android:color/black"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.637"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
-
     <ProgressBar
         android:id="@+id/pbj"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="308dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/writeareview"
+        style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
+        android:layout_width="205dp"
+        android:layout_height="45dp"
+        android:onClick="reviewonclick"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ratetext"
+        android:background="@android:color/holo_orange_light"
+        android:text="Read the book? Write a review!"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.944" />
 
 </android.support.constraint.ConstraintLayout>

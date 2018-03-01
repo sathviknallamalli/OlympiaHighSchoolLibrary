@@ -28,7 +28,7 @@ public class CheckedOutConfirmation extends AppCompatActivity {
         snackbar.show();
 
         //update the status of the book to unavailable
-        CatalogFragment.setStatus("Unavailable", CatalogFragment.pos);
+        cf.setStatus("Unavailable", CatalogFragment.pos);
 
         //set each field for confirmation
         TextView bookName = (TextView) findViewById(R.id.bookName);

@@ -1,14 +1,12 @@
 package com.example.sathv.olympiahighschoollibrary;
 
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -20,23 +18,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import com.firebase.client.Firebase;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public class BookInformation extends AppCompatActivity {
 
@@ -52,6 +43,7 @@ public class BookInformation extends AppCompatActivity {
     Button checkOut;
     Button reserve;
     Button ratebut;
+    DatabaseReference databasereference;
 
     ProgressBar pbj;
 
@@ -62,10 +54,6 @@ public class BookInformation extends AppCompatActivity {
     static int checkedoutcount = 0;
     static int reservedcount = 0;
 
-    //arraylist to store checked out books when clicked to load in the checked fragment
-    static ArrayList checkedoutbookstitles = new ArrayList();
-    static ArrayList checkedoutbooksdates = new ArrayList();
-    static ArrayList checkedoutbooksimages = new ArrayList();
 
     //the dates when reminders need to be given based on checked out date
     static ArrayList<Date> reminderdates = new ArrayList<Date>();
@@ -109,7 +97,7 @@ public class BookInformation extends AppCompatActivity {
 
         checkOut = (Button) findViewById(R.id.checkOut);
         reserve = (Button) findViewById(R.id.reserve);
-        ratebut = (Button) findViewById(R.id.ratebut);
+        Button review = (Button) findViewById(R.id.writeareview);
 
         pbj = (ProgressBar) findViewById(R.id.pbj);
         pbj.setVisibility(View.GONE);
@@ -129,34 +117,21 @@ public class BookInformation extends AppCompatActivity {
         summary.setText(CatalogFragment.summary);
         summary.setMovementMethod(new ScrollingMovementMethod());
         summary.setVerticalScrollBarEnabled(true);
+        CatalogFragment cf = new CatalogFragment();
+        status.setText(status.getText().toString() + " " + cf.getStatus());
 
-        status.setText(status.getText().toString() + " " + CatalogFragment.getStatus());
-
-        final RatingBar rb = (RatingBar) findViewById(R.id.ratingBar);
 
         bookCover.setImageResource(CatalogFragment.id);
 
         //based on the status, set color text
-        if (CatalogFragment.getStatus().equals("Available")) {
+
+        if (cf.getStatus().equals("Available")) {
             status.setTextColor(getResources().getColor(R.color.forestgreeen));
-        } else if (CatalogFragment.getStatus().equals("Unavailable")) {
-            status.setTextColor(getResources().getColor(R.color.crimson));
+        } else if (cf.getStatus().equals("Unavailable")) {
+             status.setTextColor(getResources().getColor(R.color.crimson));
         }
 
-        ratebut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-                final Snackbar snackbar = Snackbar.make(view, "Your rating " + rb.getRating(), Snackbar.LENGTH_LONG);
-                snackbar.setAction("Dismiss", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        snackbar.dismiss();
-                    }
-                });
-                snackbar.show();
-            }
-        });
 
     }
 
@@ -173,7 +148,7 @@ public class BookInformation extends AppCompatActivity {
             builder.setTitle("Please enter your password to proceed");
 
             input = new EditText(context);
-            input.setInputType(InputType.TYPE_CLASS_NUMBER);
+            input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
             builder.setView(input);
 
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -186,20 +161,11 @@ public class BookInformation extends AppCompatActivity {
                     //make sure that password is correct
                     if (entered.equals(Login.getPassword())) {
 
-                        //increase count so that in Profile fragment stats are shown
-                        checkedoutcount++;
-
-                        //add this to the checkedoutarraylists to display in checked fragment
-                        checkedoutbookstitles.add(CatalogFragment.titleofthebook);
-
                         //set and determine the due date
                         int noOfDays = 14; //i.e two weeks
                         int daysbeforedue = 2;
 
-                        //current date
                         Calendar calendar = Calendar.getInstance();
-                        Date currentDate = new Date();
-                        calendar.setTime(currentDate);
 
                         //due date set
                         calendar.add(Calendar.DAY_OF_YEAR, noOfDays);
@@ -212,11 +178,6 @@ public class BookInformation extends AppCompatActivity {
                         reminderdates.add(reminderdate);
                         setDatetoputinconfirmation(duedate.toString());
 
-                        //add
-                        checkedoutbooksdates.add(getDatetoputinconfirmation());
-
-                        //add
-                        checkedoutbooksimages.add(CatalogFragment.id);
 
                         notification = new NotificationCompat.Builder(BookInformation.this);
                         notification.setAutoCancel(true);
@@ -225,10 +186,6 @@ public class BookInformation extends AppCompatActivity {
                         notification.setWhen(System.currentTimeMillis());
                         notification.setContentTitle("Book checked out");
                         notification.setContentText("You have successfully checked out the following book: " + CatalogFragment.titleofthebook);
-
-                        Intent intent = new Intent(context, BookInformation.class);
-                        PendingIntent pendingIntent = PendingIntent.getActivity(BookInformation.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                        notification.setContentIntent(pendingIntent);
 
                         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                         nm.notify(uniqueid, notification.build());
@@ -266,44 +223,13 @@ public class BookInformation extends AppCompatActivity {
     }
 
     private void updatecheckout() {
-        String url = "https://sathviknallamalli.000webhostapp.com/updatecheckedoutstatus.php";
+        databasereference = FirebaseDatabase.getInstance().getReference();
+        BookDets bookdets = new BookDets(CatalogFragment.titleofthebook, CatalogFragment.authorofthebook, CatalogFragment.category,
+                CatalogFragment.pg, CatalogFragment.summary, CatalogFragment.isbn, CatalogFragment.status, getDatetoputinconfirmation(), Login.getUsername());
 
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                if (response.trim().equals("success")) {
-                    //if the php scropt that is in the url return success
-
-                    pbj.setVisibility(View.GONE);
-
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //if the php script returns an error, set visibility to gone and print
-                Toast.makeText(getApplicationContext(), "ERROR " + error.toString(), Toast.LENGTH_SHORT).show();
-
-                pbj.setVisibility(View.GONE);
-            }
-        })
-
-        {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-
-                Map<String, String> params = new HashMap<>();
-
-                //put necessary parameters for the php script using the hashmap
-                params.put("booktitle", CatalogFragment.titleofthebook);
-
-                return params;
-            }
-        };
-
-        requestQueue.add(stringRequest);
-
+        Firebase getbooksref = new Firebase("https://libeary-8d044.firebaseio.com/Books/");
+        getbooksref.child(CatalogFragment.titleofthebook).removeValue();
+        getbooksref.child(CatalogFragment.titleofthebook).setValue(bookdets);
 
     }
 
@@ -324,7 +250,7 @@ public class BookInformation extends AppCompatActivity {
                 builder.setTitle("Please enter your password to proceed");
 
                 input = new EditText(context);
-                input.setInputType(InputType.TYPE_CLASS_NUMBER);
+                input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 builder.setView(input);
 
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -353,10 +279,6 @@ public class BookInformation extends AppCompatActivity {
                             notification.setWhen(System.currentTimeMillis());
                             notification.setContentTitle("Book reserved");
                             notification.setContentText("You have successfully reserved the following book: " + CatalogFragment.titleofthebook);
-
-                            Intent intent = new Intent(context, BookInformation.class);
-                            PendingIntent pendingIntent = PendingIntent.getActivity(BookInformation.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                            notification.setContentIntent(pendingIntent);
 
                             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                             nm.notify(uniqueid, notification.build());
@@ -408,6 +330,13 @@ public class BookInformation extends AppCompatActivity {
         cc.setTypeface(null, Typeface.BOLD);
         cc.setTextColor(getResources().getColor(R.color.colorAccent));
         cc.setText(BookInformation.checkedoutcount + "");
+    }
+
+    public void reviewonclick(View v) {
+        final Context context = v.getContext();
+        Intent activities = new Intent(context, WriteaReview.class);
+        startActivity(activities);
+        finish();
     }
 }
 

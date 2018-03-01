@@ -45,7 +45,7 @@ public class CheckedBooksAdapter extends ArrayAdapter<CheckedBook> {
         bookTitle.setText(checkedBook.title);
         dateinchecked.setText("DUE DATE: "+ checkedBook.date);
         //change color od due date to be prominent
-        dateinchecked.setTextColor(convertView.getResources().getColor(R.color.crimson));
+        //dateinchecked.setTextColor(convertView.getResources().getColor(R.color.crimson));
         bookImage.setImageResource(checkedBook.imageid);
 
         return convertView;

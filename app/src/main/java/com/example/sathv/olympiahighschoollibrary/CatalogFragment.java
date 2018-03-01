@@ -35,10 +35,12 @@ public class CatalogFragment extends Fragment {
     String[] isbns = Login.getIss();
     String[] summaries = Login.getSs();
     static String[] statuses = Login.getStatuss();
-    public int[] picids = {R.drawable.owellbook, R.drawable.candymakers, R.drawable.tkam, R.drawable.lotf, R.drawable.quants, R.drawable.house
-            , R.drawable.cpd, R.drawable.cb, R.drawable.rq, R.drawable.selection, R.drawable.ungifted, R.drawable.bear,
-            R.drawable.bear};
-    static String[] addedornot = new String[title.length];
+    public int[] picids = {R.drawable.candymakers, R.drawable.msd, R.drawable.wheights, R.drawable.lotf, R.drawable.frank, R.drawable.selection
+            , R.drawable.owellbook, R.drawable.cpd, R.drawable.rq, R.drawable.hamelt, R.drawable.ungifted, R.drawable.pp,
+            R.drawable.ts, R.drawable.af, R.drawable.cb, R.drawable.tkam, R.drawable.hfin, R.drawable.quants, R.drawable.farenheit,
+            R.drawable.odys, R.drawable.dc, R.drawable.house, R.drawable.rj, R.drawable.gg, R.drawable.three, R.drawable.giver,
+            R.drawable.ofmm, R.drawable.awake};
+    static String[] addedornot = new String[Login.getTils().length];
 
     //the first set of arrays will get manipulated during the search, so the original copy is kept too
     static String[] titleorig = Login.getTils();
@@ -48,10 +50,12 @@ public class CatalogFragment extends Fragment {
     String[] isbnsorig = Login.getIss();
     String[] summariesorig = Login.getSs();
     static String[] statusesorig = Login.getStatuss();
-    public int[] picidsorig = {R.drawable.owellbook, R.drawable.candymakers, R.drawable.tkam, R.drawable.lotf, R.drawable.quants, R.drawable.house
-            , R.drawable.cpd, R.drawable.cb, R.drawable.rq, R.drawable.selection, R.drawable.ungifted, R.drawable.bear,
-            R.drawable.bear, R.drawable.bear, R.drawable.bear};
-    static String[] addedornotorig = new String[title.length];
+    public int[] picidsorig = {R.drawable.candymakers, R.drawable.msd, R.drawable.wheights, R.drawable.lotf, R.drawable.frank, R.drawable.selection
+            , R.drawable.owellbook, R.drawable.cpd, R.drawable.rq, R.drawable.hamelt, R.drawable.ungifted, R.drawable.pp,
+            R.drawable.ts, R.drawable.af, R.drawable.cb, R.drawable.tkam, R.drawable.hfin, R.drawable.quants, R.drawable.farenheit,
+            R.drawable.odys, R.drawable.dc, R.drawable.house, R.drawable.rj, R.drawable.gg, R.drawable.three, R.drawable.giver,
+            R.drawable.ofmm, R.drawable.awake};
+    static String[] addedornotorig = new String[Login.getTils().length];
 
     private ListView lvBook;
     private BookAdapter adapter;
@@ -337,4 +341,3 @@ public class CatalogFragment extends Fragment {
 
 
 }
-

@@ -4,7 +4,6 @@
     android:id="@+id/linearLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     android:gravity="center_horizontal"
     tools:context="com.example.sathv.olympiahighschoollibrary.Login">
 
@@ -26,7 +25,7 @@
 
 
     <EditText
-        android:id="@+id/username"
+        android:id="@+id/email"
         android:layout_width="337dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -35,9 +34,10 @@
         android:layout_marginTop="8dp"
         android:ems="10"
         android:fontFamily="casual"
-        android:hint="Username"
-        android:inputType="textPersonName"
-        android:textColor="@android:color/white"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        android:textColor="@android:color/background_light"
+        android:textColorHint="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.516"
@@ -56,8 +56,9 @@
         android:ems="10"
         android:fontFamily="casual"
         android:hint="Password"
-        android:inputType="numberPassword"
-        android:textColor="@android:color/white"
+        android:inputType="textPassword"
+        android:textColor="@android:color/background_light"
+        android:textColorHint="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -87,7 +88,7 @@
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"
-        android:layout_width="345dp"
+        android:layout_width="343dp"
         android:layout_height="41dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
@@ -103,7 +104,7 @@
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/fblogin"
-        android:layout_width="339dp"
+        android:layout_width="335dp"
         android:layout_height="5dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
@@ -123,7 +124,7 @@
 
     <Button
         android:id="@+id/signUp"
-        android:layout_width="349dp"
+        android:layout_width="347dp"
         android:layout_height="45dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
@@ -150,15 +151,16 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:fontFamily="sans-serif"
+        android:fontFamily="casual"
         android:text="Dont have an account? Sign up now!"
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
+        android:textColor="@android:color/background_light"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.847" />
+        app:layout_constraintVertical_bias="0.853" />
 
     <ProgressBar
         android:id="@+id/pb"
@@ -175,7 +177,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.386" />
-
 
 
 </android.support.constraint.ConstraintLayout>

@@ -39,7 +39,7 @@
         app:layout_constraintHorizontal_bias="0.068"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.2" />
+        app:layout_constraintVertical_bias="0.187" />
 
     <TextView
         android:id="@+id/textView18"
@@ -61,13 +61,16 @@
 
     <Button
         android:id="@+id/vcheck"
-        android:layout_width="131dp"
-        android:layout_height="41dp"
+        style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
+        android:layout_width="110dp"
+        android:layout_height="36dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="View checked"
+        android:background="@color/colorBlue"
+        android:text="View books"
+        android:textAppearance="@style/TextAppearance.AppCompat"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.033"
@@ -77,19 +80,22 @@
 
     <Button
         android:id="@+id/vreserve"
-        android:layout_width="131dp"
-        android:layout_height="41dp"
+        style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
+        android:layout_width="110dp"
+        android:layout_height="36dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="View reserved"
+        android:background="@color/colorBlue"
+        android:text="View books"
+        android:textAppearance="@style/TextAppearance.AppCompat"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.033"
+        app:layout_constraintHorizontal_bias="0.031"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.264" />
+        app:layout_constraintVertical_bias="0.261" />
 
     <ListView
         android:id="@+id/reminderbooks"

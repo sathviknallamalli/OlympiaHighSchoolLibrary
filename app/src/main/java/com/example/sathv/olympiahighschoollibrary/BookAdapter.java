@@ -60,7 +60,7 @@ public class BookAdapter extends ArrayAdapter<Book> {
         share = (Button) convertView.findViewById(R.id.share);
         bookTitle.setText(book.title);
         bookAuthor.setText(book.author);
-        bookCount.setText("Pagecount: " + book.pageCount);
+        bookCount.setText(book.pageCount + " pgs.");
         bookCategory.setText(book.category);
         bookImage.setImageResource(book.imageid);
 
@@ -79,20 +79,21 @@ public class BookAdapter extends ArrayAdapter<Book> {
             @Override
             public void onClick(View view) {
 
-                //if button sauys "Added" dont let adding
-                if (CatalogFragment.addedornot[position].equals("Added")) {
+                CatalogFragment cf = new CatalogFragment();
+
+                //if button cf "Added" dont let adding
+                if (cf.addedornot[position].equals("Added")) {
                     Toast.makeText(getContext(), "Already added to your wishlist", Toast.LENGTH_SHORT).show();
                 } else {
                     //update the variable for the Book
                     Integer index = (Integer) view.getTag();
 
-                    CatalogFragment.addedornot[position] = "Added";
-                    CatalogFragment.addedornotorig[position] = "Added";
+                    cf.addedornot[position] = "Added";
+                    cf.addedornotorig[position] = "Added";
                    // book.added = "Added";
 
                     //add.setText("Added");
 
-                    CatalogFragment cf = new CatalogFragment();
 
                     //and add to the wishlist arraylist
                     wishlistbooks.add(new WishlistBook(cf.capitalzeTitle(cf.titleorig[position]), cf.capitalizeauthor(cf.authororig[position])

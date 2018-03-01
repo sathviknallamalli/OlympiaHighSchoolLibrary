@@ -1,10 +1,10 @@
 package com.example.sathv.olympiahighschoollibrary;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,40 +15,44 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A login screen that offers login via email/password.
+ * This class is the backend for the login to screen to allow login through facebook, google, and the app account
+ * It will also retrieve all the books information from the Firebase database that has connected this android project
  */
 public class Login extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
     // UI references.
-    private EditText usernameField;
+    private EditText emailField;
     private EditText passwordField;
+    String fn, ln, un, pd, em, gr;
+    Button buttons;
+    ProgressBar pb;
 
+
+    //THIS SECTION GENERATES GETTERS AND SETTERS FOR VARIABLES
     public static String[] getTils() {
         return tils;
     }
@@ -119,7 +123,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
 
     static String[] statuss;
 
-    //create getters and setters for each variable
     public String getName() {
         return name;
     }
@@ -132,7 +135,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
         return email;
     }
 
-    public void setEmail(String email) {
+    public static void setEmail(String email) {
         Login.email = email;
     }
 
@@ -140,7 +143,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
         return grade;
     }
 
-    public void setGrade(String grade) {
+    public static void setGrade(String grade) {
         Login.grade = grade;
     }
 
@@ -148,21 +151,11 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
         return fullName;
     }
 
-    public void setFullName(String fullName) {
+    public static void setFullName(String fullName) {
         Login.fullName = fullName;
     }
 
     static String name, email, grade, fullName;
-
-    public static String getResult() {
-        return result;
-    }
-
-    public static void setResult(String result) {
-        Login.result = result;
-    }
-
-    static String result;
 
     public static String getPassword() {
         return password;
@@ -183,26 +176,30 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
     }
 
     static String username;
+    //END SECTION
 
-    public static Uri getUri() {
-        return uri;
-    }
-
-    public static void setUri(Uri uri) {
-        Login.uri = uri;
-    }
-
-    static Uri uri;
-
-    Button buttons;
-    ProgressBar pb;
-
+    //Google API variables
     private static final int REQ_CODE = 9001;
     private GoogleApiClient googleApiClient;
 
+    //Facebook UIS
     LoginButton fblogin;
     CallbackManager callbackManager;
 
+    //Firebase Objects
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private Firebase mReffname;
+
+    //This section initializes arraylists to store the retrieve information from the databases
+    //titles, authors, categories, summaries, status, isbns, pagecount, etc.
+    ArrayList<String> ts = new ArrayList<>();
+    ArrayList<String> aus = new ArrayList<>();
+    ArrayList<String> cas = new ArrayList<>();
+    ArrayList<String> ps = new ArrayList<>();
+    ArrayList<String> sus = new ArrayList<>();
+    ArrayList<String> sss = new ArrayList<>();
+    ArrayList<String> ibss = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -210,27 +207,23 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
 
-        fblogin = (LoginButton) findViewById(R.id.fblogin);
-        fblogin.setText("Log in with Facebook");
-        // Set up the login form.
-        usernameField = (EditText) findViewById(R.id.username);
+        //retrieve login form edittexts
+        emailField = (EditText) findViewById(R.id.email);
         passwordField = (EditText) findViewById(R.id.password);
-
-        GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-        googleApiClient = new GoogleApiClient.Builder(this).enableAutoManage(this, this).addApi(Auth.GOOGLE_SIGN_IN_API, signInOptions).build();
-
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
-
-        SignInButton thing = (SignInButton) findViewById(R.id.sign_in_button);
-
-        TextView textView = (TextView) thing.getChildAt(0);
-        textView.setText("Log in using Gmail");
-        textView.setTextSize(14);
-
+        pb = (ProgressBar) findViewById(R.id.pb);
+        pb.setVisibility(View.GONE);
+        //signup to make a new account from LiBEARy
         buttons = (Button) findViewById(R.id.signUp);
 
+        //initialize firebase authorization variable
+        mAuth = FirebaseAuth.getInstance();
+        //this auth will allow access to the firebase console and authenticate the user
+
+        //facebook login button
+        fblogin = (LoginButton) findViewById(R.id.fblogin);
+        fblogin.setText("Log in with Facebook");
+
+        //THIS SECTION USES THE FACEBOOK SDK TO AUTHENTICATE
         fblogin.setReadPermissions(Arrays.asList(
                 "public_profile", "email"));
 
@@ -241,6 +234,9 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
 
                 Toast.makeText(getApplicationContext(), "Log success"
                         , Toast.LENGTH_SHORT).show();
+                Intent activities = new Intent(getApplicationContext(), Activities.class);
+                startActivity(activities);
+                finish();
                 pb.setVisibility(View.GONE);
 
                 String name = loginResult.getAccessToken().getUserId();
@@ -251,49 +247,57 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
 
 
                 fblogin.setText("Log in with Facebook");
-                Intent activities = new Intent(getApplicationContext(), Activities.class);
-                startActivity(activities);
-                finish();
+
+               getallbooks();
+
 
             }
 
             @Override
             public void onCancel() {
-                Toast.makeText(getApplicationContext(), "Log cancel", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Log in with Facebook", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(FacebookException error) {
-
+                Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
             }
         });
+        //END SECTION
+
+        //THIS SECTION retrieves all the Google API variables and UI reference
+        GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+
+        //googleApiClient = new GoogleApiClient.Builder(Login.this).enableAutoManage(this, this).addApi(Auth.GOOGLE_SIGN_IN_API, signInOptions).build();
 
 
-        pb = (ProgressBar) findViewById(R.id.pb);
-        pb.setVisibility(View.GONE);
+/*        findViewById(R.id.sign_in_button).setOnClickListener(this);
+
+        SignInButton thing = (SignInButton) findViewById(R.id.sign_in_button);
+
+        TextView textView = (TextView) thing.getChildAt(0);
+        textView.setText("Log in using Gmail");
+        textView.setTextSize(14);*/
+        //END SECTION
+
 
         //onclick listener when the done button is pressed on keyboard
         passwordField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
-                    if (usernameField.getText().toString().trim().isEmpty() || passwordField.getText().toString().trim().isEmpty()) {
+                    //make sure all fields are not empty
+                    if (emailField.getText().toString().trim().isEmpty() || passwordField.getText().toString().trim().isEmpty()) {
                         Toast.makeText(getApplicationContext(), "Missing field(s)", Toast.LENGTH_SHORT).show();
                     } else {
-                        //let the progressbar to load
-                        pb.setVisibility(View.VISIBLE);
-                        //veryify the login
-                        loginCheck();
-                        pb.setVisibility(View.VISIBLE);
-                        loadbooks();
-                        loadauthors();
-                        loadpg();
-                        loadcategories();
-                        loadisbns();
-                        loadstatus();
-                        loadsummaries();
+                        //begin the app authentication
+                        startSignin();
 
-                        //  loadbooks();
+                        pb.setVisibility(View.VISIBLE);
+                        //retrieve all the books
+                        getallbooks();
                     }
                 }
                 return false;
@@ -306,28 +310,152 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
             @Override
             public void onClick(View view) {
                 //make sure both the login fields are filled
-                if (usernameField.getText().toString().trim().isEmpty() || passwordField.getText().toString().trim().isEmpty()) {
+                if (emailField.getText().toString().trim().isEmpty() || passwordField.getText().toString().trim().isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Missing field(s)", Toast.LENGTH_SHORT).show();
                 } else {
-                    //set progressbar to load
-                    pb.setVisibility(View.VISIBLE);
-                    //verify login
-                    loginCheck();
+                    //begin authentication
+                    startSignin();
 
                     pb.setVisibility(View.VISIBLE);
-                    loadbooks();
-                    loadauthors();
-                    loadpg();
-                    loadcategories();
-                    loadisbns();
-                    loadstatus();
-                    loadsummaries();
-                    //retrieve name and email
+                    getallbooks();
 
-                    // loadbooks();
                 }
             }
         });
+
+        //implement that abstract method necessary for Firebase Authentication
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
+            }
+        };
+    }
+
+    //when onstart method is implemented, setup the mAuth by adding the listener
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    //firebase authentication method
+    public void startSignin() {
+        //remove all the spaces in the username and retrieve edittest values
+        final String email = emailField.getText().toString().replace(" ", "");
+        String password = passwordField.getText().toString();
+
+        //make sure not empty
+        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+            Toast.makeText(Login.this, "FIELDS ARE EMPTY FIREBASE", Toast.LENGTH_SHORT).show();
+        } else {
+            //begin authenticating
+            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    //if not successful
+                    if (!task.isSuccessful()) {
+                        Toast.makeText(Login.this, "There was an issue, unable to Login", Toast.LENGTH_SHORT).show();
+                    }
+                    //successful
+                    if (task.isSuccessful()) {
+
+                        //get the user that is logged in and userid
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        String userid = user.getUid();
+
+                        //get the reference to the database through url
+                        mReffname = new Firebase("https://libeary-8d044.firebaseio.com/Users/" + userid);
+
+                        //this event listener will retrieve the user information
+                        //name, email, username, password, etc.
+                        mReffname.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                //store the information in Map
+                                Map<String, String> map = dataSnapshot.getValue(Map.class);
+
+                                //getvalue method to retrieve necessary fields
+                                fn = map.get("fname");
+                                ln = map.get("lname");
+                                em = map.get("email");
+                                un = map.get("username");
+                                pd = map.get("password");
+                                gr = map.get("grade");
+
+                                //use set methods
+                                Login.setFullName(fn + " " + ln);
+                                Login.setUsername(un);
+                                Login.setEmail(em);
+                                Login.setGrade(gr);
+                                Login.setPassword(pd);
+                            }
+
+                            @Override
+                            public void onCancelled(FirebaseError firebaseError) {
+
+                            }
+                        });
+
+                        //begin the navigationview activity
+                        Intent activities = new Intent(getApplicationContext(), Activities.class);
+                        startActivity(activities);
+                        finish();
+                        pb.setVisibility(View.GONE);
+                    }
+                }
+            });
+        }
+
+    }
+
+    //method to get allbooks
+    public void getallbooks() {
+        //retrieve reference
+        Firebase getbooksref = new Firebase("https://libeary-8d044.firebaseio.com/Books/");
+
+        getbooksref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //collect all the books titles, authors, pagecounts, etc. and save in the arraylists
+                ts = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "title");
+                aus = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "author");
+                cas = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "category");
+                ps = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "pagecount");
+                sus = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "summary");
+                sss = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "statuses");
+                ibss = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "isbns");
+
+                //convert the arraylist to array and use setmethod
+                setTils(ts.toArray(new String[ts.size()]));
+                setAuths(aus.toArray(new String[aus.size()]));
+                setCs(cas.toArray(new String[cas.size()]));
+                setPgs(ps.toArray(new String[ps.size()]));
+                setSs(sus.toArray(new String[sus.size()]));
+                setStatuss(sss.toArray(new String[sss.size()]));
+                setIss(ibss.toArray(new String[ibss.size()]));
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+    }
+
+    //get all the information for a necessary parameter
+    private ArrayList<String> collectBookData(Map<String, Object> users, String fieldName) {
+        ArrayList<String> information = new ArrayList<>();
+        //iterate through each user, ignoring their UID
+        for (Map.Entry<String, Object> entry : users.entrySet()) {
+
+            //Get user map
+            Map singleUser = (Map) entry.getValue();
+            //Get phone field and append to list
+            information.add((String) singleUser.get(fieldName));
+        }
+
+        return information;
     }
 
 
@@ -338,109 +466,39 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
         startActivity(dashboard);
     }
 
-    //verify login method
-    public void loginCheck() {
-        String url = "https://sathviknallamalli.000webhostapp.com/loginwebhost.php";
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                if (!response.trim().equals("incorrect") && response.length() >= 4) {
-                    //if the php scropt that is in the url return success
-                    Toast.makeText(getApplicationContext(), "Logged in", Toast.LENGTH_SHORT).show();
-
-                    //set the password variable and username variable appropriately
-                    setPassword(passwordField.getText().toString());
-                    setUsername(usernameField.getText().toString());
-
-                    name = response.trim();
-
-                    //the php script will return all the variables and will be spaced by a space
-                    // this will break each string by the space and set it into the appropriate variables
-                    String[] splitStr = name.split("\\s+");
-                    String firstname = splitStr[0];
-                    String lastname = splitStr[1];
-                    String emailRaw = splitStr[2];
-                    String gradeRaw = splitStr[3];
-
-                    setFullName(firstname + " " + lastname);
-                    //use the setters to set the variable
-                    setEmail(emailRaw + "");
-                    setGrade(gradeRaw + "");
-
-                    pb.setVisibility(View.GONE);
-                    Intent activities = new Intent(getApplicationContext(), Activities.class);
-                    startActivity(activities);
-                    finish();
-
-                } else {
-                    //else the login is incorrect
-                    Toast.makeText(getApplicationContext(), "Login fail", Toast.LENGTH_SHORT).show();
-                    pb.setVisibility(View.GONE);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //if the php script returns an error, set visibility to gone and print
-                Toast.makeText(getApplicationContext(), "ERROR " + error.toString(), Toast.LENGTH_SHORT).show();
-
-                pb.setVisibility(View.GONE);
-            }
-        })
-
-        {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-
-                Map<String, String> params = new HashMap<>();
-
-                //put necessary parameters for the php script using the hashmap
-                params.put("username", usernameField.getText().toString().trim());
-                params.put("password", passwordField.getText().toString().trim());
-
-                return params;
-            }
-        };
-
-        requestQueue.add(stringRequest);
-    }
-
-
-    private void updateUI(boolean isLogin) {
+    //updates the ui for googleLogin
+   /* private void updateUI(boolean isLogin) {
         if (isLogin) {
-
-
             Toast.makeText(getApplicationContext(), "Logged in", Toast.LENGTH_SHORT).show();
             pb.setVisibility(View.GONE);
+            //if logged in correctly, start the navigationview
             Intent activities = new Intent(getApplicationContext(), Activities.class);
             startActivity(activities);
             finish();
 
-
-
-
         } else {
             Toast.makeText(getApplicationContext(), "Logged fail", Toast.LENGTH_SHORT).show();
         }
-    }
+    }*/
 
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.sign_in_button:
+           /* case R.id.sign_in_button:
+                //when the googlesigninbutton is pressed, call this method
                 signIn();
-                break;
+                break;*/
         }
     }
-
+/*
+    //use googleAPI to authenticate
     private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
         pb.setVisibility(View.VISIBLE);
         startActivityForResult(signInIntent, REQ_CODE);
-    }
+    }*/
 
-    @Override
+    //implement abstract methods
+  @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
@@ -450,233 +508,27 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQ_CODE) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleResult(result);
+         /*   GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleResult(result);*/
         } else {
             callbackManager.onActivityResult(requestCode, resultCode, data);
             pb.setVisibility(View.VISIBLE);
         }
     }
 
-    private void handleResult(GoogleSignInResult result) {
+    //when logged in, retrieve the user information
+    /*private void handleResult(GoogleSignInResult result) {
         if (result.isSuccess()) {
             GoogleSignInAccount account = result.getSignInAccount();
 
             setFullName(account.getDisplayName());
-            String name = account.getDisplayName();
-            String email = account.getEmail();
             setEmail(account.getEmail());
             String username = account.getId();
-            Uri personPhoto = account.getPhotoUrl();
             setUsername(username);
-            setUri(personPhoto);
             // String img_url = account.getPhotoUrl().toString();
             updateUI(true);
         } else {
             updateUI(false);
         }
-    }
-
-    public void loadbooks() {
-        String url = "https://sathviknallamalli.000webhostapp.com/getbooks.php";
-
-        RequestQueue requestQueue = Volley.newRequestQueue(Login.this);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //pbdos.setVisibility(View.VISIBLE);
-                if (!response.trim().equals("incorrect")) {
-
-                    String booktitles = response;
-                    setTils(booktitles.split(", "));
-
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //display the error
-                Toast.makeText(getApplicationContext(), "ERROR WHEN RETRIEVING TTILES" + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-        };
-
-        requestQueue.add(stringRequest);
-    }
-
-    public void loadauthors() {
-        String url = "https://sathviknallamalli.000webhostapp.com/getauthors.php";
-
-        RequestQueue requestQueue = Volley.newRequestQueue(Login.this);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //pbdos.setVisibility(View.VISIBLE);
-                if (!response.trim().equals("incorrect")) {
-
-                    String authtitles = response;
-                    setAuths(authtitles.split(", "));
-
-                    pb.setVisibility(View.GONE);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //display the error
-                Toast.makeText(getApplicationContext(), "ERROR WHEN RETRIEVING ATUHS" + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-        };
-
-        requestQueue.add(stringRequest);
-    }
-
-    public void loadpg() {
-        String url = "https://sathviknallamalli.000webhostapp.com/getpagecount.php";
-
-        RequestQueue requestQueue = Volley.newRequestQueue(Login.this);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //pbdos.setVisibility(View.VISIBLE);
-                if (!response.trim().equals("incorrect")) {
-
-                    String pgs = response;
-                    setPgs(pgs.split(", "));
-
-                    pb.setVisibility(View.GONE);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //display the error
-                Toast.makeText(getApplicationContext(), "ERROR WHEN RETRIEVING ATUHS" + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-        };
-
-        requestQueue.add(stringRequest);
-    }
-
-    public void loadcategories() {
-        String url = "https://sathviknallamalli.000webhostapp.com/getcategories.php";
-
-        RequestQueue requestQueue = Volley.newRequestQueue(Login.this);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //pbdos.setVisibility(View.VISIBLE);
-                if (!response.trim().equals("incorrect")) {
-
-                    String cs = response;
-                    setCs(cs.split(", "));
-
-                    pb.setVisibility(View.GONE);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //display the error
-                Toast.makeText(getApplicationContext(), "ERROR WHEN RETRIEVING ATUHS" + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-        };
-
-        requestQueue.add(stringRequest);
-    }
-
-    public void loadisbns() {
-        String url = "https://sathviknallamalli.000webhostapp.com/getisbns.php";
-
-        RequestQueue requestQueue = Volley.newRequestQueue(Login.this);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //pbdos.setVisibility(View.VISIBLE);
-                if (!response.trim().equals("incorrect")) {
-
-                    String iss = response;
-                    setIss(iss.split(", "));
-
-                    pb.setVisibility(View.GONE);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //display the error
-                Toast.makeText(getApplicationContext(), "ERROR WHEN RETRIEVING ATUHS" + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-        };
-
-        requestQueue.add(stringRequest);
-    }
-
-    public void loadsummaries() {
-        String url = "https://sathviknallamalli.000webhostapp.com/getsummaries.php";
-
-        RequestQueue requestQueue = Volley.newRequestQueue(Login.this);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //pbdos.setVisibility(View.VISIBLE);
-                if (!response.trim().equals("incorrect")) {
-
-                    String sss = response;
-                    setSs(sss.split("<br />"));
-
-                    pb.setVisibility(View.GONE);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //display the error
-                Toast.makeText(getApplicationContext(), "ERROR WHEN RETRIEVING ATUHS" + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-        };
-
-        requestQueue.add(stringRequest);
-    }
-
-    public void loadstatus() {
-        String url = "https://sathviknallamalli.000webhostapp.com/getstatus.php";
-
-        RequestQueue requestQueue = Volley.newRequestQueue(Login.this);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //pbdos.setVisibility(View.VISIBLE);
-                if (!response.trim().equals("incorrect")) {
-
-                    String status = response;
-                    setStatuss(status.split(", "));
-
-                    pb.setVisibility(View.GONE);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //display the error
-                Toast.makeText(getApplicationContext(), "ERROR WHEN RETRIEVING ATUHS" + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-        };
-
-        requestQueue.add(stringRequest);
-    }
+    }*/
 }
-
-//RUN THE APP
-
-
-
-
-
-

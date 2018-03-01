@@ -65,8 +65,10 @@ public class WishlistBooksAdapter extends ArrayAdapter<WishlistBook> {
                 //remove from the array as well
                 BookAdapter.wishlistbooks.remove(index.intValue());
                 //update the addedornot and change to the option of being able to add to wishlist
-                CatalogFragment.addedornot[position] = "Add to wishlist";
-                CatalogFragment.addedornotorig[position] = "Add to wishlist";
+
+                CatalogFragment cf = new CatalogFragment();
+                cf.addedornot[position] = "Add to wishlist";
+                cf.addedornotorig[position] = "Add to wishlist";
                 notifyDataSetChanged();
             }
         });

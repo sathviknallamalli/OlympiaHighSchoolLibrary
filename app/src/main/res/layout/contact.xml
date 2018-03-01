@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout3"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:windowSoftInputMode="adjustResize">
 
     <TextView
         android:id="@+id/contact_form_title"
@@ -52,7 +53,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.483" />
+        app:layout_constraintVertical_bias="0.474" />
 
     <EditText
         android:id="@+id/phoneinput"
@@ -67,7 +68,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.363" />
+        app:layout_constraintVertical_bias="0.358" />
 
     <EditText
         android:id="@+id/messageinput"
@@ -88,13 +89,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.689" />
+        app:layout_constraintVertical_bias="0.676" />
 
     <Button
         android:id="@+id/submit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="52dp"
+        android:layout_marginBottom="60dp"
         android:background="@color/colorPrimaryDark"
         android:elevation="4dp"
         android:paddingLeft="70dp"

@@ -13,16 +13,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.firebase.client.Firebase;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class ChangePassword extends AppCompatActivity {
     EditText input;
@@ -32,6 +25,7 @@ public class ChangePassword extends AppCompatActivity {
     TextView pdtitle, cpdtitle;
     ProgressDialog mDialog;
     String entered;
+    FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,59 +117,15 @@ public class ChangePassword extends AppCompatActivity {
         });
         builder.show();
     }
-
     private void updatepd() {
-        String url = "https://sathviknallamalli.000webhostapp.com/updatepassword.php";
+        FirebaseUser user = mAuth.getCurrentUser();
+        String userid = user.getUid();
 
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //start and initialize the dialog with message
-                mDialog.setMessage("Changing password...");
-                mDialog.show();
-                if (response.trim().equals("success")) {
-                    //if the php script returns "success" token then let user know and send email
+        //save and update all the changes to Firebase
+        Firebase ref = new Firebase("https://libeary-8d044.firebaseio.com/Users/" + userid);
+        Firebase childref = ref.child("password");
+        childref.setValue(confirm.getText().toString());
 
-                    Login l = new Login();
-
-                    Login.setPassword(confirm.getText().toString());
-
-                    mDialog.dismiss();
-
-                    String emailRaw = l.getEmail();
-
-                    //set subject and message for the email beign sent
-                    String subject = "Password has been changed";
-                    String message = "You have changed your password using the Olympia High School Library app";
-
-                    SendMailShare sm = new SendMailShare(ChangePassword.this, emailRaw, subject, message, "Saved. Restart the app put the password change into effect");
-
-                    sm.execute();
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "Oops something went wrong" + response, Toast.LENGTH_SHORT).show();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), "error" + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-
-                Map<String, String> params = new HashMap<>();
-
-                //send the appropriate hashmap vairables as parameters into the php script
-                params.put("currentpassword", entered);
-                params.put("newpassword", confirm.getText().toString().trim());
-
-                return params;
-            }
-        };
-
-        requestQueue.add(stringRequest);
     }
+
 }

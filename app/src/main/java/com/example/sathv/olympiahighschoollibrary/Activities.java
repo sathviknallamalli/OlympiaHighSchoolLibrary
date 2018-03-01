@@ -15,7 +15,6 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -28,14 +27,13 @@ public class Activities extends AppCompatActivity
     TextView studentName;
     TextView email, rcount, ccount;
 
-    ImageView profilepic;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activities);
 
         //set which page should first display once acitivities is launched after login
+
         CatalogFragment fragment = new CatalogFragment();
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, fragment);
@@ -132,10 +130,10 @@ public class Activities extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new InformationFragment()).commit();
         } else if (id == R.id.nav_wishlist) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new WishlistFragment()).commit();
-        } else if (id == R.id.nav_share) {
-            fragmentManager.beginTransaction().replace(R.id.frameLayout, new ShareFragment()).commit();
         } else if (id == R.id.nav_contact) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new ContactFragment()).commit();
+        }else if (id == R.id.nav_about) {
+            fragmentManager.beginTransaction().replace(R.id.frameLayout, new AboutFragment()).commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
