@@ -23,7 +23,6 @@ import android.widget.Toast;
 
 import com.firebase.client.Firebase;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -128,9 +127,8 @@ public class BookInformation extends AppCompatActivity {
         if (cf.getStatus().equals("Available")) {
             status.setTextColor(getResources().getColor(R.color.forestgreeen));
         } else if (cf.getStatus().equals("Unavailable")) {
-             status.setTextColor(getResources().getColor(R.color.crimson));
+            status.setTextColor(getResources().getColor(R.color.crimson));
         }
-
 
 
     }
@@ -191,7 +189,8 @@ public class BookInformation extends AppCompatActivity {
                         nm.notify(uniqueid, notification.build());
 
                         pbj.setVisibility(View.VISIBLE);
-                        updatecheckout();
+                        //CatalogFragment l = new CatalogFragment();
+                        updatecheckout(CatalogFragment.selected);
 
                         //initializeCountDrawerchecke();
 
@@ -222,14 +221,12 @@ public class BookInformation extends AppCompatActivity {
         }
     }
 
-    private void updatecheckout() {
-        databasereference = FirebaseDatabase.getInstance().getReference();
-        BookDets bookdets = new BookDets(CatalogFragment.titleofthebook, CatalogFragment.authorofthebook, CatalogFragment.category,
-                CatalogFragment.pg, CatalogFragment.summary, CatalogFragment.isbn, CatalogFragment.status, getDatetoputinconfirmation(), Login.getUsername());
+    private void updatecheckout(Book needstobeupdated) {
+        Firebase mReffname = new Firebase("https://libeary-8d044.firebaseio.com/Books/" + needstobeupdated.getTitle());
+        needstobeupdated.setStatus("1");
+        final FirebaseBook bookdets = new FirebaseBook(needstobeupdated.getTitle(), needstobeupdated.getAuthor(), needstobeupdated.getCategory(), needstobeupdated.getPageCount(), needstobeupdated.getSummary(), needstobeupdated.getIsbn(), needstobeupdated.getStatus(), getDatetoputinconfirmation(), Login.getUsername());
 
-        Firebase getbooksref = new Firebase("https://libeary-8d044.firebaseio.com/Books/");
-        getbooksref.child(CatalogFragment.titleofthebook).removeValue();
-        getbooksref.child(CatalogFragment.titleofthebook).setValue(bookdets);
+        mReffname.setValue(bookdets);
 
     }
 

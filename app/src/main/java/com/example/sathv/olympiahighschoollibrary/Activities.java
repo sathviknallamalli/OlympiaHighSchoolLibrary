@@ -58,10 +58,10 @@ public class Activities extends AppCompatActivity
 
         //set the values for textviews in navheader
         studentName = (TextView) v.findViewById(R.id.name);
-        studentName.setText(l.getFullName());
+        studentName.setText(Login.namesend);
 
         email = (TextView) v.findViewById(R.id.email);
-        email.setText(l.getEmail());
+        email.setText(Login.esend);
 
         rcount = (TextView) MenuItemCompat.getActionView(navigationView.getMenu().
                 findItem(R.id.nav_reservedbooks));
@@ -132,7 +132,7 @@ public class Activities extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new WishlistFragment()).commit();
         } else if (id == R.id.nav_contact) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new ContactFragment()).commit();
-        }else if (id == R.id.nav_about) {
+        } else if (id == R.id.nav_about) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new AboutFragment()).commit();
         }
 

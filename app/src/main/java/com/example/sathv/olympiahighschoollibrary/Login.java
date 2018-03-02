@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -50,6 +51,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
     String fn, ln, un, pd, em, gr;
     Button buttons;
     ProgressBar pb;
+    String userclass;
 
 
     //THIS SECTION GENERATES GETTERS AND SETTERS FOR VARIABLES
@@ -131,7 +133,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
         Login.name = name;
     }
 
-    public String getEmail() {
+    public static String getEmail() {
         return email;
     }
 
@@ -139,7 +141,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
         Login.email = email;
     }
 
-    public String getGrade() {
+    public static String getGrade() {
         return grade;
     }
 
@@ -147,7 +149,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
         Login.grade = grade;
     }
 
-    public String getFullName() {
+    public static String getFullName() {
         return fullName;
     }
 
@@ -176,6 +178,25 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
     }
 
     static String username;
+
+    static String[] ctits, cds;
+
+    public static String[] getCtits() {
+        return ctits;
+    }
+
+    public static void setCtits(String[] ctits) {
+        Login.ctits = ctits;
+    }
+
+    public static String[] getCds() {
+        return cds;
+    }
+
+    public static void setCds(String[] cds) {
+        Login.cds = cds;
+    }
+
     //END SECTION
 
     //Google API variables
@@ -200,6 +221,10 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
     ArrayList<String> sus = new ArrayList<>();
     ArrayList<String> sss = new ArrayList<>();
     ArrayList<String> ibss = new ArrayList<>();
+    ArrayList<String> ddal = new ArrayList<>();
+    ArrayList<String> ccal = new ArrayList<>();
+
+    static String esend, namesend;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -248,7 +273,12 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
 
                 fblogin.setText("Log in with Facebook");
 
-               getallbooks();
+                getallbooks();
+                getchecked();
+
+
+                esend = emailField.getText().toString();
+                namesend = Login.getFullName();
 
 
             }
@@ -295,9 +325,13 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                         //begin the app authentication
                         startSignin();
 
+                        esend = emailField.getText().toString();
+
+
                         pb.setVisibility(View.VISIBLE);
-                        //retrieve all the books
                         getallbooks();
+                        getchecked();
+                        namesend = Login.getFullName();
                     }
                 }
                 return false;
@@ -316,9 +350,13 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                     //begin authentication
                     startSignin();
 
+                    esend = emailField.getText().toString();
+
+
                     pb.setVisibility(View.VISIBLE);
                     getallbooks();
-
+                    getchecked();
+                    namesend = Login.getFullName();
                 }
             }
         });
@@ -356,6 +394,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                     //if not successful
                     if (!task.isSuccessful()) {
                         Toast.makeText(Login.this, "There was an issue, unable to Login", Toast.LENGTH_SHORT).show();
+                        pb.setVisibility(View.GONE);
                     }
                     //successful
                     if (task.isSuccessful()) {
@@ -383,8 +422,10 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                                 pd = map.get("password");
                                 gr = map.get("grade");
 
+
                                 //use set methods
                                 Login.setFullName(fn + " " + ln);
+                                namesend = fn + " " + ln;
                                 Login.setUsername(un);
                                 Login.setEmail(em);
                                 Login.setGrade(gr);
@@ -423,8 +464,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                 cas = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "category");
                 ps = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "pagecount");
                 sus = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "summary");
-                sss = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "statuses");
-                ibss = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "isbns");
+                sss = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "status");
+                ibss = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "isbn");
 
                 //convert the arraylist to array and use setmethod
                 setTils(ts.toArray(new String[ts.size()]));
@@ -441,6 +482,58 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
 
             }
         });
+    }
+
+    public void getchecked() {
+        //  databasereference.child(CatalogFragment.titleofthebook).setValue();
+        Firebase getbooksref = new Firebase("https://libeary-8d044.firebaseio.com/Books/");
+
+        getbooksref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //collect all the books titles, authors, pagecounts, etc. and save in the arraylists
+                ddal = lolnew((Map<String, Object>) dataSnapshot.getValue(), "duedate", un);
+                ccal = lolnew((Map<String, Object>) dataSnapshot.getValue(), "title", un);
+
+                Log.d("SATHVIK", ddal.toString() + " " + ccal.toString());
+
+                setCtits(ccal.toArray(new String[ccal.size()]));
+                setCds(ddal.toArray(new String[ddal.size()]));
+
+                for (int i = 0; i < ctits.length; i++) {
+                    Log.d("SATHVIK", getCtits()[i] + " " + getCds()[i] + " ");
+                }
+                //convert the arraylist to array and use setmethod
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
+
+    }
+
+    private ArrayList<String> lolnew(Map<String, Object> users, String fieldName, String usernamecheck) {
+        ArrayList<String> information = new ArrayList<>();
+        //iterate through each user, ignoring their UID
+        for (Map.Entry<String, Object> entry : users.entrySet()) {
+
+            //Get user map
+            Map singleUser = (Map) entry.getValue();
+            Log.d("HELLO", usernamecheck + "");
+            //Get phone field and append to list
+            //  information.add((String) singleUser.get("checkedoutto"));
+            String thing = (String) singleUser.get("checkedoutto");
+            if (thing.equals(usernamecheck)) {
+                information.add((String) singleUser.get(fieldName));
+                Log.d("HELLOGOHOME", "SOMETHING " + singleUser.get(fieldName).toString());
+            }
+        }
+
+        return information;
     }
 
     //get all the information for a necessary parameter
@@ -498,7 +591,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
     }*/
 
     //implement abstract methods
-  @Override
+    @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }

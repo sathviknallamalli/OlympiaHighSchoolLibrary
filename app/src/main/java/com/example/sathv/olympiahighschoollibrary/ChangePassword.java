@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -54,7 +57,7 @@ public class ChangePassword extends AppCompatActivity {
         builder.setTitle("Please enter your current password to continue");
 
         input = new EditText(context);
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
         builder.setView(input);
 
         //set ok button
@@ -85,9 +88,22 @@ public class ChangePassword extends AppCompatActivity {
                             //then update the password change into database
                             else {
 
-                                Login.setPassword(confirm.getText().toString());
 
                                 updatepd();
+
+                                mAuth = FirebaseAuth.getInstance();
+                                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                if (user != null) {
+                                    user.updatePassword(confirm.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Toast.makeText(getApplicationContext(), "Password changed", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+                                }
+
                             }
                         }
                     });
@@ -117,14 +133,23 @@ public class ChangePassword extends AppCompatActivity {
         });
         builder.show();
     }
+
     private void updatepd() {
+        mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
         String userid = user.getUid();
 
+
         //save and update all the changes to Firebase
         Firebase ref = new Firebase("https://libeary-8d044.firebaseio.com/Users/" + userid);
-        Firebase childref = ref.child("password");
-        childref.setValue(confirm.getText().toString());
+        final UserInformation bookdets = new UserInformation(Login.getFullName().split(" ")[0], Login.getFullName().split(" ")[1],
+                Login.getUsername(), confirm.getText().toString(), Login.getEmail(), Login.getGrade());
+        ref.setValue(bookdets);
+
+        Login.setPassword(confirm.getText().toString());
+
+
+        //send an email regarding the changes to the account
 
     }
 

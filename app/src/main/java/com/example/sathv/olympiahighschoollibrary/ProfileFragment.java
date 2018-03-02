@@ -12,18 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.firebase.client.Firebase;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 /**
  * Created by sathv on 11/28/2017.
@@ -37,6 +29,7 @@ public class ProfileFragment extends Fragment {
 
     TextView name;
     TextView gr;
+    FirebaseAuth mAuth;
     TextView val;
     TextView reserval;
     Button b2;
@@ -107,11 +100,10 @@ public class ProfileFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
+                        newGrade = grades[which].toString();
                         updategrade();
 
                         gr.setText("Grade: " + grades[which]);
-                        newGrade = grades[which].toString();
-
 
 
 
@@ -124,45 +116,16 @@ public class ProfileFragment extends Fragment {
     }
 
     private void updategrade() {
-        String url = "https://sathviknallamalli.000webhostapp.com/updategrade.php";
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        String userid = user.getUid();
 
-        RequestQueue requestQueue = Volley.newRequestQueue(getView().getContext());
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //start and initialize the dialog with message
-                mDialog.setMessage("Changing grade...");
-                mDialog.show();
-                if (response.trim().equals("success")) {
-                    //if the php script returns "success" token then let user know and send email
-                    l.setGrade(newGrade);
+        //save and update all the changes to Firebase
+        Firebase ref = new Firebase("https://libeary-8d044.firebaseio.com/Users/" + userid);
+        final UserInformation bookdets = new UserInformation(Login.getFullName().split(" ")[0], Login.getFullName().split(" ")[1],
+                Login.getUsername(), Login.getPassword(), Login.getEmail(), newGrade);
+        ref.setValue(bookdets);
 
-                    mDialog.dismiss();
-                    Toast.makeText(getContext(), "Grade has been changed", Toast.LENGTH_SHORT).show();
-
-                } else {
-                    Toast.makeText(getContext(), "Oops something went wrong" + response, Toast.LENGTH_SHORT).show();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), "error" + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-
-                Map<String, String> params = new HashMap<>();
-
-                //send the appropriate hashmap vairables as parameters into the php script
-                params.put("username", l.getUsername());
-                params.put("grade", newGrade);
-
-                return params;
-            }
-        };
-
-        requestQueue.add(stringRequest);
+        Login.setGrade(newGrade);
     }
 }

@@ -92,7 +92,7 @@ public class RemindersFragment extends Fragment {
                 if (currentDate.equals(BookInformation.reminderdates.get(i))) {
 
                     //add book to the reminder books arraylist for listview
-                    reminderBooks.add(new ReminderBook(c.getCtits()[i], (int) R.drawable.bear
+                    reminderBooks.add(new ReminderBook(Login.getCtits()[i], (int) R.drawable.bear
                             , "Book is DUE IN 2 DAYS"));
 
                     isreminder = true;
@@ -103,7 +103,7 @@ public class RemindersFragment extends Fragment {
                     notification.setSmallIcon(R.mipmap.ic_launcher);
                     notification.setWhen(System.currentTimeMillis());
                     notification.setContentTitle("REMINDER");
-                    notification.setContentText("This book is due in 2 days" + c.getCtits()[i]);
+                    notification.setContentText("This book is due in 2 days" + Login.getCtits()[i]);
 
                     //Intent intent = new Intent(view.getContext(), );
                     //PendingIntent pendingIntent = PendingIntent.getActivity(view.getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);

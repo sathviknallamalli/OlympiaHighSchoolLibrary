@@ -4,10 +4,10 @@ package com.example.sathv.olympiahighschoollibrary;
  * Created by sathv on 3/1/2018.
  */
 
-public class BookDets {
+public class FirebaseBook {
     private String title, author, category, pagecount, summary, isbn, status, duedate, checkedoutto;
 
-    public BookDets(String title, String author, String category, String pagecount, String summary, String isbn, String status, String duedate, String checkedoutto) {
+    public FirebaseBook(String title, String author, String category, String pagecount, String summary, String isbn, String status, String duedate, String checkedoutto) {
         this.title = title;
         this.author = author;
         this.category = category;
@@ -18,6 +18,7 @@ public class BookDets {
         this.duedate = duedate;
         this.checkedoutto = checkedoutto;
     }
+
 
     public String getTitle() {
         return title;

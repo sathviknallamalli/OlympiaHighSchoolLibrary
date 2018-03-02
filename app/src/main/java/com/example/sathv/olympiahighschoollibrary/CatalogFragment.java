@@ -87,6 +87,8 @@ public class CatalogFragment extends Fragment {
 
     public static String status;
 
+    static Book selected;
+
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,8 +122,8 @@ public class CatalogFragment extends Fragment {
 
         //make a Book for each title,author,pagecount,isbb,status,image id and load into arraylist
         for (int i = 0; i < titleorig.length; i++) {
-            books.add(new Book(capitalzeTitle(titleorig[i]), capitalizeauthor(authororig[i]), pageCountorig[i], picidsorig[i], capitalizeauthor(categoriesorig[i]), addedornotorig[i], isbns[i], statuses[i], summaries[i]));
-            bookstwo.add(new Book(capitalzeTitle(titleorig[i]), capitalizeauthor(authororig[i]), pageCountorig[i], picidsorig[i], capitalizeauthor(categoriesorig[i]), addedornotorig[i], isbns[i], statuses[i], summaries[i]));
+            books.add(new Book((titleorig[i]), (authororig[i]), pageCountorig[i], picidsorig[i], (categoriesorig[i]), addedornotorig[i], isbns[i], statuses[i], summaries[i]));
+            bookstwo.add(new Book((titleorig[i]), (authororig[i]), pageCountorig[i], picidsorig[i], (categoriesorig[i]), addedornotorig[i], isbns[i], statuses[i], summaries[i]));
             lvBook.setTextFilterEnabled(true);
 
         }
@@ -139,9 +141,9 @@ public class CatalogFragment extends Fragment {
                 for (int i = 0; i < title.length; i++) {
                     if (position == i) {
 
-                        titleofthebook = capitalzeTitle(title[i]);
-                        authorofthebook = capitalizeauthor(author[i]);
-                        category = capitalizeauthor(categories[i]);
+                        titleofthebook = title[i];
+                        authorofthebook = (author[i]);
+                        category = (categories[i]);
                         pg = pageCount[i];
                         id = picids[i];
                         isbn = isbns[i];
@@ -150,6 +152,7 @@ public class CatalogFragment extends Fragment {
                         pos = i;
 
                         //then start the bookinfo activity
+                        selected = books.get(position);
                         Intent appInfo = new Intent(view.getContext(), BookInformation.class);
                         startActivityForResult(appInfo, i);
 

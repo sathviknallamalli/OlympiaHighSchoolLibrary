@@ -127,19 +127,16 @@ public class AccountFragment extends Fragment {
 
 
     private void updateinfo() {
+        mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
         String userid = user.getUid();
 
         //save and update all the changes to Firebase
         Firebase ref = new Firebase("https://libeary-8d044.firebaseio.com/Users/" + userid);
-        Firebase childref = ref.child("email");
-        childref.setValue(emailtemp.getText().toString().trim().replace(" ", ""));
-        Firebase newduedate = ref.child("fname");
-        newduedate.setValue(fnametemp.getText().toString().trim());
-        Firebase person = ref.child("lname");
-        person.setValue(lnametemp.getText().toString().trim());
-        Firebase u = ref.child("username");
-        person.setValue(usernametemp.getText().toString().trim().replace(" ", ""));
+        final UserInformation bookdets = new UserInformation(fnametemp.getText().toString().trim(), lnametemp.getText().toString().trim(),
+                usernametemp.getText().toString().trim().replace(" ", ""), Login.getPassword(),
+                emailtemp.getText().toString().trim().replace(" ", ""), Login.getGrade());
+        ref.setValue(bookdets);
 
         //set methods
         Login.setEmail(emailtemp.getText().toString().trim().replace(" ", ""));

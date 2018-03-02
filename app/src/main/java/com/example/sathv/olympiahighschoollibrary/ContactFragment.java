@@ -15,6 +15,8 @@ import android.widget.EditText;
 
 public class ContactFragment extends Fragment {
 
+    //This class is like a forum and allows the user to leave suggestions or any complains. Any new bugs discrovered
+    //can be received from this and fixed
     public ContactFragment() {
 
     }
