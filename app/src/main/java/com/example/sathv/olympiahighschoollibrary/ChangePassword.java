@@ -37,6 +37,7 @@ public class ChangePassword extends AppCompatActivity {
 
         Context context = getApplicationContext();
 
+
         submit = (Button) findViewById(R.id.submit);
         pd = (EditText) findViewById(R.id.pd);
         confirm = (EditText) findViewById(R.id.confirm);

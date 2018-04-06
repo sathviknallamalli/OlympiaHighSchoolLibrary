@@ -4,7 +4,6 @@ package com.example.sathv.olympiahighschoollibrary;
  * Created by sathv on 12/8/2017.
  */
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.EditText;
@@ -35,7 +34,7 @@ public class SendMailShare extends AsyncTask<Void, Void, Void> {
     EditText input;
 
     //Progressdialog to show while sending email
-    private ProgressDialog progressDialog;
+   // private ProgressDialog progressDialog;
 
     //Class Constructor
     public SendMailShare(Context context, String email, String subject, String message, String toast) {
@@ -51,14 +50,14 @@ public class SendMailShare extends AsyncTask<Void, Void, Void> {
     protected void onPreExecute() {
         super.onPreExecute();
         //Showing progress dialog while sending email
-        progressDialog = ProgressDialog.show(context, "Sending message", "Please wait...", false, false);
+       // progressDialog = ProgressDialog.show(context, "Sending message", "Please wait...", false, false);
     }
 
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
         //Dismissing the progress dialog
-        progressDialog.dismiss();
+        //progressDialog.dismiss();
         //Showing a success message
         Toast.makeText(context, toast, Toast.LENGTH_LONG).show();
     }

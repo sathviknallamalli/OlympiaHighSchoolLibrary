@@ -1,5 +1,6 @@
 package com.example.sathv.olympiahighschoollibrary;
 
+
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -90,9 +91,8 @@ public class CatalogFragment extends Fragment {
     static Book selected;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LayoutInflater lf = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.catalog, container, false);
         getActivity().setTitle("Library Catalog");
 
@@ -169,6 +169,7 @@ public class CatalogFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+        resetSearch();
         //inflater.inflate(R.menu.activities, menu);
         MenuItem searchItem = menu.findItem(R.id.item_search);
         android.support.v7.widget.SearchView searchView = (SearchView) searchItem.getActionView();
@@ -176,6 +177,8 @@ public class CatalogFragment extends Fragment {
         SearchView.OnQueryTextListener listener = new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+
+                //resetSearch();
                 return false;
             }
 
@@ -185,64 +188,66 @@ public class CatalogFragment extends Fragment {
                     //if the search bar is empty, load the original listview using the resetsearch method that is defined below
                     resetSearch();
                     return false;
-                }
+                } else {
 
-                //filtered values of book based on the search
-                final ArrayList<Book> filteredValues = new ArrayList<Book>(books);
+                    //filtered values of book based on the search
+                    final ArrayList<Book> filteredValues = new ArrayList<Book>(books);
 
-                for (int i = 0; i < books.size(); i++) {
+                    for (int i = 0; i < books.size(); i++) {
 
-                    //if the title of each book does not contaain the string from the search bar, then delete it from the listview
-                    //and remove from the filtered values arraylist
-                    if (!(books.get(i).title.toLowerCase()).contains(newText.toLowerCase())) {
+                        //if the title of each book does not contaain the string from the search bar, then delete it from the listview
+                        //and remove from the filtered values arraylist
+                        if (!(books.get(i).title.toLowerCase()).contains(newText.toLowerCase())) {
 
-                        //remove each field
-                        filteredValues.remove(books.get(i));
-                        title = removeeltString(title, i);
-                        author = removeeltString(author, i);
-                        categories = removeeltString(categories, i);
-                        pageCount = removeeltString(pageCount, i);
-                        picids = removeEltInt(picids, i);
-                        isbns = removeeltString(isbns, i);
-                        summaries = removeeltString(summaries, i);
-                        statuses = removeeltString(statuses, i);
-                        addedornot = removeeltString(addedornot, i);
-                        //then set the adapter for filteredvalues
-                        filteredvaluesadapter = new BookAdapter(getActivity().getApplicationContext(), R.layout.customlayout, filteredValues);
-                    }
-                }
-
-                lvBook.setAdapter(filteredvaluesadapter);
-
-                //then declare the onclick listener if a book is clicked after they searched
-                lvBook.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapter, View view, int position, long val) {
-
-                        for (int i = 0; i < title.length; i++) {
-                            if (position == i) {
-
-                                //assign the static variables to the appropriate information retrieved from filtered values arraylist
-                                titleofthebook = capitalzeTitle(filteredValues.get(i).title);
-                                authorofthebook = capitalizeauthor(filteredValues.get(i).author);
-                                category = capitalizeauthor(filteredValues.get(i).category);
-                                pg = filteredValues.get(i).pageCount;
-                                id = filteredValues.get(i).imageid;
-                                isbn = filteredValues.get(i).isbn;
-                                summary = filteredValues.get(i).summary;
-                                setStatus(filteredValues.get(i).status, i);
-                                pos = i;
-
-                                //similarly also start the bookinformation activity
-                                Intent appInfo = new Intent(view.getContext(), BookInformation.class);
-                                startActivityForResult(appInfo, i);
-                            }
+                            //remove each field
+                            filteredValues.remove(books.get(i));
+                            title = removeeltString(title, i);
+                            author = removeeltString(author, i);
+                            categories = removeeltString(categories, i);
+                            pageCount = removeeltString(pageCount, i);
+                            picids = removeEltInt(picids, i);
+                            isbns = removeeltString(isbns, i);
+                            summaries = removeeltString(summaries, i);
+                            statuses = removeeltString(statuses, i);
+                            addedornot = removeeltString(addedornot, i);
+                            //then set the adapter for filteredvalues
+                            filteredvaluesadapter = new BookAdapter(getActivity().getApplicationContext(), R.layout.customlayout, filteredValues);
                         }
                     }
-                });
-                return false;
+
+                    lvBook.setAdapter(filteredvaluesadapter);
+
+                    //then declare the onclick listener if a book is clicked after they searched
+                    lvBook.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapter, View view, int position, long val) {
+
+                            for (int i = 0; i < title.length; i++) {
+                                if (position == i) {
+
+                                    //assign the static variables to the appropriate information retrieved from filtered values arraylist
+                                    titleofthebook = capitalzeTitle(filteredValues.get(i).title);
+                                    authorofthebook = capitalizeauthor(filteredValues.get(i).author);
+                                    category = capitalizeauthor(filteredValues.get(i).category);
+                                    pg = filteredValues.get(i).pageCount;
+                                    id = filteredValues.get(i).imageid;
+                                    isbn = filteredValues.get(i).isbn;
+                                    summary = filteredValues.get(i).summary;
+                                    setStatus(filteredValues.get(i).status, i);
+                                    pos = i;
+
+                                    //similarly also start the bookinformation activity
+                                    Intent appInfo = new Intent(view.getContext(), BookInformation.class);
+                                    startActivityForResult(appInfo, i);
+                                }
+                            }
+                        }
+                    });
+                    return false;
+                }
             }
         };
+
         //set the appropriate listener and hint for searchbar
         searchView.setOnQueryTextListener(listener);
         searchView.setQueryHint("Search a book by title");

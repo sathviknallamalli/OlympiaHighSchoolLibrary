@@ -1,12 +1,12 @@
 package com.example.sathv.olympiahighschoollibrary;
 
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-
 public class Activities extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -26,18 +25,28 @@ public class Activities extends AppCompatActivity
     Login l = new Login();
     TextView studentName;
     TextView email, rcount, ccount;
+    SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activities);
+        sharedPref = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
 
         //set which page should first display once acitivities is launched after login
+        /*AboutFragment fragmenttt = new AboutFragment();
+        android.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.frameLayout, fragmenttt);
+        fragmentTransaction.commit();*/
 
-        CatalogFragment fragment = new CatalogFragment();
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frameLayout, fragment);
-        fragmentTransaction.commit();
+      /*  AboutFragment fragment = new AboutFragment();
+        FragmentTransaction fragmentTfransaction = getFragmentManager().beginTransaction();
+        fragmentTfransaction.replace(R.id.frameLayout, fragment);
+        fragmentTfransaction.commit();*/
+
+
+        // FragmentManager fragmentManager = getFragmentManager();
+        // fragmentManager.beginTransaction().replace(R.id.frameLayout, new CatalogFragment()).commit();
 
         //set toolbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -54,22 +63,24 @@ public class Activities extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
+
         View v = navigationView.getHeaderView(0);
 
         //set the values for textviews in navheader
         studentName = (TextView) v.findViewById(R.id.name);
-        studentName.setText(Login.namesend);
+        studentName.setText(sharedPref.getString(getString(R.string.fullname), "full name"));
 
         email = (TextView) v.findViewById(R.id.email);
-        email.setText(Login.esend);
+        email.setText(sharedPref.getString(getString(R.string.email), "email"));
 
-        rcount = (TextView) MenuItemCompat.getActionView(navigationView.getMenu().
+       /* rcount = (TextView) MenuItemCompat.getActionView(navigationView.getMenu().
                 findItem(R.id.nav_reservedbooks));
 
         ccount = (TextView) MenuItemCompat.getActionView(navigationView.getMenu().
-                findItem(R.id.nav_checkedbooks));
+                findItem(R.id.nav_checkedbooks));*/
 
-        initializeCountDrawer();
+        //initializeCountDrawer();
 
     }
 
@@ -112,6 +123,8 @@ public class Activities extends AppCompatActivity
         int id = item.getItemId();
         FragmentManager fragmentManager = getFragmentManager();
 
+       // android.app.FragmentManager fragmentManager = getFragmentManager();
+
         if (id == R.id.nav_catalog) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new CatalogFragment()).commit();
         } else if (id == R.id.nav_checkedbooks) {
@@ -152,5 +165,13 @@ public class Activities extends AppCompatActivity
         ccount.setTypeface(null, Typeface.BOLD);
         ccount.setTextColor(getResources().getColor(R.color.colorAccent));
         ccount.setText(BookInformation.checkedoutcount + "");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.clear();
     }
 }

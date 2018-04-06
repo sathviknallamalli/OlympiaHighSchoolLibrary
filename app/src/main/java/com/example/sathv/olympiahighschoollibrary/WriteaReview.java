@@ -10,7 +10,7 @@ public class WriteaReview extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_writea_review);
 
-        setTitle(CatalogFragment.title + " Write a review");
+        setTitle("Write a review");
 
 
     }

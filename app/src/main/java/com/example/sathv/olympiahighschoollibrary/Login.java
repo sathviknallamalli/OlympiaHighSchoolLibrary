@@ -1,6 +1,8 @@
 package com.example.sathv.olympiahighschoollibrary;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -26,8 +28,12 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -51,6 +57,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
     String fn, ln, un, pd, em, gr;
     Button buttons;
     ProgressBar pb;
+    boolean loginwithgmail;
     String userclass;
 
 
@@ -246,6 +253,9 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
 
         //facebook login button
         fblogin = (LoginButton) findViewById(R.id.fblogin);
+        if(fblogin.getText().equals("Log out")){
+            fblogin.setText("Log in with Facebook");
+        }
         fblogin.setText("Log in with Facebook");
 
         //THIS SECTION USES THE FACEBOOK SDK TO AUTHENTICATE
@@ -259,13 +269,12 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
 
                 Toast.makeText(getApplicationContext(), "Log success"
                         , Toast.LENGTH_SHORT).show();
-                Intent activities = new Intent(getApplicationContext(), Activities.class);
-                startActivity(activities);
-                finish();
+
                 pb.setVisibility(View.GONE);
 
                 String name = loginResult.getAccessToken().getUserId();
                 String email = loginResult.getAccessToken().getToken();
+
 
                 setFullName(name);
                 setEmail(email);
@@ -274,12 +283,28 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                 fblogin.setText("Log in with Facebook");
 
                 getallbooks();
-                getchecked();
+               // getchecked();
 
+                String[] splited = name.split("\\s+");
+
+
+                SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString(getString(R.string.fullname), name);
+                editor.putString(getString(R.string.fname), splited[0]);
+                editor.putString(getString(R.string.lname), "no last name");
+                editor.putString(getString(R.string.email), email);
+                editor.putString(getString(R.string.grade), "Unknown" );
+                editor.putString(getString(R.string.username), "Not Applicable for Facebook login");
+                editor.putString(getString(R.string.password), "Cannot retrieve");
+                editor.apply();
 
                 esend = emailField.getText().toString();
                 namesend = Login.getFullName();
 
+                Intent activities = new Intent(getApplicationContext(), Activities.class);
+                startActivity(activities);
+                finish();
 
             }
 
@@ -300,16 +325,16 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                 .requestEmail()
                 .build();
 
-        //googleApiClient = new GoogleApiClient.Builder(Login.this).enableAutoManage(this, this).addApi(Auth.GOOGLE_SIGN_IN_API, signInOptions).build();
+        googleApiClient = new GoogleApiClient.Builder(Login.this).enableAutoManage(this, this).addApi(Auth.GOOGLE_SIGN_IN_API, signInOptions).build();
 
 
-/*        findViewById(R.id.sign_in_button).setOnClickListener(this);
+       findViewById(R.id.sign_in_button).setOnClickListener(this);
 
         SignInButton thing = (SignInButton) findViewById(R.id.sign_in_button);
 
         TextView textView = (TextView) thing.getChildAt(0);
         textView.setText("Log in using Gmail");
-        textView.setTextSize(14);*/
+        textView.setTextSize(14);
         //END SECTION
 
 
@@ -330,7 +355,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
 
                         pb.setVisibility(View.VISIBLE);
                         getallbooks();
-                        getchecked();
+                       // getchecked();
                         namesend = Login.getFullName();
                     }
                 }
@@ -355,7 +380,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
 
                     pb.setVisibility(View.VISIBLE);
                     getallbooks();
-                    getchecked();
+                 //   getchecked();
                     namesend = Login.getFullName();
                 }
             }
@@ -423,6 +448,19 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                                 gr = map.get("grade");
 
 
+                                SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+                                SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sp.edit();
+                                editor.putString(getString(R.string.fullname), fn + " " +  ln);
+                                editor.putString(getString(R.string.fname), fn);
+                                editor.putString(getString(R.string.lname), ln);
+                                editor.putString(getString(R.string.email), em);
+                                editor.putString(getString(R.string.grade), gr );
+                                editor.putString(getString(R.string.username), un);
+                                editor.putString(getString(R.string.password), pd);
+                                editor.apply();
+
+
                                 //use set methods
                                 Login.setFullName(fn + " " + ln);
                                 namesend = fn + " " + ln;
@@ -467,8 +505,11 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                 sss = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "status");
                 ibss = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "isbn");
 
+                Log.d("HELLOWORLD", ts.size() + "");
+
                 //convert the arraylist to array and use setmethod
                 setTils(ts.toArray(new String[ts.size()]));
+                Log.d("HELLOWORLD", getTils().length + "AAA");
                 setAuths(aus.toArray(new String[aus.size()]));
                 setCs(cas.toArray(new String[cas.size()]));
                 setPgs(ps.toArray(new String[ps.size()]));
@@ -482,58 +523,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
 
             }
         });
-    }
-
-    public void getchecked() {
-        //  databasereference.child(CatalogFragment.titleofthebook).setValue();
-        Firebase getbooksref = new Firebase("https://libeary-8d044.firebaseio.com/Books/");
-
-        getbooksref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                //collect all the books titles, authors, pagecounts, etc. and save in the arraylists
-                ddal = lolnew((Map<String, Object>) dataSnapshot.getValue(), "duedate", un);
-                ccal = lolnew((Map<String, Object>) dataSnapshot.getValue(), "title", un);
-
-                Log.d("SATHVIK", ddal.toString() + " " + ccal.toString());
-
-                setCtits(ccal.toArray(new String[ccal.size()]));
-                setCds(ddal.toArray(new String[ddal.size()]));
-
-                for (int i = 0; i < ctits.length; i++) {
-                    Log.d("SATHVIK", getCtits()[i] + " " + getCds()[i] + " ");
-                }
-                //convert the arraylist to array and use setmethod
-
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
-
-
-    }
-
-    private ArrayList<String> lolnew(Map<String, Object> users, String fieldName, String usernamecheck) {
-        ArrayList<String> information = new ArrayList<>();
-        //iterate through each user, ignoring their UID
-        for (Map.Entry<String, Object> entry : users.entrySet()) {
-
-            //Get user map
-            Map singleUser = (Map) entry.getValue();
-            Log.d("HELLO", usernamecheck + "");
-            //Get phone field and append to list
-            //  information.add((String) singleUser.get("checkedoutto"));
-            String thing = (String) singleUser.get("checkedoutto");
-            if (thing.equals(usernamecheck)) {
-                information.add((String) singleUser.get(fieldName));
-                Log.d("HELLOGOHOME", "SOMETHING " + singleUser.get(fieldName).toString());
-            }
-        }
-
-        return information;
     }
 
     //get all the information for a necessary parameter
@@ -560,11 +549,12 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
     }
 
     //updates the ui for googleLogin
-   /* private void updateUI(boolean isLogin) {
+    private void updateUI(boolean isLogin) {
         if (isLogin) {
             Toast.makeText(getApplicationContext(), "Logged in", Toast.LENGTH_SHORT).show();
             pb.setVisibility(View.GONE);
             //if logged in correctly, start the navigationview
+
             Intent activities = new Intent(getApplicationContext(), Activities.class);
             startActivity(activities);
             finish();
@@ -572,23 +562,23 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
         } else {
             Toast.makeText(getApplicationContext(), "Logged fail", Toast.LENGTH_SHORT).show();
         }
-    }*/
+    }
 
     public void onClick(View v) {
         switch (v.getId()) {
-           /* case R.id.sign_in_button:
+            case R.id.sign_in_button:
                 //when the googlesigninbutton is pressed, call this method
                 signIn();
-                break;*/
+                break;
         }
     }
-/*
+
     //use googleAPI to authenticate
     private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
         pb.setVisibility(View.VISIBLE);
         startActivityForResult(signInIntent, REQ_CODE);
-    }*/
+    }
 
     //implement abstract methods
     @Override
@@ -601,8 +591,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQ_CODE) {
-         /*   GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleResult(result);*/
+           GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleResult(result);
         } else {
             callbackManager.onActivityResult(requestCode, resultCode, data);
             pb.setVisibility(View.VISIBLE);
@@ -610,7 +600,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
     }
 
     //when logged in, retrieve the user information
-    /*private void handleResult(GoogleSignInResult result) {
+    private void handleResult(GoogleSignInResult result) {
         if (result.isSuccess()) {
             GoogleSignInAccount account = result.getSignInAccount();
 
@@ -618,10 +608,41 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
             setEmail(account.getEmail());
             String username = account.getId();
             setUsername(username);
+
+            loginwithgmail = true;
+
+            String[] splited = account.getDisplayName().split("\\s+");
+
+            SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString(getString(R.string.fullname), account.getDisplayName());
+            editor.putString(getString(R.string.fname), splited[0]);
+            editor.putString(getString(R.string.lname), splited[1]);
+            editor.putString(getString(R.string.email), account.getEmail());
+            editor.putString(getString(R.string.grade), "Unknown" );
+            editor.putString(getString(R.string.username), username);
+            editor.putString(getString(R.string.password), "");
+            editor.apply();
+
+            getallbooks();
+
             // String img_url = account.getPhotoUrl().toString();
-            updateUI(true);
+          //  updateUI(true);
+
+            Intent activities = new Intent(getApplicationContext(), Activities.class);
+            startActivity(activities);
+            finish();
+
         } else {
             updateUI(false);
         }
-    }*/
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.clear();
+    }
 }

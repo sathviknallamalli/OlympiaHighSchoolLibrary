@@ -2,7 +2,9 @@ package com.example.sathv.olympiahighschoollibrary;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,6 +43,8 @@ public class AccountFragment extends Fragment {
     Button edit;
     ProgressDialog mDialog;
 
+    SharedPreferences sharedPref;
+
     @Override
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -49,6 +53,8 @@ public class AccountFragment extends Fragment {
         View view = inflater.inflate(R.layout.account, container, false);
         getActivity().setTitle("Manage account");
         setHasOptionsMenu(false);
+
+        sharedPref = view.getContext().getSharedPreferences("userinfo", Context.MODE_PRIVATE);
 
         //retrieve views
         fnametemp = (EditText) view.findViewById(R.id.fnametemp);
@@ -94,11 +100,18 @@ public class AccountFragment extends Fragment {
 
                 //set textfields with current info
 
-                String[] names = l.getFullName().split(" ");
+
+                String[] names = sharedPref.getString(getString(R.string.fullname), "full name").split(" ");
+
+                if (names.length == 1) {
+                    lnametemp.setText("no last name");
+                } else {
+                    lnametemp.setText(names[1]);
+                }
+
                 fnametemp.setText(names[0]);
-                lnametemp.setText(names[1]);
-                emailtemp.setText(l.getEmail());
-                usernametemp.setText(l.getUsername());
+                emailtemp.setText(sharedPref.getString(getString(R.string.email), "email"));
+                usernametemp.setText(sharedPref.getString(getString(R.string.username), "username"));
             }
         });
 

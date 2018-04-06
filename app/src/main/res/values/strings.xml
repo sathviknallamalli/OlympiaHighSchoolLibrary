@@ -32,4 +32,14 @@
         <item>11</item>
         <item>12</item>
     </string-array>
+
+
+    <string name="fullname">fullname</string>
+    <string name="fname">fname</string>
+    <string name="lname">lname</string>
+    <string name="email">email</string>
+    <string name="username">username</string>
+    <string name="password">password</string>
+    <string name="grade">grade</string>
+
 </resources>

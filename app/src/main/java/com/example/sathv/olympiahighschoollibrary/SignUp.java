@@ -2,7 +2,9 @@ package com.example.sathv.olympiahighschoollibrary;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.InputType;
@@ -112,10 +114,11 @@ public class SignUp extends Activity {
                 String un = username.getText().toString();
                 String pd = password.getText().toString();
                 String grade = gradeOptions.getSelectedItem().toString();
-
                 register(email.getText().toString(), pd, fname, lname, un, grade);
                 Login l = new Login();
                 l.getallbooks();
+
+
             }
         }
 
@@ -135,6 +138,16 @@ public class SignUp extends Activity {
                     UserInformation userInformation = new UserInformation(fname, lname, un, password, email, grade);
                     mRootRef.child(userid).setValue(userInformation);
 
+                    SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putString(getString(R.string.fullname), fname + " " + lname);
+                    editor.putString(getString(R.string.fname), fname);
+                    editor.putString(getString(R.string.lname), lname);
+                    editor.putString(getString(R.string.email), email);
+                    editor.putString(getString(R.string.grade), grade);
+                    editor.putString(getString(R.string.username), un);
+                    editor.putString(getString(R.string.password), password);
+                    editor.apply();
 
 
                     Login.setPassword(password);
@@ -142,6 +155,14 @@ public class SignUp extends Activity {
                     Login.setUsername(un);
                     Login.setEmail(email);
                     Login.setGrade(grade);
+
+                    String subject =  "Welcome to the Olympia High School Library";
+                    String message = "This email is confirmation that you have successfully signed up and created an account for Olympia High School Library." +
+                            " This email will be used to contact you and reserve or check out books under. Below is your user information" +
+                            "\nFirst name: " + fname + "\nLast name: " + lname + "\nUsername: " + un + "\nPassword " + password + "\nGrade " + grade;
+
+                    SendMailShare sm = new SendMailShare(SignUp.this, email, subject, message, "A confirmation email has been sent");
+                    sm.execute();
 
                     Intent activities = new Intent(getApplicationContext(), Activities.class);
                     startActivity(activities);
@@ -162,6 +183,12 @@ public class SignUp extends Activity {
 
 
     }
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.clear();
+    }
 
 }

@@ -1,5 +1,7 @@
 package com.example.sathv.olympiahighschoollibrary;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +34,13 @@ public class launch extends AppCompatActivity {
         //   Firebase.setAndroidContext(this);
 //        FirebaseUser user = mAuth.getCurrentUser();
         //       userID = user.getUid();
+
+
+
+
+        SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+
+
 
         mRootRef = new Firebase("https://libeary-8d044.firebaseio.com/Users");
 

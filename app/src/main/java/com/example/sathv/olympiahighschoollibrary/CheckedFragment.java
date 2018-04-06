@@ -1,7 +1,11 @@
 package com.example.sathv.olympiahighschoollibrary;
 
 import android.app.Fragment;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,9 +17,13 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -30,27 +38,32 @@ public class CheckedFragment extends Fragment {
 
     ListView lvc;
     ArrayList<CheckedBook> checkedBooks;
-    Firebase databasereference;
+    Firebase refname;
     TextView message;
 
-    ArrayList<String> ddal = new ArrayList<>();
-    ArrayList<String> ccal = new ArrayList<>();
+
+    ArrayList<String> information = new ArrayList<>();
 
 
     private CheckedBooksAdapter adapter;
 
+    Login l = new Login();
 
-     String ctits[] = Login.getCtits();
-     String cds[] = Login.getCds();
 
+    String ctits[];
+    String cds[];
+    // String cds[] = Login.getCds();
+
+    Map<String, Object> titletemp, datetemp;
 
     View view;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        getActivity().setTitle("Your bookshelf");
+        getActivity().setTitle("Checked out books");
         view = inflater.inflate(R.layout.checkedbooks, container, false);
 
 
@@ -61,6 +74,12 @@ public class CheckedFragment extends Fragment {
         //set the search bar option
         setHasOptionsMenu(true);
 
+        titletemp = new HashMap<String, Object>();
+        datetemp = new HashMap<String, Object>();
+
+        ctits = collectBookData("title", l.getUsername());
+        cds = collectBookData("duedate", l.getUsername());
+
 
         //if the checkedout arraylists are empty, then display a message
         if (ctits.length == 0 || cds.length == 0) {
@@ -70,10 +89,10 @@ public class CheckedFragment extends Fragment {
         //if not then add each checked out book to an arraylist and make adapter
         else {
             Log.d("BLANK", "ENTERED");
-            for (int i = 0; i < ctits.length; i++) {
+            for (int i = 0; i < ctits.length; i+=2) {
 
                 //add checked book to arraylist
-                checkedBooks.add(new CheckedBook(ccal.get(i), ddal.get(i), R.drawable.bear));
+                checkedBooks.add(new CheckedBook(ctits[i], cds[i+1], R.drawable.bear));
 
             }
             //set adapter
@@ -83,23 +102,61 @@ public class CheckedFragment extends Fragment {
         return view;
     }
 
-    private ArrayList<String> collectBookData(Map<String, Object> users, String fieldName, String usernamecheck) {
-        ArrayList<String> information = new ArrayList<>();
-        //iterate through each user, ignoring their UID
-        for (Map.Entry<String, Object> entry : users.entrySet()) {
+    private String[] collectBookData(final String fieldName, final String usernamecheck) {
 
-            //Get user map
-            Map singleUser = (Map) entry.getValue();
-            //Get phone field and append to list
-            //  information.add((String) singleUser.get("checkedoutto"));
-            String thing = (String) singleUser.get("checkedoutto");
-            if (thing.equals(usernamecheck)) {
-                information.add((String) singleUser.get(fieldName));
-                Log.d("HELLOGOHOME", singleUser.get(fieldName).toString());
-            }
+
+        int val = Login.getTils().length;
+
+        for (int i = 0; i < val; i++) {
+            refname = new Firebase("https://libeary-8d044.firebaseio.com/Books/" + Login.getTils()[i]);
+
+            refname.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Map<String, String> map = dataSnapshot.getValue(Map.class);
+
+                    if (map.get("checkedoutto").equals(usernamecheck)) {
+                        information.add(map.get(fieldName));
+
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for (String s : information) {
+                            stringBuilder.append(s);
+                            stringBuilder.append(", ");
+                        }
+
+                        if (fieldName.equals("title")) {
+                            SharedPreferences preferences = view.getContext().getSharedPreferences("pref", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putString("title", stringBuilder.toString());
+                            editor.commit();
+                        } else if (fieldName.equals("duedate")) {
+                            SharedPreferences preferences = view.getContext().getSharedPreferences("pref", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putString("duedate", stringBuilder.toString());
+                            editor.commit();
+                        }
+
+                    }
+                    //Log.d("DUDE", information.toString());
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+
+                }
+
+            });
+
+
         }
 
-        return information;
+        SharedPreferences preferences = view.getContext().getSharedPreferences("pref", Context.MODE_PRIVATE);
+        String wordstring = preferences.getString(fieldName, "");
+        //  Log.d("DUDE", "AFTER" + wordstring);
+
+        String[] temp = wordstring.split(", ");
+
+        return temp;
     }
 
     //override menu onclick method
