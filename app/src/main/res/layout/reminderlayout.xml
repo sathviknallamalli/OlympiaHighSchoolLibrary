@@ -31,7 +31,7 @@
         android:layout_below="@+id/reminderbookname"
         android:layout_marginTop="13dp"
         android:text="TextView"
-        android:textColor="@color/common_plus_signin_btn_text_light_focused"
+        android:textColor="?attr/actionModeSplitBackground"
         android:textSize="14sp"
         tools:layout_editor_absoluteX="101dp"
         tools:layout_editor_absoluteY="47dp" />

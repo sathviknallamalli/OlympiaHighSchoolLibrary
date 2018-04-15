@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.InputType;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.AdapterView;
@@ -26,6 +25,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class SignUp extends Activity {
 
     EditText username;
@@ -36,13 +38,13 @@ public class SignUp extends Activity {
     Spinner gradeOptions;
     Button register;
     EditText confirm;
+    EditText phonenumber;
     String userid;
 
     FirebaseAuth mAuth;
 
     ProgressDialog mDialog;
     private Firebase mRootRef;
-
 
     ArrayAdapter<CharSequence> adapter;
 
@@ -71,6 +73,8 @@ public class SignUp extends Activity {
         gradeOptions = (Spinner) findViewById(R.id.gradeOptions);
         register = (Button) findViewById(R.id.signUp);
 
+        phonenumber = (EditText) findViewById(R.id.phonenumber);
+
         mDialog = new ProgressDialog(this);
 
         //selecting the grade on spinner
@@ -98,13 +102,24 @@ public class SignUp extends Activity {
     public void registerAction(View view) {
         //check is all fields are entered correctly
         if (username.getText().toString().trim().isEmpty() || firstName.getText().toString().trim().isEmpty() || lastName.getText().toString().trim().isEmpty() || password.getText().toString().trim().isEmpty() || email.getText().toString().trim().isEmpty() ||
-                gradeOptions.getSelectedItem().toString().equals("Please select your grade")) {
+                gradeOptions.getSelectedItem().toString().equals("Please select your grade") || phonenumber.getText().toString().isEmpty()) {
             Toast.makeText(getApplicationContext(), "Missing field(s)", Toast.LENGTH_SHORT).show();
 
         } else {
             //check if passwords are identical
+
+            Pattern p = Pattern.compile("[^A-Za-z0-9]");
+            Matcher m = p.matcher(password.getText().toString());
+
+            Pattern numberp = Pattern.compile("([0-9])");
+            Matcher numberm = numberp.matcher(password.getText().toString());
+
             if (!password.getText().toString().equals(confirm.getText().toString())) {
                 Toast.makeText(getApplicationContext(), "Passwords are not identical", Toast.LENGTH_SHORT).show();
+            } else if (!m.find()) {
+                Toast.makeText(getApplicationContext(), "Password must contain a special character", Toast.LENGTH_SHORT).show();
+            } else if (!numberm.find()) {
+                Toast.makeText(getApplicationContext(), "Password must contain a number", Toast.LENGTH_SHORT).show();
             } else if (!Patterns.EMAIL_ADDRESS.matcher(email.getText().toString()).matches()) {
                 Toast.makeText(getApplicationContext(), "Email is invalid", Toast.LENGTH_SHORT).show();
             } else {
@@ -114,6 +129,8 @@ public class SignUp extends Activity {
                 String un = username.getText().toString();
                 String pd = password.getText().toString();
                 String grade = gradeOptions.getSelectedItem().toString();
+
+
                 register(email.getText().toString(), pd, fname, lname, un, grade);
                 Login l = new Login();
                 l.getallbooks();
@@ -125,17 +142,28 @@ public class SignUp extends Activity {
     }
 
     private void register(final String email, final String password, final String fname, final String lname, final String un, final String grade) {
+
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     finish();
-                    Log.d("TAG", "signed in");
 
                     FirebaseUser user = mAuth.getCurrentUser();
                     userid = user.getUid();
 
-                    UserInformation userInformation = new UserInformation(fname, lname, un, password, email, grade);
+                    user.sendEmailVerification()
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(getApplicationContext(), "Please verify your email", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+
+                    UserInformation userInformation = new UserInformation(fname, lname, "Email/Password", un, password, email, grade);
                     mRootRef.child(userid).setValue(userInformation);
 
                     SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
@@ -156,12 +184,12 @@ public class SignUp extends Activity {
                     Login.setEmail(email);
                     Login.setGrade(grade);
 
-                    String subject =  "Welcome to the Olympia High School Library";
+                    String subject = "Welcome to the Olympia High School Library";
                     String message = "This email is confirmation that you have successfully signed up and created an account for Olympia High School Library." +
                             " This email will be used to contact you and reserve or check out books under. Below is your user information" +
                             "\nFirst name: " + fname + "\nLast name: " + lname + "\nUsername: " + un + "\nPassword " + password + "\nGrade " + grade;
 
-                    SendMailShare sm = new SendMailShare(SignUp.this, email, subject, message, "A confirmation email has been sent");
+                    SendMailShare sm = new SendMailShare(SignUp.this, email, subject, message, "");
                     sm.execute();
 
                     Intent activities = new Intent(getApplicationContext(), Activities.class);
@@ -183,6 +211,7 @@ public class SignUp extends Activity {
 
 
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

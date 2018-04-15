@@ -1,13 +1,17 @@
 package com.example.sathv.olympiahighschoollibrary;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,12 +22,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -33,13 +38,17 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,16 +58,26 @@ import java.util.Map;
  * This class is the backend for the login to screen to allow login through facebook, google, and the app account
  * It will also retrieve all the books information from the Firebase database that has connected this android project
  */
-public class Login extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
+public class Login extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
+
+    private static final int RC_SIGN_IN = 9001;
+    private GoogleApiClient mGoogleApiClient;
+
 
     // UI references.
     private EditText emailField;
     private EditText passwordField;
+    TextView fp;
     String fn, ln, un, pd, em, gr;
     Button buttons;
     ProgressBar pb;
     boolean loginwithgmail;
     String userclass;
+
+    EditText input;
+    String entered;
+
+    Button facebookbtn;
 
 
     //THIS SECTION GENERATES GETTERS AND SETTERS FOR VARIABLES
@@ -206,12 +225,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
 
     //END SECTION
 
-    //Google API variables
-    private static final int REQ_CODE = 9001;
-    private GoogleApiClient googleApiClient;
 
     //Facebook UIS
-    LoginButton fblogin;
     CallbackManager callbackManager;
 
     //Firebase Objects
@@ -228,10 +243,10 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
     ArrayList<String> sus = new ArrayList<>();
     ArrayList<String> sss = new ArrayList<>();
     ArrayList<String> ibss = new ArrayList<>();
-    ArrayList<String> ddal = new ArrayList<>();
-    ArrayList<String> ccal = new ArrayList<>();
 
     static String esend, namesend;
+
+    Firebase mRootRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -239,104 +254,113 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
 
+        facebookbtn = (Button) findViewById(R.id.facebookbutton);
+
         //retrieve login form edittexts
         emailField = (EditText) findViewById(R.id.email);
         passwordField = (EditText) findViewById(R.id.password);
         pb = (ProgressBar) findViewById(R.id.pb);
         pb.setVisibility(View.GONE);
+        fp = findViewById(R.id.fp);
         //signup to make a new account from LiBEARy
         buttons = (Button) findViewById(R.id.signUp);
 
         //initialize firebase authorization variable
         mAuth = FirebaseAuth.getInstance();
+        mRootRef = new Firebase("https://libeary-8d044.firebaseio.com/Users");
         //this auth will allow access to the firebase console and authenticate the user
-
-        //facebook login button
-        fblogin = (LoginButton) findViewById(R.id.fblogin);
-        if(fblogin.getText().equals("Log out")){
-            fblogin.setText("Log in with Facebook");
-        }
-        fblogin.setText("Log in with Facebook");
-
-        //THIS SECTION USES THE FACEBOOK SDK TO AUTHENTICATE
-        fblogin.setReadPermissions(Arrays.asList(
-                "public_profile", "email"));
-
         callbackManager = CallbackManager.Factory.create();
-        fblogin.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+
+        facebookbtn.setOnClickListener(new OnClickListener() {
             @Override
-            public void onSuccess(LoginResult loginResult) {
+            public void onClick(View view) {
+                LoginManager.getInstance().logInWithReadPermissions(Login.this, Arrays.asList("email", "public_profile"));
+                LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
 
-                Toast.makeText(getApplicationContext(), "Log success"
-                        , Toast.LENGTH_SHORT).show();
+                        handleFacebookAccessToken(loginResult.getAccessToken());
+                        Toast.makeText(getApplicationContext(), "Log success"
+                                , Toast.LENGTH_SHORT).show();
 
-                pb.setVisibility(View.GONE);
+                        pb.setVisibility(View.GONE);
 
-                String name = loginResult.getAccessToken().getUserId();
-                String email = loginResult.getAccessToken().getToken();
-
-
-                setFullName(name);
-                setEmail(email);
-
-
-                fblogin.setText("Log in with Facebook");
-
-                getallbooks();
-               // getchecked();
-
-                String[] splited = name.split("\\s+");
+                        String name = loginResult.getAccessToken().getUserId();
+                        String email = loginResult.getAccessToken().getToken();
 
 
-                SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sp.edit();
-                editor.putString(getString(R.string.fullname), name);
-                editor.putString(getString(R.string.fname), splited[0]);
-                editor.putString(getString(R.string.lname), "no last name");
-                editor.putString(getString(R.string.email), email);
-                editor.putString(getString(R.string.grade), "Unknown" );
-                editor.putString(getString(R.string.username), "Not Applicable for Facebook login");
-                editor.putString(getString(R.string.password), "Cannot retrieve");
-                editor.apply();
+                        setFullName(name);
+                        setEmail(email);
 
-                esend = emailField.getText().toString();
-                namesend = Login.getFullName();
+                        getallbooks();
+                        // getchecked();
 
-                Intent activities = new Intent(getApplicationContext(), Activities.class);
-                startActivity(activities);
-                finish();
+                        String[] splited = name.split("\\s+");
 
-            }
 
-            @Override
-            public void onCancel() {
-                Toast.makeText(getApplicationContext(), "Log in with Facebook", Toast.LENGTH_SHORT).show();
-            }
+                        SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putString(getString(R.string.fullname), name);
+                        editor.putString(getString(R.string.fname), splited[0]);
+                        editor.putString(getString(R.string.lname), "no last name");
+                        editor.putString(getString(R.string.email), email);
+                        editor.putString(getString(R.string.grade), "Unknown");
+                        editor.putString(getString(R.string.username), "Not Applicable for Facebook login");
+                        editor.putString(getString(R.string.password), "Cannot retrieve");
+                        editor.apply();
 
-            @Override
-            public void onError(FacebookException error) {
-                Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
+                        esend = emailField.getText().toString();
+                        namesend = Login.getFullName();
+
+                        FirebaseUser user = mAuth.getCurrentUser();
+
+                       /* UserInformation userInformation = new UserInformation("no first name", "no last name",
+                                "Facebook", "No username specified"
+                                , "No password specified", user.getEmail(), "Unknown");
+                        mRootRef.child(user.getUid()).setValue(userInformation);*/
+
+
+                        Intent activities = new Intent(getApplicationContext(), Activities.class);
+                        startActivity(activities);
+                        finish();
+
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Toast.makeText(getApplicationContext(), "Log in with Facebook", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(FacebookException error) {
+                        Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+                //END SECTION);
             }
         });
-        //END SECTION
 
-        //THIS SECTION retrieves all the Google API variables and UI reference
-        GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
+        //GOOGLE SIGN IN
+        findViewById(R.id.sign_in_button).setOnClickListener(this);
 
-        googleApiClient = new GoogleApiClient.Builder(Login.this).enableAutoManage(this, this).addApi(Auth.GOOGLE_SIGN_IN_API, signInOptions).build();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
 
+        mGoogleApiClient = new GoogleApiClient.Builder(this).enableAutoManage(this, this).addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
 
-       findViewById(R.id.sign_in_button).setOnClickListener(this);
+        mAuth.signOut();
 
-        SignInButton thing = (SignInButton) findViewById(R.id.sign_in_button);
-
-        TextView textView = (TextView) thing.getChildAt(0);
-        textView.setText("Log in using Gmail");
-        textView.setTextSize(14);
-        //END SECTION
-
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    Log.d("TAG", "onauthstatesignin " + user.getUid());
+                } else {
+                    Log.d("TAG", "onauthstatesignout");
+                }
+                updateUI(user);
+            }
+        };
 
         //onclick listener when the done button is pressed on keyboard
         passwordField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -355,7 +379,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
 
                         pb.setVisibility(View.VISIBLE);
                         getallbooks();
-                       // getchecked();
+                        // getchecked();
                         namesend = Login.getFullName();
                     }
                 }
@@ -380,19 +404,63 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
 
                     pb.setVisibility(View.VISIBLE);
                     getallbooks();
-                 //   getchecked();
+                    //   getchecked();
                     namesend = Login.getFullName();
                 }
             }
         });
 
-        //implement that abstract method necessary for Firebase Authentication
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
+        fp.setOnClickListener(new OnClickListener() {
             @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            public void onClick(View view) {
+
+                final AlertDialog.Builder builder = new AlertDialog.Builder(Login.this);
+                builder.setTitle("Please enter your email");
+
+                input = new EditText(getApplicationContext());
+                input.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
+                input.setTextColor(getResources().getColor(R.color.tw__composer_white));
+                builder.setView(input);
+
+                //set ok button
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        entered = input.getText().toString();
+
+                        if (Patterns.EMAIL_ADDRESS.matcher(entered).matches()) {
+                            FirebaseAuth.getInstance().sendPasswordResetEmail(entered)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Toast.makeText(Login.this, "Check for a reset email", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+
+                        } else {
+                            Toast.makeText(Login.this, "Email is invalid", Toast.LENGTH_SHORT).show();
+                        }
+
+
+                    }
+                });
+
+                //alert dialog negative cancel button
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                builder.show();
+
 
             }
-        };
+        });
     }
 
     //when onstart method is implemented, setup the mAuth by adding the listener
@@ -400,6 +468,14 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
     protected void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 
     //firebase authentication method
@@ -451,11 +527,11 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                                 SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
                                 SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sp.edit();
-                                editor.putString(getString(R.string.fullname), fn + " " +  ln);
+                                editor.putString(getString(R.string.fullname), fn + " " + ln);
                                 editor.putString(getString(R.string.fname), fn);
                                 editor.putString(getString(R.string.lname), ln);
                                 editor.putString(getString(R.string.email), em);
-                                editor.putString(getString(R.string.grade), gr );
+                                editor.putString(getString(R.string.grade), gr);
                                 editor.putString(getString(R.string.username), un);
                                 editor.putString(getString(R.string.password), pd);
                                 editor.apply();
@@ -549,92 +625,137 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
     }
 
     //updates the ui for googleLogin
-    private void updateUI(boolean isLogin) {
-        if (isLogin) {
-            Toast.makeText(getApplicationContext(), "Logged in", Toast.LENGTH_SHORT).show();
+    private void updateUI(FirebaseUser user) {
+        if (user != null) {
+            //Toast.makeText(getApplicationContext(), "Logged in", Toast.LENGTH_SHORT).show();
             pb.setVisibility(View.GONE);
             //if logged in correctly, start the navigationview
+            getallbooks();
+
+            String thing = user.getDisplayName();
+            String split[] = thing.split("\\s+");
+
+
+            SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString(getString(R.string.fullname), thing);
+            editor.putString(getString(R.string.fname), split[0]);
+            editor.putString(getString(R.string.lname), split[1]);
+            editor.putString(getString(R.string.email), user.getEmail());
+            editor.putString(getString(R.string.grade), "Unknown");
+            editor.putString(getString(R.string.username), "No username specified");
+            editor.putString(getString(R.string.password), "No password specified");
+            editor.apply();
+
+            UserInformation userInformation = new UserInformation(split[0], split[1], "Gmail", "No username specified"
+                    , "No password specified", user.getEmail(), "Unknown");
+            mRootRef.child(user.getUid()).setValue(userInformation);
 
             Intent activities = new Intent(getApplicationContext(), Activities.class);
             startActivity(activities);
             finish();
 
         } else {
-            Toast.makeText(getApplicationContext(), "Logged fail", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "Logged fail", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.sign_in_button:
-                //when the googlesigninbutton is pressed, call this method
-                signIn();
-                break;
-        }
-    }
-
-    //use googleAPI to authenticate
-    private void signIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-        pb.setVisibility(View.VISIBLE);
-        startActivityForResult(signInIntent, REQ_CODE);
-    }
-
-    //implement abstract methods
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQ_CODE) {
-           GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleResult(result);
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            if (result.isSuccess()) {
+                GoogleSignInAccount account = result.getSignInAccount();
+                firebaseAuthWithGoogle(account);
+            } else {
+                updateUI(null);
+            }
         } else {
             callbackManager.onActivityResult(requestCode, resultCode, data);
             pb.setVisibility(View.VISIBLE);
+
         }
     }
 
-    //when logged in, retrieve the user information
-    private void handleResult(GoogleSignInResult result) {
-        if (result.isSuccess()) {
-            GoogleSignInAccount account = result.getSignInAccount();
+    private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
 
-            setFullName(account.getDisplayName());
-            setEmail(account.getEmail());
-            String username = account.getId();
-            setUsername(username);
+        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+        mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (!task.isSuccessful()) {
+                    Toast.makeText(Login.this, "Authentication failed.",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
 
-            loginwithgmail = true;
+    private void handleFacebookAccessToken(AccessToken token) {
+        Log.d("TAG", "handleFacebookAccessToken:" + token);
 
-            String[] splited = account.getDisplayName().split("\\s+");
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d("TAG", "signInWithCredential:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
 
-            SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sp.edit();
-            editor.putString(getString(R.string.fullname), account.getDisplayName());
-            editor.putString(getString(R.string.fname), splited[0]);
-            editor.putString(getString(R.string.lname), splited[1]);
-            editor.putString(getString(R.string.email), account.getEmail());
-            editor.putString(getString(R.string.grade), "Unknown" );
-            editor.putString(getString(R.string.username), username);
-            editor.putString(getString(R.string.password), "");
-            editor.apply();
+                            UserInformation userInformation = new UserInformation("no first name", "no last name",
+                                    "Facebook", "No username specified"
+                                    , "No password specified", user.getEmail(), "Unknown");
+                            mRootRef.child(user.getUid()).setValue(userInformation);
 
-            getallbooks();
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w("TAG", "signInWithCredential:failure", task.getException());
+                            Toast.makeText(Login.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
 
-            // String img_url = account.getPhotoUrl().toString();
-          //  updateUI(true);
+                        // ...
+                    }
+                });
+    }
 
-            Intent activities = new Intent(getApplicationContext(), Activities.class);
-            startActivity(activities);
-            finish();
+    private void signin() {
+        Intent signinintent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signinintent, RC_SIGN_IN);
+    }
 
-        } else {
-            updateUI(false);
+    public void signout(FirebaseAuth mAuth) {
+        mAuth.signOut();
+
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(@NonNull Status status) {
+                        updateUI(null);
+                    }
+                }
+        );
+    }
+
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Toast.makeText(Login.this, "Connection error",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.sign_in_button:
+                signin();
+                break;
         }
     }
 
@@ -645,4 +766,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
         SharedPreferences.Editor editor = sp.edit();
         editor.clear();
     }
+
+
 }

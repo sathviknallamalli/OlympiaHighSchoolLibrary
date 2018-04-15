@@ -9,6 +9,16 @@ public class UserInformation {
     private String fname;
     private String lname;
 
+    private String provider;
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
     public String getFname() {
         return fname;
     }
@@ -46,9 +56,10 @@ public class UserInformation {
     private String email;
     private String grade;
 
-    public UserInformation(String fname, String lname, String username, String password, String email, String grade) {
+    public UserInformation(String fname, String lname, String provider, String username, String password, String email, String grade) {
         this.fname = fname;
         this.lname = lname;
+        this.provider = provider;
         this.username = username;
         this.password = password;
         this.email = email;

@@ -123,7 +123,7 @@ public class ProfileFragment extends Fragment {
         //save and update all the changes to Firebase
         Firebase ref = new Firebase("https://libeary-8d044.firebaseio.com/Users/" + userid);
         final UserInformation bookdets = new UserInformation(Login.getFullName().split(" ")[0], Login.getFullName().split(" ")[1],
-                Login.getUsername(), Login.getPassword(), Login.getEmail(), newGrade);
+                "Email/Password",Login.getUsername(), Login.getPassword(), Login.getEmail(), newGrade);
         ref.setValue(bookdets);
 
         Login.setGrade(newGrade);

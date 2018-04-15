@@ -12,10 +12,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 public class Activities extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -27,11 +28,14 @@ public class Activities extends AppCompatActivity
     TextView email, rcount, ccount;
     SharedPreferences sharedPref;
 
+    FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activities);
         sharedPref = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+        mAuth = FirebaseAuth.getInstance();
 
         //set which page should first display once acitivities is launched after login
         /*AboutFragment fragmenttt = new AboutFragment();
@@ -62,7 +66,6 @@ public class Activities extends AppCompatActivity
         //set the navigation view
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
 
 
         View v = navigationView.getHeaderView(0);
@@ -97,12 +100,12 @@ public class Activities extends AppCompatActivity
 
 
     //inflate the navigationview activities view
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.activities, menu);
         return true;
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -123,9 +126,10 @@ public class Activities extends AppCompatActivity
         int id = item.getItemId();
         FragmentManager fragmentManager = getFragmentManager();
 
-       // android.app.FragmentManager fragmentManager = getFragmentManager();
+        // android.app.FragmentManager fragmentManager = getFragmentManager();
 
         if (id == R.id.nav_catalog) {
+
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new CatalogFragment()).commit();
         } else if (id == R.id.nav_checkedbooks) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new CheckedFragment()).commit();
@@ -147,6 +151,8 @@ public class Activities extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new ContactFragment()).commit();
         } else if (id == R.id.nav_about) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new AboutFragment()).commit();
+        }else if (id == R.id.nav_logout) {
+            fragmentManager.beginTransaction().replace(R.id.frameLayout, new LogoutFragment()).commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -174,4 +180,5 @@ public class Activities extends AppCompatActivity
         SharedPreferences.Editor editor = sp.edit();
         editor.clear();
     }
+
 }

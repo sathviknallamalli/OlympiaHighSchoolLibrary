@@ -147,7 +147,7 @@ public class AccountFragment extends Fragment {
         //save and update all the changes to Firebase
         Firebase ref = new Firebase("https://libeary-8d044.firebaseio.com/Users/" + userid);
         final UserInformation bookdets = new UserInformation(fnametemp.getText().toString().trim(), lnametemp.getText().toString().trim(),
-                usernametemp.getText().toString().trim().replace(" ", ""), Login.getPassword(),
+                "Email/Password",usernametemp.getText().toString().trim().replace(" ", ""), Login.getPassword(),
                 emailtemp.getText().toString().trim().replace(" ", ""), Login.getGrade());
         ref.setValue(bookdets);
 

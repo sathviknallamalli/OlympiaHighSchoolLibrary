@@ -34,7 +34,7 @@
         android:layout_alignStart="@+id/bookTitle"
         android:layout_marginBottom="18dp"
         android:text="TextView"
-        android:textColor="@color/common_plus_signin_btn_text_light_focused"
+        android:textColor="?attr/actionModeSplitBackground"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

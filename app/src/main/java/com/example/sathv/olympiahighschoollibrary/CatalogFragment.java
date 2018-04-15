@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.ArrayList;
 
 /**
@@ -90,12 +92,15 @@ public class CatalogFragment extends Fragment {
 
     static Book selected;
 
+    FirebaseAuth mAuth;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.catalog, container, false);
         getActivity().setTitle("Library Catalog");
 
+        mAuth = FirebaseAuth.getInstance();
         //allow to display search option
         setHasOptionsMenu(true);
 
@@ -166,13 +171,19 @@ public class CatalogFragment extends Fragment {
 
 
     //the options menu that contains search action
+
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+
+        inflater.inflate(R.menu.activities, menu);
         resetSearch();
         //inflater.inflate(R.menu.activities, menu);
         MenuItem searchItem = menu.findItem(R.id.item_search);
         android.support.v7.widget.SearchView searchView = (SearchView) searchItem.getActionView();
+
+
         //the listener
         SearchView.OnQueryTextListener listener = new SearchView.OnQueryTextListener() {
             @Override

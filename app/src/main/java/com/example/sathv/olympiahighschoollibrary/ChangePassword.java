@@ -144,7 +144,7 @@ public class ChangePassword extends AppCompatActivity {
         //save and update all the changes to Firebase
         Firebase ref = new Firebase("https://libeary-8d044.firebaseio.com/Users/" + userid);
         final UserInformation bookdets = new UserInformation(Login.getFullName().split(" ")[0], Login.getFullName().split(" ")[1],
-                Login.getUsername(), confirm.getText().toString(), Login.getEmail(), Login.getGrade());
+                "Email/Password",Login.getUsername(), confirm.getText().toString(), Login.getEmail(), Login.getGrade());
         ref.setValue(bookdets);
 
         Login.setPassword(confirm.getText().toString());

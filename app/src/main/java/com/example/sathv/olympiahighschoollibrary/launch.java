@@ -81,7 +81,7 @@ public class launch extends AppCompatActivity {
 
                 count++;
                 //handle the exception if the EditText fields are null
-                UserInformation userInformation = new UserInformation(fname, lname, username, password, email, phoneNum);
+                UserInformation userInformation = new UserInformation(fname, lname, "Email/Password", username, password, email, phoneNum);
                 mRootRef.child("adsklfasdl;fwep" + count).setValue(userInformation);
 
             }
