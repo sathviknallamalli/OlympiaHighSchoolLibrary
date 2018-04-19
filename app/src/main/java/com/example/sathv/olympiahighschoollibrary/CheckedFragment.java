@@ -2,6 +2,7 @@ package com.example.sathv.olympiahighschoollibrary;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +48,7 @@ public class CheckedFragment extends Fragment {
 
 
     private CheckedBooksAdapter adapter;
-
+    private CheckedBooksAdapter filteredvaluesadapter;
     Login l = new Login();
 
 
@@ -77,8 +79,11 @@ public class CheckedFragment extends Fragment {
         titletemp = new HashMap<String, Object>();
         datetemp = new HashMap<String, Object>();
 
-        ctits = collectBookData("title", l.getUsername());
-        cds = collectBookData("duedate", l.getUsername());
+        SharedPreferences sp = view.getContext().getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+
+
+        ctits = collectBookData("title", sp.getString(getString(R.string.email), "email"));
+        cds = collectBookData("duedate", sp.getString(getString(R.string.email), "email"));
 
 
         //if the checkedout arraylists are empty, then display a message
@@ -89,10 +94,10 @@ public class CheckedFragment extends Fragment {
         //if not then add each checked out book to an arraylist and make adapter
         else {
             Log.d("BLANK", "ENTERED");
-            for (int i = 0; i < ctits.length; i+=2) {
+            for (int i = 0; i < ctits.length; i++) {
 
                 //add checked book to arraylist
-                checkedBooks.add(new CheckedBook(ctits[i], cds[i+1], R.drawable.bear));
+                checkedBooks.add(new CheckedBook(ctits[i], cds[i], R.drawable.bear));
 
             }
             //set adapter
@@ -124,17 +129,10 @@ public class CheckedFragment extends Fragment {
                             stringBuilder.append(", ");
                         }
 
-                        if (fieldName.equals("title")) {
-                            SharedPreferences preferences = view.getContext().getSharedPreferences("pref", Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = preferences.edit();
-                            editor.putString("title", stringBuilder.toString());
-                            editor.commit();
-                        } else if (fieldName.equals("duedate")) {
-                            SharedPreferences preferences = view.getContext().getSharedPreferences("pref", Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = preferences.edit();
-                            editor.putString("duedate", stringBuilder.toString());
-                            editor.commit();
-                        }
+                        SharedPreferences preferences = view.getContext().getSharedPreferences("pref", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putString(fieldName, stringBuilder.toString());
+                        editor.commit();
 
                     }
                     //Log.d("DUDE", information.toString());
@@ -159,10 +157,17 @@ public class CheckedFragment extends Fragment {
         return temp;
     }
 
+    @Override
+    public void onOptionsMenuClosed(Menu menu) {
+        super.onOptionsMenuClosed(menu);
+        resetSearch();
+    }
+
     //override menu onclick method
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.activities, menu);
         MenuItem searchItem = menu.findItem(R.id.item_search);
         android.support.v7.widget.SearchView searchView = (SearchView) searchItem.getActionView();
         //search bar onclicklistener
@@ -186,21 +191,31 @@ public class CheckedFragment extends Fragment {
                 for (int i = 0; i < checkedBooks.size(); i++) {
 
                     //if the title of each book doesnt contain what the search bar is, then remove the book from filteredvalues
-                    if (!(checkedBooks.get(i).title.toLowerCase()).contains(newText.toLowerCase())) {
+                    if (!(checkedBooks.get(i).getTitle().toLowerCase()).contains(newText.toLowerCase())) {
                         filteredValues.remove(checkedBooks.get(i));
+                        filteredvaluesadapter = new CheckedBooksAdapter(getActivity().getApplicationContext(), R.layout.itemforchecked, filteredValues);
                     }
                 }
 
-                //set the adapter to the new arraylist of filtered values
-                adapter = new CheckedBooksAdapter(getActivity().getApplicationContext(), R.layout.itemforchecked, filteredValues);
-                lvc.setAdapter(adapter);
+                lvc.setAdapter(filteredvaluesadapter);
 
                 return false;
             }
         };
         //set searchbar listener and hint
         searchView.setOnQueryTextListener(listener);
-        searchView.setQueryHint("Search a book by title");
+        searchView.setQueryHint("Search checked out books by title");
+
+        MenuItem lg = menu.findItem(R.id.item_logout);
+
+        lg.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(getView().getContext(), Login.class));
+                return false;
+            }
+        });
     }
 
     //reset search method to set original adapter for the original books

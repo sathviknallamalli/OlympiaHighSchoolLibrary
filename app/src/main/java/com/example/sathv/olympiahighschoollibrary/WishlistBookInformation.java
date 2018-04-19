@@ -4,7 +4,6 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -29,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class BookInformation extends AppCompatActivity {
+public class WishlistBookInformation extends AppCompatActivity {
 
     TextView status;
     // TextView title;
@@ -69,14 +68,14 @@ public class BookInformation extends AppCompatActivity {
     NotificationCompat.Builder notification;
     private static final int uniqueid = 45612;
 
-    CatalogFragment cf;
+
 
     public static String getDatetoputinconfirmation() {
         return datetoputinconfirmation;
     }
 
     public static void setDatetoputinconfirmation(String datetoputinconfirmation) {
-        BookInformation.datetoputinconfirmation = datetoputinconfirmation;
+        WishlistBookInformation.datetoputinconfirmation = datetoputinconfirmation;
     }
 
     @Override
@@ -84,11 +83,10 @@ public class BookInformation extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_information);
 
-        cf = new CatalogFragment();
+
 
         //based on the selected book in catalog, title is set for activity
-        setTitle(CatalogFragment.titleofthebook);
-
+        setTitle(WishlistFragment.titleofthebook);
 
         //  title = (TextView) findViewById(R.id.infoTitle);
         author = (TextView) findViewById(R.id.infoAuthor);
@@ -122,28 +120,26 @@ public class BookInformation extends AppCompatActivity {
 
         //set the bookinfo fields with appropriate text based on selected book in catalog fragment
         //  title.setText(CatalogFragment.titleofthebook);
-        CatalogFragment cf = new CatalogFragment();
 
-//        Log.d("JOSEPH", cf.getSelected().getAuthor());
 
-        author.setText(CatalogFragment.authorofthebook);
-        category.setText(category.getText().toString() + " " + CatalogFragment.category);
-        isbn.setText("ISBN: " + CatalogFragment.isbn);
-        pg.setText("Pagecount: " + CatalogFragment.pg + "");
-        summary.setText(CatalogFragment.summary);
+        author.setText(WishlistFragment.authorofthebook);
+        category.setText(category.getText().toString() + " " + WishlistFragment.category);
+        isbn.setText("ISBN: " + WishlistFragment.isbn);
+        pg.setText("Pagecount: " + WishlistFragment.pg + "");
+        summary.setText(WishlistFragment.summary);
         summary.setMovementMethod(new ScrollingMovementMethod());
         summary.setVerticalScrollBarEnabled(true);
 
-        status.setText(status.getText().toString() + " " + cf.getStatus());
+        status.setText(status.getText().toString() + " " + WishlistFragment.status);
 
 
-        bookCover.setImageResource(CatalogFragment.id);
+        bookCover.setImageResource(WishlistFragment.id);
 
         //based on the status, set color text
 
-        if (cf.getStatus().equals("Available")) {
+        if (WishlistFragment.status.equals("Available")) {
             status.setTextColor(getResources().getColor(R.color.forestgreeen));
-        } else if (cf.getStatus().equals("Unavailable")) {
+        } else if (WishlistFragment.status.equals("Unavailable")) {
             status.setTextColor(getResources().getColor(R.color.crimson));
         }
 
@@ -172,11 +168,9 @@ public class BookInformation extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int which) {
 
                     String entered = input.getText().toString();
-                    SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
-                    String password = sp.getString(getString(R.string.password), "Unknown");
 
                     //make sure that password is correct
-                    if (entered.equals(password)) {
+                    if (entered.equals(Login.getPassword())) {
 
                         //set and determine the due date
                         int noOfDays = 14; //i.e two weeks
@@ -196,22 +190,22 @@ public class BookInformation extends AppCompatActivity {
                         setDatetoputinconfirmation(duedate.toString());
 
 
-                        notification = new NotificationCompat.Builder(BookInformation.this);
+                        notification = new NotificationCompat.Builder(WishlistBookInformation.this);
                         notification.setAutoCancel(true);
 
                         notification.setSmallIcon(R.mipmap.ic_launcher);
                         notification.setWhen(System.currentTimeMillis());
                         notification.setContentTitle("Book checked out");
-                        notification.setContentText("You have successfully checked out the following book: " + CatalogFragment.titleofthebook);
+                        notification.setContentText("You have successfully checked out the following book: " + WishlistFragment.titleofthebook);
 
                         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                         nm.notify(uniqueid, notification.build());
 
                         pbj.setVisibility(View.VISIBLE);
-                        CatalogFragment l = new CatalogFragment();
-                        updatecheckout(CatalogFragment.titleofthebook, CatalogFragment.authorofthebook, CatalogFragment.category,
-                                CatalogFragment.pg, CatalogFragment.summary, CatalogFragment.isbn, cf.getStatus());
+                        //CatalogFragment l = new CatalogFragment();
+                        updatecheckout(WishlistFragment.selected);
 
+                        //initializeCountDrawerchecke();
 
                         //start checked out confirmation activity for user
                         Intent activities = new Intent(context, CheckedOutConfirmation.class);
@@ -240,15 +234,10 @@ public class BookInformation extends AppCompatActivity {
         }
     }
 
-    private void updatecheckout(String title, String author, String category, String pagecount, String summary, String isbn, String status) {
-        Firebase mReffname = new Firebase("https://libeary-8d044.firebaseio.com/Books/" + title);
-
-        SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
-        String email = sp.getString(getString(R.string.email), "Unknown");
-
-        final FirebaseBook bookdets = new FirebaseBook(title, author,
-                category, pagecount, summary,
-                isbn, "1", getDatetoputinconfirmation(), email);
+    private void updatecheckout(Book needstobeupdated) {
+        Firebase mReffname = new Firebase("https://libeary-8d044.firebaseio.com/Books/" + needstobeupdated.getTitle());
+        needstobeupdated.setStatus("1");
+        final FirebaseBook bookdets = new FirebaseBook(needstobeupdated.getTitle(), needstobeupdated.getAuthor(), needstobeupdated.getCategory(), needstobeupdated.getPageCount(), needstobeupdated.getSummary(), needstobeupdated.getIsbn(), needstobeupdated.getStatus(), getDatetoputinconfirmation(), Login.getUsername());
 
         mReffname.setValue(bookdets);
 
@@ -262,7 +251,7 @@ public class BookInformation extends AppCompatActivity {
             final Context context = view.getContext();
 
             //make sure book is not already reserved
-            if (reservedbooktitles.contains(CatalogFragment.titleofthebook) || reservedbookimages.contains(CatalogFragment.id) || reservedbookauthor.contains(cf.authorofthebook)) {
+            if (reservedbooktitles.contains(WishlistFragment.titleofthebook) || reservedbookimages.contains(WishlistFragment.id) || reservedbookauthor.contains(WishlistFragment.authorofthebook)) {
                 Toast.makeText(context, "Book is already reserved", Toast.LENGTH_LONG).show();
             } else {
 
@@ -274,36 +263,32 @@ public class BookInformation extends AppCompatActivity {
                 input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 builder.setView(input);
 
-
-
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
                         String entered = input.getText().toString();
-                        SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
-                        String password = sp.getString(getString(R.string.password), "Unknown");
 
                         //make sure password is correct
-                        if (entered.equals(password)) {
+                        if (entered.equals(Login.getPassword())) {
 
                             //increase reserved count for Profile fragment to recrod count
                             reservedcount++;
 
                             //add info to the reserved arraylists for reserved fragment
-                            reservedbooktitles.add(CatalogFragment.titleofthebook);
-                            // reservedbookauthor.add(CatalogFragment.authorofthebook);
-                            reservedbookimages.add(CatalogFragment.id);
+                            reservedbooktitles.add(WishlistFragment.titleofthebook);
+                           // reservedbookauthor.add(CatalogFragment.authorofthebook);
+                            reservedbookimages.add(WishlistFragment.id);
 
 
-                            notification = new NotificationCompat.Builder(BookInformation.this);
+                            notification = new NotificationCompat.Builder(WishlistBookInformation.this);
                             notification.setAutoCancel(true);
 
                             notification.setSmallIcon(R.mipmap.ic_launcher);
                             notification.setWhen(System.currentTimeMillis());
                             notification.setContentTitle("Book reserved");
-                            notification.setContentText("You have successfully reserved the following book: " + CatalogFragment.titleofthebook);
+                            notification.setContentText("You have successfully reserved the following book: " + WishlistFragment.titleofthebook);
 
                             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                             nm.notify(uniqueid, notification.build());
@@ -344,7 +329,7 @@ public class BookInformation extends AppCompatActivity {
         rc.setGravity(Gravity.CENTER_VERTICAL);
         rc.setTypeface(null, Typeface.BOLD);
         rc.setTextColor(getResources().getColor(R.color.colorAccent));
-        rc.setText(BookInformation.reservedcount + "");
+        rc.setText(WishlistBookInformation.reservedcount + "");
 
 
     }
@@ -354,7 +339,7 @@ public class BookInformation extends AppCompatActivity {
         cc.setGravity(Gravity.CENTER_VERTICAL);
         cc.setTypeface(null, Typeface.BOLD);
         cc.setTextColor(getResources().getColor(R.color.colorAccent));
-        cc.setText(BookInformation.checkedoutcount + "");
+        cc.setText(WishlistBookInformation.checkedoutcount + "");
     }
 
     public void reviewonclick(View v) {

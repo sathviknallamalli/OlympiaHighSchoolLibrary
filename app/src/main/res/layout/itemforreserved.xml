@@ -36,7 +36,7 @@
         android:layout_below="@+id/bookTitle"
         android:layout_marginTop="12dp"
         android:text="TextView"
-        android:textColor="?attr/actionModeSplitBackground"
+        android:textColor="@color/com_facebook_likeboxcountview_text_color"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

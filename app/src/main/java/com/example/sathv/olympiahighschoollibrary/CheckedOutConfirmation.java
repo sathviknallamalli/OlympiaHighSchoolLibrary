@@ -1,5 +1,7 @@
 package com.example.sathv.olympiahighschoollibrary;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
@@ -18,7 +20,7 @@ public class CheckedOutConfirmation extends AppCompatActivity {
         CatalogFragment cf = new CatalogFragment();
 
         View view = (ConstraintLayout) findViewById(R.id.clayout);
-        final Snackbar snackbar = Snackbar.make(view, cf.capitalzeTitle(CatalogFragment.titleofthebook) + "has been checked out and available for pickup", Snackbar.LENGTH_LONG);
+        final Snackbar snackbar = Snackbar.make(view, (CatalogFragment.titleofthebook) + "has been checked out and available for pickup", Snackbar.LENGTH_LONG);
         snackbar.setAction("Dismiss", new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -35,8 +37,10 @@ public class CheckedOutConfirmation extends AppCompatActivity {
         TextView checkedoutto = (TextView) findViewById(R.id.checkedoutto);
         TextView dueDate = (TextView) findViewById(R.id.dueDate);
 
-        bookName.setText("Book name: " + cf.capitalzeTitle(CatalogFragment.titleofthebook));
-        checkedoutto.setText("Checked out to " + Login.getUsername());
+        bookName.setText("Book name: " + (CatalogFragment.titleofthebook));
+        SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+
+        checkedoutto.setText("Checked out to " + sp.getString(getString(R.string.email), "email"));
         dueDate.setText("Due date: " + BookInformation.getDatetoputinconfirmation());
     }
 }

@@ -42,4 +42,14 @@
     <string name="password">password</string>
     <string name="grade">grade</string>
 
+    <string name="title">title</string>
+    <string name="author">author</string>
+    <string name="category">category</string>
+    <string name="pagecount">pagecount</string>
+    <string name="isbn">isbn</string>
+    <string name="summary">summary</string>
+    <string name="status">status</string>
+    <string name="picid">picid</string>
+    <string name="provider">provider</string>
+
 </resources>

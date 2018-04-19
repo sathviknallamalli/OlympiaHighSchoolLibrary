@@ -3,8 +3,10 @@ package com.example.sathv.olympiahighschoollibrary;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -57,15 +59,18 @@ public class ProfileFragment extends Fragment {
         changegrade = (Button) view.findViewById(R.id.changegrade);
         mDialog = new ProgressDialog(view.getContext());
 
-        //assign each field the proper information by retrieving variables; username, name, checkedoutcount, and reservedcount
-        name.setText(l2.getFullName());
+        SharedPreferences sp = view.getContext().getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+        String grade = sp.getString(getString(R.string.grade), "Unknown");
 
-        if (l2.getGrade() == null) {
+        //assign each field the proper information by retrieving variables; username, name, checkedoutcount, and reservedcount
+        name.setText(sp.getString(getString(R.string.fullname), "full name"));
+
+        if (grade.equals("Unknown")) {
             gr.setText("Grade: " + "Unknown");
         } else {
-            gr.setText("Grade: " + l2.getGrade());
-
+            gr.setText("Grade: " + grade);
         }
+
         val.setText(BookInformation.checkedoutcount + "");
         reserval.setText(BookInformation.reservedcount + "");
 
@@ -106,7 +111,6 @@ public class ProfileFragment extends Fragment {
                         gr.setText("Grade: " + grades[which]);
 
 
-
                     }
                 });
                 builder.show();
@@ -115,17 +119,24 @@ public class ProfileFragment extends Fragment {
         return view;
     }
 
+
     private void updategrade() {
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
         String userid = user.getUid();
 
         //save and update all the changes to Firebase
+        SharedPreferences sp = getView().getContext().getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+
+
         Firebase ref = new Firebase("https://libeary-8d044.firebaseio.com/Users/" + userid);
-        final UserInformation bookdets = new UserInformation(Login.getFullName().split(" ")[0], Login.getFullName().split(" ")[1],
-                "Email/Password",Login.getUsername(), Login.getPassword(), Login.getEmail(), newGrade);
+        final UserInformation bookdets = new UserInformation(sp.getString(getString(R.string.fname), "fname"),
+                sp.getString(getString(R.string.lname), "lname"),sp.getString(getString(R.string.provider), "providder"),
+                sp.getString(getString(R.string.username), "username"), sp.getString(getString(R.string.password), "password")
+                , sp.getString(getString(R.string.email), "email"), newGrade);
         ref.setValue(bookdets);
 
-        Login.setGrade(newGrade);
+        editor.putString(getString(R.string.grade), newGrade);
     }
 }

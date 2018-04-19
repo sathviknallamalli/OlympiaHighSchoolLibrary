@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
@@ -38,6 +39,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -49,10 +51,20 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.TwitterAuthProvider;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * This class is the backend for the login to screen to allow login through facebook, google, and the app account
@@ -71,8 +83,10 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     String fn, ln, un, pd, em, gr;
     Button buttons;
     ProgressBar pb;
-    boolean loginwithgmail;
-    String userclass;
+
+    EditText passwordcustom;
+    EditText usernamecustom;
+    EditText gradecustom;
 
     EditText input;
     String entered;
@@ -205,22 +219,10 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
 
     static String username;
 
-    static String[] ctits, cds;
+    static String[] ctits;
 
     public static String[] getCtits() {
         return ctits;
-    }
-
-    public static void setCtits(String[] ctits) {
-        Login.ctits = ctits;
-    }
-
-    public static String[] getCds() {
-        return cds;
-    }
-
-    public static void setCds(String[] cds) {
-        Login.cds = cds;
     }
 
     //END SECTION
@@ -248,10 +250,20 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
 
     Firebase mRootRef;
 
+    private TwitterLoginButton mLoginButton;
+
+    final String CONSUMER_KEY = "WmCgyauCS5UuLCPosNQpc2Tag";
+    final String CONSUMER_SECRET = "VEReEAhJSuBLzf8wW4OrICYLoYkN1hbgfASz4ICyX3munFmwP9";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        final TwitterAuthConfig authConfig = new TwitterAuthConfig(CONSUMER_KEY, CONSUMER_SECRET);
+        Fabric.with(Login.this, new Twitter(authConfig));
+
         FacebookSdk.sdkInitialize(getApplicationContext());
+
         setContentView(R.layout.activity_login);
 
         facebookbtn = (Button) findViewById(R.id.facebookbutton);
@@ -274,31 +286,35 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
         facebookbtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                LoginManager.getInstance().logInWithReadPermissions(Login.this, Arrays.asList("email", "public_profile"));
+                LoginManager.getInstance().logInWithReadPermissions(Login.this, Arrays.asList("email", "public_profile", "user_friends"));
                 LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
 
                         handleFacebookAccessToken(loginResult.getAccessToken());
+
+
                         Toast.makeText(getApplicationContext(), "Log success"
                                 , Toast.LENGTH_SHORT).show();
+
 
                         pb.setVisibility(View.GONE);
 
                         String name = loginResult.getAccessToken().getUserId();
                         String email = loginResult.getAccessToken().getToken();
 
+                        getallbooks();
+                        // getchecked();
+
+                        //String[] splited = name.split("\\s+");
+
+                        FirebaseUser signedinuser = mAuth.getCurrentUser();
 
                         setFullName(name);
                         setEmail(email);
 
-                        getallbooks();
-                        // getchecked();
 
-                        String[] splited = name.split("\\s+");
-
-
-                        SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+                       /* SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sp.edit();
                         editor.putString(getString(R.string.fullname), name);
                         editor.putString(getString(R.string.fname), splited[0]);
@@ -307,12 +323,13 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                         editor.putString(getString(R.string.grade), "Unknown");
                         editor.putString(getString(R.string.username), "Not Applicable for Facebook login");
                         editor.putString(getString(R.string.password), "Cannot retrieve");
-                        editor.apply();
+                        editor.apply();*/
+
 
                         esend = emailField.getText().toString();
                         namesend = Login.getFullName();
 
-                        FirebaseUser user = mAuth.getCurrentUser();
+
 
                        /* UserInformation userInformation = new UserInformation("no first name", "no last name",
                                 "Facebook", "No username specified"
@@ -341,7 +358,10 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
         });
 
         //GOOGLE SIGN IN
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
+        SignInButton signInButton = findViewById(R.id.sign_in_button);
+        signInButton.setOnClickListener(this);
+        TextView textView = (TextView) signInButton.getChildAt(0);
+        textView.setText("Log in with Google");
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
 
@@ -354,11 +374,11 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    Log.d("TAG", "onauthstatesignin " + user.getUid());
+                    updateUI(user, "Gmail");
                 } else {
-                    Log.d("TAG", "onauthstatesignout");
                 }
-                updateUI(user);
+
+
             }
         };
 
@@ -461,6 +481,53 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
 
             }
         });
+
+
+        mLoginButton = findViewById(R.id.twitter);
+
+        mLoginButton.setCallback(new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                Log.d("TAG", "twitterLogin:success" + result);
+                handleTwitterSession(result.data);
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                Log.w("TAG", "twitterLogin:failure", exception);
+                updateUI(null, "Twitter");
+            }
+        });
+
+    }
+
+    private void handleTwitterSession(TwitterSession session) {
+        Log.d("TAG", "handleTwitterSession:" + session);
+
+        AuthCredential credential = TwitterAuthProvider.getCredential(
+                session.getAuthToken().token,
+                session.getAuthToken().secret);
+
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d("TAG", "signInWithCredential:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            updateUI(user, "Twitter");
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w("TAG", "signInWithCredential:failure", task.getException());
+                            Toast.makeText(Login.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                            updateUI(null, "Twitter");
+                        }
+
+                        // ...
+                    }
+                });
     }
 
     //when onstart method is implemented, setup the mAuth by adding the listener
@@ -581,11 +648,9 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                 sss = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "status");
                 ibss = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "isbn");
 
-                Log.d("HELLOWORLD", ts.size() + "");
 
                 //convert the arraylist to array and use setmethod
                 setTils(ts.toArray(new String[ts.size()]));
-                Log.d("HELLOWORLD", getTils().length + "AAA");
                 setAuths(aus.toArray(new String[aus.size()]));
                 setCs(cas.toArray(new String[cas.size()]));
                 setPgs(ps.toArray(new String[ps.size()]));
@@ -625,39 +690,73 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     }
 
     //updates the ui for googleLogin
-    private void updateUI(FirebaseUser user) {
+    private void updateUI(final FirebaseUser user, final String provider) {
         if (user != null) {
             //Toast.makeText(getApplicationContext(), "Logged in", Toast.LENGTH_SHORT).show();
             pb.setVisibility(View.GONE);
             //if logged in correctly, start the navigationview
             getallbooks();
 
-            String thing = user.getDisplayName();
-            String split[] = thing.split("\\s+");
+            final String thing = user.getDisplayName();
+            final String split[] = thing.split("\\s+");
+
+            final String uno = user.getEmail();
+
+            String userid = user.getUid();
+
+            mReffname = new Firebase("https://libeary-8d044.firebaseio.com/Users/" + userid);
+
+            //this event listener will retrieve the user information
+            //name, email, username, password, etc.
+            mReffname.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    //store the information in Map
+                    Map<String, String> map = dataSnapshot.getValue(Map.class);
 
 
-            SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-            SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sp.edit();
-            editor.putString(getString(R.string.fullname), thing);
-            editor.putString(getString(R.string.fname), split[0]);
-            editor.putString(getString(R.string.lname), split[1]);
-            editor.putString(getString(R.string.email), user.getEmail());
-            editor.putString(getString(R.string.grade), "Unknown");
-            editor.putString(getString(R.string.username), "No username specified");
-            editor.putString(getString(R.string.password), "No password specified");
-            editor.apply();
+                    un = map.get("username");
+                    pd = map.get("password");
+                    gr = map.get("grade");
 
-            UserInformation userInformation = new UserInformation(split[0], split[1], "Gmail", "No username specified"
-                    , "No password specified", user.getEmail(), "Unknown");
-            mRootRef.child(user.getUid()).setValue(userInformation);
+                    if (pd.equals("No password specified") || un.equals("No username specified") || gr.equals("Unknown")) {
+                        update(split[0], split[1], provider, uno, user);
+                    } else {
 
-            Intent activities = new Intent(getApplicationContext(), Activities.class);
-            startActivity(activities);
-            finish();
+                        SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putString(getString(R.string.fullname), thing);
+                        editor.putString(getString(R.string.fname), split[0]);
+                        editor.putString(getString(R.string.lname), split[1]);
+                        editor.putString(getString(R.string.email), uno);
+                        editor.putString(getString(R.string.grade), map.get("grade"));
+                        editor.putString(getString(R.string.username), map.get("username"));
+                        editor.putString(getString(R.string.password), map.get("password"));
+                        editor.putString(getString(R.string.provider), provider);
+                        editor.apply();
+
+                        UserInformation userInformation = new UserInformation(split[0], split[1], provider + "",
+                                map.get("username")
+                                , map.get("password"), uno, map.get("grade"));
+                        mRootRef.child(user.getUid()).setValue(userInformation);
+
+                        Intent activities = new Intent(Login.this, Activities.class);
+                        startActivity(activities);
+                        finish();
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+
+                }
+            });
+
 
         } else {
-            //Toast.makeText(getApplicationContext(), "Logged fail", Toast.LENGTH_SHORT).show();
+            // Toast.makeText(getApplicationContext(), "Logged fail", Toast.LENGTH_SHORT).show();
+            pb.setVisibility(View.GONE);
         }
     }
 
@@ -672,11 +771,13 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
-                updateUI(null);
+                updateUI(null, "Gmail");
             }
         } else {
             callbackManager.onActivityResult(requestCode, resultCode, data);
             pb.setVisibility(View.VISIBLE);
+
+            mLoginButton.onActivityResult(requestCode, resultCode, data);
 
         }
     }
@@ -698,7 +799,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d("TAG", "handleFacebookAccessToken:" + token);
 
-        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        final AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -708,10 +809,12 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                             Log.d("TAG", "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
 
-                            UserInformation userInformation = new UserInformation("no first name", "no last name",
-                                    "Facebook", "No username specified"
-                                    , "No password specified", user.getEmail(), "Unknown");
-                            mRootRef.child(user.getUid()).setValue(userInformation);
+                            SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sp.edit();
+                            editor.putString(getString(R.string.fullname), user.getDisplayName());
+
+                            updateUI(user, "Facebook");
+
 
                         } else {
                             // If sign in fails, display a message to the user.
@@ -737,7 +840,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(@NonNull Status status) {
-                        updateUI(null);
+                        updateUI(null, "Gmail");
                     }
                 }
         );
@@ -765,6 +868,62 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
         SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.clear();
+    }
+
+    public void update(final String cfname, final String clname, final String cprovider, final String cemail,
+                       final FirebaseUser user) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(Login.this);
+        builder.setTitle("Enter informaiton");
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View v = inflater.inflate(R.layout.customalert, null);
+        builder.setView(v);
+
+        passwordcustom = v.findViewById(R.id.passwordcustom);
+        usernamecustom = v.findViewById(R.id.usernamecustom);
+        gradecustom = v.findViewById(R.id.gradecustom);
+
+
+        //set ok button
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                UserInformation userInformation = new UserInformation(cfname, clname, cprovider,
+                        usernamecustom.getText().toString()
+                        , passwordcustom.getText().toString(), cemail, gradecustom.getText().toString());
+                mRootRef.child(user.getUid()).setValue(userInformation);
+
+                SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString(getString(R.string.fullname), cfname + " " + clname);
+                editor.putString(getString(R.string.fname), cfname);
+                editor.putString(getString(R.string.lname), clname);
+                editor.putString(getString(R.string.email), cemail);
+                editor.putString(getString(R.string.grade), gradecustom.getText().toString());
+                editor.putString(getString(R.string.username), usernamecustom.getText().toString());
+                editor.putString(getString(R.string.password), passwordcustom.getText().toString());
+                editor.putString(getString(R.string.provider), cprovider);
+                editor.apply();
+
+                Intent activities = new Intent(Login.this, Activities.class);
+                startActivity(activities);
+                finish();
+                dialog.cancel();
+
+
+            }
+        });
+
+        //alert dialog negative cancel button
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
     }
 
 

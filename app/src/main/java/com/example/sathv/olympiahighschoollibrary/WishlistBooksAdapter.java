@@ -68,7 +68,7 @@ public class WishlistBooksAdapter extends ArrayAdapter<WishlistBook> {
 
                 CatalogFragment cf = new CatalogFragment();
                 cf.addedornot[position] = "Add to wishlist";
-                cf.addedornotorig[position] = "Add to wishlist";
+               // cf.addedornotorig[position] = "Add to wishlist";
                 notifyDataSetChanged();
             }
         });

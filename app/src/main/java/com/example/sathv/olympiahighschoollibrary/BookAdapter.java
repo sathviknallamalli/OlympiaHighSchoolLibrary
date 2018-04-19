@@ -89,17 +89,17 @@ public class BookAdapter extends ArrayAdapter<Book> {
                     Integer index = (Integer) view.getTag();
 
                     cf.addedornot[position] = "Added";
-                    cf.addedornotorig[position] = "Added";
+                    //cf.addedornotorig[position] = "Added";
                    // book.added = "Added";
 
                     //add.setText("Added");
 
 
                     //and add to the wishlist arraylist
-                    wishlistbooks.add(new WishlistBook(cf.capitalzeTitle(cf.titleorig[position]), cf.capitalizeauthor(cf.authororig[position])
-                            , cf.capitalizeauthor(cf.categoriesorig[position]), cf.picidsorig[position]));
+                    wishlistbooks.add(new WishlistBook(cf.title[position], (cf.author[position])
+                            , cf.categories[position], cf.picids[position]));
 
-                    final Snackbar snackbar = Snackbar.make(view,  cf.capitalzeTitle(cf.titleorig[position])  + "has been added to your wishlist", Snackbar.LENGTH_LONG);
+                    final Snackbar snackbar = Snackbar.make(view,  cf.title[position]  + " has been added to your wishlist", Snackbar.LENGTH_LONG);
                     snackbar.setAction("Dismiss", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {

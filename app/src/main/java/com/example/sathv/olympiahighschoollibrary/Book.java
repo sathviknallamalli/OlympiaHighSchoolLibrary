@@ -15,6 +15,14 @@ public class Book {
     public String summary;
     public int imageid;
 
+    public int getImageid() {
+        return imageid;
+    }
+
+    public void setImageid(int imageid) {
+        this.imageid = imageid;
+    }
+
     //parameters for Book contructor
     public Book(String title, String author, String pageCount, int imageid, String category, String added, String isbn, String status, String summary) {
         this.title = title;

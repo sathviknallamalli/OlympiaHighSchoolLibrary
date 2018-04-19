@@ -1,6 +1,7 @@
 package com.example.sathv.olympiahighschoollibrary;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
@@ -11,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
@@ -29,14 +32,29 @@ public class WishlistFragment extends Fragment {
     TextView message;
 
     private WishlistBooksAdapter adapter;
+    private WishlistBooksAdapter filteredvaluesadapter;
+
+    public static String titleofthebook;
+    public static String authorofthebook;
+    public static String category;
+    public static String pg;
+    public static int id;
+    public static String isbn;
+    public static String summary;
+    public static String status;
+
+    CatalogFragment cf;
+
+    static Book selected;
 
     @Override
-
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.wishlist, container, false);
         getActivity().setTitle("Wishlist");
         setHasOptionsMenu(true);
+
+        cf = new CatalogFragment();
 
         //assign varible
         lvw = (ListView) view.findViewById(R.id.listofwishlistbooks);
@@ -56,13 +74,21 @@ public class WishlistFragment extends Fragment {
             //set as adapter
             adapter = new WishlistBooksAdapter(getActivity().getApplicationContext(), R.layout.wishlistlayout, wishlistBooks);
             lvw.setAdapter(adapter);
+            
         }
         return view;
     }
 
     @Override
+    public void onOptionsMenuClosed(Menu menu) {
+        super.onOptionsMenuClosed(menu);
+        resetSearch();
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.activities, menu);
         MenuItem searchItem = menu.findItem(R.id.item_search);
         android.support.v7.widget.SearchView searchView = (SearchView) searchItem.getActionView();
         //set listener for searchbar
@@ -87,12 +113,12 @@ public class WishlistFragment extends Fragment {
                     //if the title of each reserved book does not contains the searchbar input, then remove the book
                     if (!(wishlistBooks.get(i).title.toLowerCase()).contains(newText.toLowerCase())) {
                         filteredValues.remove(wishlistBooks.get(i));
+                        filteredvaluesadapter = new WishlistBooksAdapter(getActivity().getApplicationContext(), R.layout.customlayout, filteredValues);
                     }
                 }
 
                 //set the adapter with filteredvalues arraylist
-                adapter = new WishlistBooksAdapter(getActivity().getApplicationContext(), R.layout.wishlistlayout, filteredValues);
-                lvw.setAdapter(adapter);
+                lvw.setAdapter(filteredvaluesadapter);
 
                 return false;
             }
@@ -100,6 +126,17 @@ public class WishlistFragment extends Fragment {
         //set listener and hint
         searchView.setOnQueryTextListener(listener);
         searchView.setQueryHint("Search a book by title");
+
+        MenuItem lg = menu.findItem(R.id.item_logout);
+
+        lg.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(getView().getContext(), Login.class));
+                return false;
+            }
+        });
     }
 
     //reset search method

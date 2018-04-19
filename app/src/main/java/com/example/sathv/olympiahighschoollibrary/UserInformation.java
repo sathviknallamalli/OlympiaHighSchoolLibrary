@@ -56,7 +56,8 @@ public class UserInformation {
     private String email;
     private String grade;
 
-    public UserInformation(String fname, String lname, String provider, String username, String password, String email, String grade) {
+    public UserInformation(String fname, String lname, String provider, String username, String password, String email,
+                           String grade) {
         this.fname = fname;
         this.lname = lname;
         this.provider = provider;

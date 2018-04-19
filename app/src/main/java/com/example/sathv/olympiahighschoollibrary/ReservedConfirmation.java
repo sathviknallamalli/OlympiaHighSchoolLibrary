@@ -1,5 +1,7 @@
 package com.example.sathv.olympiahighschoollibrary;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
@@ -18,7 +20,7 @@ public class ReservedConfirmation extends AppCompatActivity {
         CatalogFragment cf = new CatalogFragment();
 
         View view = (ConstraintLayout) findViewById(R.id.rlayout);
-        final Snackbar snackbar = Snackbar.make(view, cf.capitalzeTitle(CatalogFragment.titleofthebook) + "has been reserved and you will be notified when the book is avilable for pickup", Snackbar.LENGTH_LONG);
+        final Snackbar snackbar = Snackbar.make(view, (CatalogFragment.titleofthebook) + " has been reserved and you will be notified when the book is avilable for pickup", Snackbar.LENGTH_LONG);
         snackbar.setAction("Dismiss", new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -32,7 +34,9 @@ public class ReservedConfirmation extends AppCompatActivity {
         TextView reservedto = (TextView) findViewById(R.id.reserveusernmae);
 
         //set each field with appropriate variables by retrieving as static variables
-        reserveBook.setText("Book name: " + cf.capitalzeTitle(CatalogFragment.titleofthebook));
-        reservedto.setText("Reserved to " + Login.getUsername());
+        reserveBook.setText("Book name: " + (CatalogFragment.titleofthebook));
+        SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+
+        reservedto.setText("Reserved to " + sp.getString(getString(R.string.email), "email"));
     }
 }
