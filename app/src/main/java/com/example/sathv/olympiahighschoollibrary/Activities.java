@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,6 +29,8 @@ public class Activities extends AppCompatActivity
     TextView email, rcount, ccount;
     SharedPreferences sharedPref;
 
+    ImageView loginicon;
+
     FirebaseAuth mAuth;
 
     @Override
@@ -36,6 +39,7 @@ public class Activities extends AppCompatActivity
         setContentView(R.layout.activity_activities);
         sharedPref = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
         mAuth = FirebaseAuth.getInstance();
+
 
         //set which page should first display once acitivities is launched after login
         /*AboutFragment fragmenttt = new AboutFragment();
@@ -70,6 +74,8 @@ public class Activities extends AppCompatActivity
 
         View v = navigationView.getHeaderView(0);
 
+        loginicon = (ImageView) v.findViewById(R.id.loginicon);
+
         //set the values for textviews in navheader
         studentName = (TextView) v.findViewById(R.id.name);
         studentName.setText(sharedPref.getString(getString(R.string.fullname), "full name"));
@@ -84,6 +90,14 @@ public class Activities extends AppCompatActivity
                 findItem(R.id.nav_checkedbooks));*/
 
         //initializeCountDrawer();
+
+        if (sharedPref.getString(getString(R.string.provider), "provider").equals("Facebook")) {
+            loginicon.setImageResource(R.drawable.com_facebook_button_icon_blue);
+        } else if (sharedPref.getString(getString(R.string.provider), "provider").equals("Gmail")) {
+            loginicon.setImageResource(R.drawable.googleg_standard_color_18);
+        } else if (sharedPref.getString(getString(R.string.provider), "provider").equals("Twitter")) {
+            loginicon.setImageResource(R.drawable.twit);
+        }
 
     }
 
@@ -151,7 +165,7 @@ public class Activities extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new ContactFragment()).commit();
         } else if (id == R.id.nav_about) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new AboutFragment()).commit();
-        }else if (id == R.id.nav_logout) {
+        } else if (id == R.id.nav_logout) {
             fragmentManager.beginTransaction().replace(R.id.frameLayout, new LogoutFragment()).commit();
         }
 

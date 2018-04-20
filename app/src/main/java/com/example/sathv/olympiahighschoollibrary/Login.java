@@ -19,6 +19,7 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +53,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.TwitterAuthProvider;
+import com.google.firebase.auth.UserInfo;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -63,6 +65,8 @@ import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -84,9 +88,12 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     Button buttons;
     ProgressBar pb;
 
+    ImageView loginicon;
+
     EditText passwordcustom;
     EditText usernamecustom;
     EditText gradecustom;
+    EditText confirmcustom;
 
     EditText input;
     String entered;
@@ -274,6 +281,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
         pb = (ProgressBar) findViewById(R.id.pb);
         pb.setVisibility(View.GONE);
         fp = findViewById(R.id.fp);
+        loginicon = (ImageView) findViewById(R.id.loginicon);
         //signup to make a new account from LiBEARy
         buttons = (Button) findViewById(R.id.signUp);
 
@@ -337,10 +345,6 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                         mRootRef.child(user.getUid()).setValue(userInformation);*/
 
 
-                        Intent activities = new Intent(getApplicationContext(), Activities.class);
-                        startActivity(activities);
-                        finish();
-
                     }
 
                     @Override
@@ -374,7 +378,31 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    updateUI(user, "Gmail");
+
+                    for (UserInfo userdos : FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
+
+                        if (userdos.getProviderId().equals("facebook.com")) {
+                            //For linked facebook account
+                            Log.d("xx_xx_provider_info", "User is signed in with Facebook");
+                            updateUI(user, "Facebook");
+
+
+
+                        } else if (userdos.getProviderId().equals("google.com")) {
+                            //For linked Google account
+                            Log.d("xx_xx_provider_info", "User is signed in with Google");
+                            updateUI(user, "Gmail");
+
+
+                        }else if (userdos.getProviderId().equals("twitter.com")) {
+                            //For linked Google account
+                            Log.d("xx_xx_provider_info", "User is signed in with Twitter");
+                            updateUI(user, "Twitter");
+
+
+                        }
+                    }
+
                 } else {
                 }
 
@@ -501,34 +529,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
 
     }
 
-    private void handleTwitterSession(TwitterSession session) {
-        Log.d("TAG", "handleTwitterSession:" + session);
 
-        AuthCredential credential = TwitterAuthProvider.getCredential(
-                session.getAuthToken().token,
-                session.getAuthToken().secret);
-
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d("TAG", "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user, "Twitter");
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w("TAG", "signInWithCredential:failure", task.getException());
-                            Toast.makeText(Login.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                            updateUI(null, "Twitter");
-                        }
-
-                        // ...
-                    }
-                });
-    }
 
     //when onstart method is implemented, setup the mAuth by adding the listener
     @Override
@@ -693,7 +694,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     private void updateUI(final FirebaseUser user, final String provider) {
         if (user != null) {
             //Toast.makeText(getApplicationContext(), "Logged in", Toast.LENGTH_SHORT).show();
-            pb.setVisibility(View.GONE);
+
             //if logged in correctly, start the navigationview
             getallbooks();
 
@@ -714,35 +715,40 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                     //store the information in Map
                     Map<String, String> map = dataSnapshot.getValue(Map.class);
 
-
-                    un = map.get("username");
-                    pd = map.get("password");
-                    gr = map.get("grade");
-
-                    if (pd.equals("No password specified") || un.equals("No username specified") || gr.equals("Unknown")) {
+                    if (map == null) {
                         update(split[0], split[1], provider, uno, user);
                     } else {
+                        un = map.get("username");
+                        pd = map.get("password");
+                        gr = map.get("grade");
 
-                        SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sp.edit();
-                        editor.putString(getString(R.string.fullname), thing);
-                        editor.putString(getString(R.string.fname), split[0]);
-                        editor.putString(getString(R.string.lname), split[1]);
-                        editor.putString(getString(R.string.email), uno);
-                        editor.putString(getString(R.string.grade), map.get("grade"));
-                        editor.putString(getString(R.string.username), map.get("username"));
-                        editor.putString(getString(R.string.password), map.get("password"));
-                        editor.putString(getString(R.string.provider), provider);
-                        editor.apply();
+                        if (pd.equals("No password specified") || un.equals("No username specified") || gr.equals("Unknown")) {
+                            update(split[0], split[1], provider, uno, user);
+                        } else {
 
-                        UserInformation userInformation = new UserInformation(split[0], split[1], provider + "",
-                                map.get("username")
-                                , map.get("password"), uno, map.get("grade"));
-                        mRootRef.child(user.getUid()).setValue(userInformation);
+                            SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sp.edit();
+                            editor.putString(getString(R.string.fullname), thing);
+                            editor.putString(getString(R.string.fname), split[0]);
+                            editor.putString(getString(R.string.lname), split[1]);
+                            editor.putString(getString(R.string.email), uno);
+                            editor.putString(getString(R.string.grade), map.get("grade"));
+                            editor.putString(getString(R.string.username), map.get("username"));
+                            editor.putString(getString(R.string.password), map.get("password"));
+                            editor.putString(getString(R.string.provider), provider);
+                            editor.apply();
 
-                        Intent activities = new Intent(Login.this, Activities.class);
-                        startActivity(activities);
-                        finish();
+                            UserInformation userInformation = new UserInformation(split[0], split[1], provider + "",
+                                    map.get("username")
+                                    , map.get("password"), uno, map.get("grade"));
+                            mRootRef.child(user.getUid()).setValue(userInformation);
+
+                            pb.setVisibility(View.GONE);
+
+                            Intent activities = new Intent(Login.this, Activities.class);
+                            startActivity(activities);
+                            finish();
+                        }
                     }
 
                 }
@@ -796,6 +802,8 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
         });
     }
 
+
+
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d("TAG", "handleFacebookAccessToken:" + token);
 
@@ -812,8 +820,14 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                             SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = sp.edit();
                             editor.putString(getString(R.string.fullname), user.getDisplayName());
+                            editor.putString(getString(R.string.email), user.getEmail());
 
                             updateUI(user, "Facebook");
+
+
+                            /*Intent activities = new Intent(getApplicationContext(), Activities.class);
+                            startActivity(activities);
+                            finish();*/
 
 
                         } else {
@@ -827,6 +841,35 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                     }
                 });
     }
+
+    private void handleTwitterSession(TwitterSession session) {
+        Log.d("TAG", "handleTwitterSession:" + session);
+
+        AuthCredential credential = TwitterAuthProvider.getCredential(
+                session.getAuthToken().token,
+                session.getAuthToken().secret);
+
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d("TAG", "signInWithCredential:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            updateUI(user, "Twitter");
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w("TAG", "signInWithCredential:failure", task.getException());
+                            Toast.makeText(Login.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                        // ...
+                    }
+                });
+    }
+
 
     private void signin() {
         Intent signinintent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
@@ -873,7 +916,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     public void update(final String cfname, final String clname, final String cprovider, final String cemail,
                        final FirebaseUser user) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(Login.this);
-        builder.setTitle("Enter informaiton");
+        builder.setTitle("Please enter this information for completion of your account");
 
         LayoutInflater inflater = this.getLayoutInflater();
         final View v = inflater.inflate(R.layout.customalert, null);
@@ -882,7 +925,10 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
         passwordcustom = v.findViewById(R.id.passwordcustom);
         usernamecustom = v.findViewById(R.id.usernamecustom);
         gradecustom = v.findViewById(R.id.gradecustom);
+        confirmcustom = v.findViewById(R.id.confirmcustom);
 
+        Toast.makeText(getApplicationContext(), "Because you logged in with another provider, please enter this information " +
+                "to complete your account creation", Toast.LENGTH_LONG).show();
 
         //set ok button
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -890,28 +936,45 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                UserInformation userInformation = new UserInformation(cfname, clname, cprovider,
-                        usernamecustom.getText().toString()
-                        , passwordcustom.getText().toString(), cemail, gradecustom.getText().toString());
-                mRootRef.child(user.getUid()).setValue(userInformation);
+                String passwordcust = passwordcustom.getText().toString();
 
-                SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sp.edit();
-                editor.putString(getString(R.string.fullname), cfname + " " + clname);
-                editor.putString(getString(R.string.fname), cfname);
-                editor.putString(getString(R.string.lname), clname);
-                editor.putString(getString(R.string.email), cemail);
-                editor.putString(getString(R.string.grade), gradecustom.getText().toString());
-                editor.putString(getString(R.string.username), usernamecustom.getText().toString());
-                editor.putString(getString(R.string.password), passwordcustom.getText().toString());
-                editor.putString(getString(R.string.provider), cprovider);
-                editor.apply();
+                Pattern p = Pattern.compile("[^A-Za-z0-9]");
+                Matcher m = p.matcher(passwordcust);
 
-                Intent activities = new Intent(Login.this, Activities.class);
-                startActivity(activities);
-                finish();
-                dialog.cancel();
+                Pattern numberp = Pattern.compile("([0-9])");
+                Matcher numberm = numberp.matcher(passwordcust);
 
+                if (!passwordcustom.getText().toString().equals(confirmcustom.getText().toString())) {
+                    Toast.makeText(getApplicationContext(), "Passwords are not identical", Toast.LENGTH_SHORT).show();
+                } else if (!m.find()) {
+                    Toast.makeText(getApplicationContext(), "Password must contain a special character", Toast.LENGTH_SHORT).show();
+                } else if (!numberm.find()) {
+                    Toast.makeText(getApplicationContext(), "Password must contain a number", Toast.LENGTH_SHORT).show();
+                } else {
+                    UserInformation userInformation = new UserInformation(cfname, clname, cprovider,
+                            usernamecustom.getText().toString()
+                            , passwordcustom.getText().toString(), cemail, gradecustom.getText().toString());
+                    mRootRef.child(user.getUid()).setValue(userInformation);
+
+                    SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putString(getString(R.string.fullname), cfname + " " + clname);
+                    editor.putString(getString(R.string.fname), cfname);
+                    editor.putString(getString(R.string.lname), clname);
+                    editor.putString(getString(R.string.email), cemail);
+                    editor.putString(getString(R.string.grade), gradecustom.getText().toString());
+                    editor.putString(getString(R.string.username), usernamecustom.getText().toString());
+                    editor.putString(getString(R.string.password), passwordcustom.getText().toString());
+                    editor.putString(getString(R.string.provider), cprovider);
+                    editor.apply();
+
+                    pb.setVisibility(View.GONE);
+
+                    Intent activities = new Intent(Login.this, Activities.class);
+                    startActivity(activities);
+                    finish();
+                    dialog.cancel();
+                }
 
             }
         });
