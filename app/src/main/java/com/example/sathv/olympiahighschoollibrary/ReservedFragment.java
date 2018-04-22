@@ -3,7 +3,9 @@ package com.example.sathv.olympiahighschoollibrary;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -42,7 +44,8 @@ public class ReservedFragment extends Fragment {
     View view;
 
     String rtits[], rauths[];
-
+    
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getActivity().setTitle("Reserved books");
@@ -92,7 +95,7 @@ public class ReservedFragment extends Fragment {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     Map<String, String> map = dataSnapshot.getValue(Map.class);
 
-                    SharedPreferences sp = view.getContext().getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+                    SharedPreferences sp =view.getContext().getSharedPreferences("userinfo", Context.MODE_PRIVATE);
                     String emailofuser = sp.getString(getString(R.string.email), "");
 
                     if (map.get("reservations").contains(emailofuser)) {

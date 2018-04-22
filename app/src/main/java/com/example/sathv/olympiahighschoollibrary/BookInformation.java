@@ -24,6 +24,8 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -277,7 +279,7 @@ public class BookInformation extends AppCompatActivity {
                 Map<String, String> map = dataSnapshot.getValue(Map.class);
 
                 reservationsforthisbook = map.get("reservations");
-                if(reservationsforthisbook.isEmpty() || reservationsforthisbook == null){
+                if (reservationsforthisbook.isEmpty() || reservationsforthisbook == null) {
                     reservationsforthisbook = "";
                 }
             }
