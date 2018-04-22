@@ -83,13 +83,6 @@ public class Activities extends AppCompatActivity
         email = (TextView) v.findViewById(R.id.email);
         email.setText(sharedPref.getString(getString(R.string.email), "email"));
 
-       /* rcount = (TextView) MenuItemCompat.getActionView(navigationView.getMenu().
-                findItem(R.id.nav_reservedbooks));
-
-        ccount = (TextView) MenuItemCompat.getActionView(navigationView.getMenu().
-                findItem(R.id.nav_checkedbooks));*/
-
-        //initializeCountDrawer();
 
         if (sharedPref.getString(getString(R.string.provider), "provider").equals("Facebook")) {
             loginicon.setImageResource(R.drawable.com_facebook_button_icon_blue);

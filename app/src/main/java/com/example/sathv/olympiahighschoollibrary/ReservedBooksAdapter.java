@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.firebase.client.Firebase;
+
 import java.util.ArrayList;
 
 /**
@@ -19,6 +21,7 @@ public class ReservedBooksAdapter extends ArrayAdapter<ReservedBook> {
 
     Context context;
     int resource;
+    private Firebase mReffname;
     ArrayList<ReservedBook> arraylistreservedbooks = null;
 
     //reserved book adapter constructor
@@ -66,6 +69,8 @@ public class ReservedBooksAdapter extends ArrayAdapter<ReservedBook> {
                         BookInformation.reservedbookimages.remove(index.intValue());
                         BookInformation.reservedbookauthor.remove(index.intValue());
                         notifyDataSetChanged();
+
+
                     }
                 }
         );

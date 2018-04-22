@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.NotificationCompat;
@@ -13,7 +12,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.ScrollingMovementMethod;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,12 +20,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
-import com.google.firebase.database.DatabaseReference;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 public class BookInformation extends AppCompatActivity {
 
@@ -42,15 +43,17 @@ public class BookInformation extends AppCompatActivity {
     ImageView bookCover;
     Button checkOut;
     Button reserve;
-    Button ratebut;
-    DatabaseReference databasereference;
 
     ProgressBar pbj;
 
     NavigationView navigationView = null;
 
-    TextView rc, cc;
+    Firebase mRootRef;
 
+    String reservations, checkedoutto, datething;
+
+
+    String reservationsforthisbook;
     static int checkedoutcount = 0;
     static int reservedcount = 0;
 
@@ -86,9 +89,9 @@ public class BookInformation extends AppCompatActivity {
 
         cf = new CatalogFragment();
 
-        //based on the selected book in catalog, title is set for activity
         setTitle(CatalogFragment.titleofthebook);
 
+        mRootRef = new Firebase("https://libeary-8d044.firebaseio.com/Users");
 
         //  title = (TextView) findViewById(R.id.infoTitle);
         author = (TextView) findViewById(R.id.infoAuthor);
@@ -109,35 +112,21 @@ public class BookInformation extends AppCompatActivity {
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
 
-        /*SharedPreferences mPrefs = getSharedPreferences("bookstore",MODE_PRIVATE);
 
-        Gson gson = new Gson();
-        String json = mPrefs.getString("MyObject", "");
-        Book obj = gson.fromJson(json, Book.class);*/
-
-
-//        cc = (TextView) MenuItemCompat.getActionView(navigationView.getMenu().findItem(R.id.nav_checkedbooks));
-
-//        rc = (TextView) MenuItemCompat.getActionView(navigationView.getMenu().findItem(R.id.nav_reservedbooks));
-
-        //set the bookinfo fields with appropriate text based on selected book in catalog fragment
-        //  title.setText(CatalogFragment.titleofthebook);
-        CatalogFragment cf = new CatalogFragment();
-
-//        Log.d("JOSEPH", cf.getSelected().getAuthor());
+        //Book b = CatalogFragment.books.get(CatalogFragment.pos);
 
         author.setText(CatalogFragment.authorofthebook);
         category.setText(category.getText().toString() + " " + CatalogFragment.category);
         isbn.setText("ISBN: " + CatalogFragment.isbn);
-        pg.setText("Pagecount: " + CatalogFragment.pg + "");
+        pg.setText("Pagecount: " + CatalogFragment.pg);
         summary.setText(CatalogFragment.summary);
         summary.setMovementMethod(new ScrollingMovementMethod());
         summary.setVerticalScrollBarEnabled(true);
 
         status.setText(status.getText().toString() + " " + cf.getStatus());
 
-
         bookCover.setImageResource(CatalogFragment.id);
+
 
         //based on the status, set color text
 
@@ -146,6 +135,26 @@ public class BookInformation extends AppCompatActivity {
         } else if (cf.getStatus().equals("Unavailable")) {
             status.setTextColor(getResources().getColor(R.color.crimson));
         }
+
+        reserve.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                boolean alreadycheckout = ischeckedout(CatalogFragment.titleofthebook);
+
+                SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+                String email = sp.getString(getString(R.string.email), "em");
+
+                if (CatalogFragment.reservedlist.contains(email)) {
+                    Toast.makeText(BookInformation.this, "You have already reserved this book", Toast.LENGTH_LONG).show();
+                } else if (alreadycheckout) {
+                    Toast.makeText(BookInformation.this, "You have checked this book out", Toast.LENGTH_LONG).show();
+
+                } else {
+                    method();
+                }
+            }
+        });
 
 
     }
@@ -195,13 +204,12 @@ public class BookInformation extends AppCompatActivity {
                         reminderdates.add(reminderdate);
                         setDatetoputinconfirmation(duedate.toString());
 
-
                         notification = new NotificationCompat.Builder(BookInformation.this);
                         notification.setAutoCancel(true);
 
                         notification.setSmallIcon(R.mipmap.ic_launcher);
                         notification.setWhen(System.currentTimeMillis());
-                        notification.setContentTitle("Book checked out");
+                        notification.setContentTitle(CatalogFragment.titleofthebook + " checked out");
                         notification.setContentText("You have successfully checked out the following book: " + CatalogFragment.titleofthebook);
 
                         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -210,7 +218,7 @@ public class BookInformation extends AppCompatActivity {
                         pbj.setVisibility(View.VISIBLE);
                         CatalogFragment l = new CatalogFragment();
                         updatecheckout(CatalogFragment.titleofthebook, CatalogFragment.authorofthebook, CatalogFragment.category,
-                                CatalogFragment.pg, CatalogFragment.summary, CatalogFragment.isbn, cf.getStatus());
+                                CatalogFragment.pg, CatalogFragment.summary, CatalogFragment.isbn);
 
 
                         //start checked out confirmation activity for user
@@ -240,122 +248,103 @@ public class BookInformation extends AppCompatActivity {
         }
     }
 
-    private void updatecheckout(String title, String author, String category, String pagecount, String summary, String isbn, String status) {
+    private void updatecheckout(String title, String author, String category, String pagecount, String summary,
+                                String isbn) {
+
         Firebase mReffname = new Firebase("https://libeary-8d044.firebaseio.com/Books/" + title);
 
         SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
         String email = sp.getString(getString(R.string.email), "Unknown");
+        String tempres = sp.getString(getString(R.string.reservations), "unknown");
+
 
         final FirebaseBook bookdets = new FirebaseBook(title, author,
                 category, pagecount, summary,
-                isbn, "1", getDatetoputinconfirmation(), email);
+                isbn, "1", getDatetoputinconfirmation(), email, tempres);
 
         mReffname.setValue(bookdets);
 
     }
 
-    //reserve button onclick
-    public void reserveOnClick(View view) {
 
-        //only allow reservations to be made when book is unavailable
-        if (status.getText().toString().contains("Unavailable")) {
-            final Context context = view.getContext();
+    private void updatereserve(final String datething, final String checkedoutto) {
 
-            //make sure book is not already reserved
-            if (reservedbooktitles.contains(CatalogFragment.titleofthebook) || reservedbookimages.contains(CatalogFragment.id) || reservedbookauthor.contains(cf.authorofthebook)) {
-                Toast.makeText(context, "Book is already reserved", Toast.LENGTH_LONG).show();
-            } else {
+        final Firebase mReffname = new Firebase("https://libeary-8d044.firebaseio.com/Books/" + CatalogFragment.titleofthebook);
+        mReffname.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //store the information in Map
+                Map<String, String> map = dataSnapshot.getValue(Map.class);
 
-                //build alertdialog for user to enter password in order to reserve book
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Please enter your password to proceed");
-
-                input = new EditText(context);
-                input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                builder.setView(input);
-
-
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        String entered = input.getText().toString();
-                        SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
-                        String password = sp.getString(getString(R.string.password), "Unknown");
-
-                        //make sure password is correct
-                        if (entered.equals(password)) {
-
-                            //increase reserved count for Profile fragment to recrod count
-                            reservedcount++;
-
-                            //add info to the reserved arraylists for reserved fragment
-                            reservedbooktitles.add(CatalogFragment.titleofthebook);
-                            // reservedbookauthor.add(CatalogFragment.authorofthebook);
-                            reservedbookimages.add(CatalogFragment.id);
-
-
-                            notification = new NotificationCompat.Builder(BookInformation.this);
-                            notification.setAutoCancel(true);
-
-                            notification.setSmallIcon(R.mipmap.ic_launcher);
-                            notification.setWhen(System.currentTimeMillis());
-                            notification.setContentTitle("Book reserved");
-                            notification.setContentText("You have successfully reserved the following book: " + CatalogFragment.titleofthebook);
-
-                            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                            nm.notify(uniqueid, notification.build());
-
-                            //initializeCountDrawerreserve();
-
-                            //start the activity for confirm reservation
-                            Intent activities = new Intent(context, ReservedConfirmation.class);
-                            startActivity(activities);
-                            finish();
-
-                        } else {
-                            Toast.makeText(context, "password is incorrect", Toast.LENGTH_LONG).show();
-                            input.setText("");
-                        }
-                    }
-                });
-                //builder second button for negative
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-                builder.show();
+                reservationsforthisbook = map.get("reservations");
+                if(reservationsforthisbook.isEmpty() || reservationsforthisbook == null){
+                    reservationsforthisbook = "";
+                }
             }
+
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
+        SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+
+        String email = sp.getString(getString(R.string.email), "em");
+        String newres = reservationsforthisbook + email + ", ";
+        if (CatalogFragment.status.equals("Available")) {
+            CatalogFragment.status = "0";
+        } else {
+            CatalogFragment.status = "1";
         }
-        //if book is available then dont reserve and instead check out the book
-        else {
-            Toast.makeText(getApplicationContext(), "Please check out the book instead", Toast.LENGTH_SHORT).show();
 
+        final FirebaseBook bookdets = new FirebaseBook(CatalogFragment.titleofthebook, CatalogFragment.authorofthebook,
+                CatalogFragment.category, CatalogFragment.pg, CatalogFragment.summary,
+                CatalogFragment.isbn, CatalogFragment.status, datething, checkedoutto, newres);
+
+        mReffname.setValue(bookdets);
+
+
+    }
+
+
+    public boolean ischeckedout(String title) {
+        Firebase mReffname = new Firebase("https://libeary-8d044.firebaseio.com/Books/" + title);
+        boolean ischecked;
+        mReffname.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //store the information in Map
+                Map<String, String> map = dataSnapshot.getValue(Map.class);
+
+                String checkedoutto = map.get("checkedoutto");
+                SharedPreferences preferences = getSharedPreferences("checked", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString(getString(R.string.checkedoutto), checkedoutto);
+                editor.commit();
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+        SharedPreferences preferences = getSharedPreferences("checked", Context.MODE_PRIVATE);
+        String wordstring = preferences.getString(getString(R.string.checkedoutto), "");
+
+        SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+        String emailofuser = sp.getString(getString(R.string.email), "");
+
+        if (wordstring.equals(emailofuser)) {
+            ischecked = true;
+        } else {
+            ischecked = false;
         }
+        return ischecked;
     }
 
-    private void initializeCountDrawerreserve() {
-        //Gravity property aligns the text
-        rc.setGravity(Gravity.CENTER_VERTICAL);
-        rc.setTypeface(null, Typeface.BOLD);
-        rc.setTextColor(getResources().getColor(R.color.colorAccent));
-        rc.setText(BookInformation.reservedcount + "");
-
-
-    }
-
-    private void initializeCountDrawerchecke() {
-        //Gravity property aligns the text
-        cc.setGravity(Gravity.CENTER_VERTICAL);
-        cc.setTypeface(null, Typeface.BOLD);
-        cc.setTextColor(getResources().getColor(R.color.colorAccent));
-        cc.setText(BookInformation.checkedoutcount + "");
-    }
 
     public void reviewonclick(View v) {
         final Context context = v.getContext();
@@ -363,6 +352,90 @@ public class BookInformation extends AppCompatActivity {
         startActivity(activities);
         finish();
     }
+
+    public void method() {
+        Firebase mReffname = new Firebase("https://libeary-8d044.firebaseio.com/Books/" + CatalogFragment.titleofthebook);
+
+        mReffname.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //store the information in Map
+                Map<String, String> map = dataSnapshot.getValue(Map.class);
+
+                String checkedoutto = map.get("checkedoutto");
+                SharedPreferences preferences = getSharedPreferences("checked", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString(getString(R.string.checkedoutto), checkedoutto);
+                editor.commit();
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+        final SharedPreferences sharedPreferences = getSharedPreferences("checked", Context.MODE_PRIVATE);
+        //only allow reservations to be made when book is unavailable
+        AlertDialog.Builder builder = new AlertDialog.Builder(BookInformation.this);
+        builder.setTitle("Please enter your password to proceed");
+
+        input = new EditText(BookInformation.this);
+        input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        builder.setView(input);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                String entered = input.getText().toString();
+                SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+                String password = sp.getString(getString(R.string.password), "Unknown");
+
+                //make sure password is correct
+                if (entered.equals(password)) {
+
+                    //increase reserved count for Profile fragment to recrod count
+                    reservedcount++;
+
+                    notification = new NotificationCompat.Builder(BookInformation.this);
+                    notification.setAutoCancel(true);
+
+                    notification.setSmallIcon(R.mipmap.ic_launcher);
+                    notification.setWhen(System.currentTimeMillis());
+                    notification.setContentTitle(CatalogFragment.titleofthebook + " reserved");
+                    notification.setContentText("You have successfully reserved the following book: " + CatalogFragment.titleofthebook);
+
+                    NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                    nm.notify(uniqueid, notification.build());
+
+                    //initializeCountDrawerreserve();
+                    updatereserve(CatalogFragment.reservedlist,
+                            (sharedPreferences.getString(getString(R.string.checkedoutto), "nothing")));
+                    //start the activity for confirm reservation
+                    Intent activities = new Intent(BookInformation.this, ReservedConfirmation.class);
+                    startActivity(activities);
+                    finish();
+
+                } else {
+                    Toast.makeText(BookInformation.this, "password is incorrect", Toast.LENGTH_LONG).show();
+                    input.setText("");
+                }
+            }
+        });
+        //builder second button for negative
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+
 }
 
 

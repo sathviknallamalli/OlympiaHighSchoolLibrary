@@ -36,14 +36,13 @@ public class CatalogFragment extends Fragment {
     String[] isbns = Login.getIss();
     String[] summaries = Login.getSs();
     static String[] statuses = Login.getStatuss();
-    public int[] picids = {R.drawable.candymakers, R.drawable.msd, R.drawable.wheights, R.drawable.lotf, R.drawable.frank, R.drawable.selection
+    public int[] picids = {R.drawable.candymakers, R.drawable.wheights, R.drawable.lotf, R.drawable.frank, R.drawable.selection
             , R.drawable.owellbook, R.drawable.cpd, R.drawable.rq, R.drawable.hamelt, R.drawable.ungifted, R.drawable.pp,
             R.drawable.ts, R.drawable.af, R.drawable.cb, R.drawable.tkam, R.drawable.hfin, R.drawable.quants, R.drawable.farenheit,
             R.drawable.odys, R.drawable.dc, R.drawable.house, R.drawable.rj, R.drawable.gg, R.drawable.three, R.drawable.giver,
             R.drawable.ofmm, R.drawable.awake};
     static String[] addedornot = new String[Login.getTils().length];
-
-
+    String[] reservations = Login.getResses();
 
     private ListView lvBook;
     private BookAdapter adapter;
@@ -58,6 +57,7 @@ public class CatalogFragment extends Fragment {
     public static String isbn;
     public static String summary;
     public static int pos;
+    public static String reservedlist;
 
     //arraylist to add all the books into
     static ArrayList<Book> books, bookstwo;
@@ -75,7 +75,7 @@ public class CatalogFragment extends Fragment {
 
     public static String status;
 
-    public static Book selected;
+    public Book selected;
 
     FirebaseAuth mAuth;
 
@@ -112,8 +112,9 @@ public class CatalogFragment extends Fragment {
 
         //make a Book for each title,author,pagecount,isbb,status,image id and load into arraylist
         for (int i = 0; i < title.length; i++) {
-            books.add(new Book((title[i]), (author[i]), pageCount[i], picids[i], (categories[i]), addedornot[i], isbns[i], statuses[i], summaries[i]));
-           // bookstwo.add(new Book((titleorig[i]), (authororig[i]), pageCountorig[i], picidsorig[i], (categoriesorig[i]), addedornotorig[i], isbns[i], statuses[i], summaries[i]));
+            books.add(new Book((title[i]), (author[i]), pageCount[i], picids[i], (categories[i]), addedornot[i], isbns[i],
+                    statuses[i], summaries[i], reservations[i]));
+            // bookstwo.add(new Book((titleorig[i]), (authororig[i]), pageCountorig[i], picidsorig[i], (categoriesorig[i]), addedornotorig[i], isbns[i], statuses[i], summaries[i]));
             lvBook.setTextFilterEnabled(true);
 
         }
@@ -139,14 +140,18 @@ public class CatalogFragment extends Fragment {
                 isbn = isbns[i];
                 summary = summaries[i];
                 setStatus(statuses[i], i);
+                reservedlist = reservations[i];
                 pos = i;
 
-                selected = new Book((title[i]), (author[i]), pageCount[i], picids[i], (categories[i]), addedornot[i], isbns[i], statuses[i], summaries[i]);
+                selected = new Book((title[i]), (author[i]), pageCount[i], picids[i], (categories[i]), addedornot[i], isbns[i],
+                        statuses[i], summaries[i], reservations[i]);
+
 
                 Intent appInfo = new Intent(view.getContext(), BookInformation.class);
-                Bundle b = new Bundle();
-                b.putString("key", "uno"); //Your id
-                appInfo.putExtras(b); //Put your id to your next Intent
+
+                //    BookInformation bi = new BookInformation();
+                //  bi.set(selected);
+
                 startActivity(appInfo);
 
             }
@@ -234,6 +239,7 @@ public class CatalogFragment extends Fragment {
                             isbn = filteredValues.get(i).getIsbn();
                             summary = filteredValues.get(i).getSummary();
                             setStatus(filteredValues.get(i).getStatus(), i);
+                            reservedlist = (filteredValues.get(i).getReservations());
                             pos = i;
 
                             //similarly also start the bookinformation activity
@@ -285,6 +291,7 @@ public class CatalogFragment extends Fragment {
                 isbn = isbns[i];
                 summary = summaries[i];
                 setStatus(statuses[i], i);
+                reservedlist = reservations[i];
                 pos = i;
 
                 //book info activity started with all the details of the book

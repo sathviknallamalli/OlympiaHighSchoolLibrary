@@ -84,7 +84,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     private EditText emailField;
     private EditText passwordField;
     TextView fp;
-    String fn, ln, un, pd, em, gr;
+    String fn, ln, un, pd, em, gr , res;
     Button buttons;
     ProgressBar pb;
 
@@ -141,6 +141,16 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     }
 
     static String[] cs;
+
+    static String[] resses;
+
+    public static String[] getResses() {
+        return resses;
+    }
+
+    public static void setResses(String[] resses) {
+        Login.resses = resses;
+    }
 
     public static String[] getIss() {
         return iss;
@@ -252,6 +262,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     ArrayList<String> sus = new ArrayList<>();
     ArrayList<String> sss = new ArrayList<>();
     ArrayList<String> ibss = new ArrayList<>();
+    ArrayList<String> ress = new ArrayList<>();
 
     static String esend, namesend;
 
@@ -527,6 +538,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
             }
         });
 
+
     }
 
 
@@ -648,6 +660,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                 sus = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "summary");
                 sss = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "status");
                 ibss = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "isbn");
+                ress = collectBookData((Map<String, Object>) dataSnapshot.getValue(), "reservations");
 
 
                 //convert the arraylist to array and use setmethod
@@ -658,6 +671,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                 setSs(sus.toArray(new String[sus.size()]));
                 setStatuss(sss.toArray(new String[sss.size()]));
                 setIss(ibss.toArray(new String[ibss.size()]));
+                setResses(ress.toArray(new String[ress.size()]));
             }
 
             @Override
@@ -725,7 +739,6 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                         if (pd.equals("No password specified") || un.equals("No username specified") || gr.equals("Unknown")) {
                             update(split[0], split[1], provider, uno, user);
                         } else {
-
                             SharedPreferences sp = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = sp.edit();
                             editor.putString(getString(R.string.fullname), thing);
@@ -736,6 +749,8 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                             editor.putString(getString(R.string.username), map.get("username"));
                             editor.putString(getString(R.string.password), map.get("password"));
                             editor.putString(getString(R.string.provider), provider);
+                            editor.putString(getString(R.string.uuid), user.getUid());
+
                             editor.apply();
 
                             UserInformation userInformation = new UserInformation(split[0], split[1], provider + "",
@@ -966,6 +981,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                     editor.putString(getString(R.string.username), usernamecustom.getText().toString());
                     editor.putString(getString(R.string.password), passwordcustom.getText().toString());
                     editor.putString(getString(R.string.provider), cprovider);
+                    editor.putString(getString(R.string.uuid), user.getUid());
                     editor.apply();
 
                     pb.setVisibility(View.GONE);

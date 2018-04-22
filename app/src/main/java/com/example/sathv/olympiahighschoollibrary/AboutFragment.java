@@ -17,7 +17,6 @@ public class AboutFragment extends Fragment {
     }
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +25,8 @@ public class AboutFragment extends Fragment {
         //set the title of the screen
         getActivity().setTitle("Olympia High School Library");
         setHasOptionsMenu(false);
+
+
 
         return view;
     }

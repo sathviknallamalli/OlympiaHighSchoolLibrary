@@ -3,6 +3,7 @@ package com.example.sathv.olympiahighschoollibrary;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -29,6 +30,7 @@ public class ChangePassword extends AppCompatActivity {
     ProgressDialog mDialog;
     String entered;
     FirebaseAuth mAuth;
+    SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +39,7 @@ public class ChangePassword extends AppCompatActivity {
 
         Context context = getApplicationContext();
 
-
+        sharedPref = getSharedPreferences("userinfo", Context.MODE_PRIVATE);
         submit = (Button) findViewById(R.id.submit);
         pd = (EditText) findViewById(R.id.pd);
         confirm = (EditText) findViewById(R.id.confirm);
@@ -143,8 +145,16 @@ public class ChangePassword extends AppCompatActivity {
 
         //save and update all the changes to Firebase
         Firebase ref = new Firebase("https://libeary-8d044.firebaseio.com/Users/" + userid);
-        final UserInformation bookdets = new UserInformation(Login.getFullName().split(" ")[0], Login.getFullName().split(" ")[1],
-                "Email/Password",Login.getUsername(), confirm.getText().toString(), Login.getEmail(), Login.getGrade());
+
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(getString(R.string.password), confirm.getText().toString());
+
+
+        final UserInformation bookdets = new UserInformation(sharedPref.getString(getString(R.string.fname), "full name"),
+                sharedPref.getString(getString(R.string.lname), "full name"),
+                sharedPref.getString(getString(R.string.provider), "full name"),
+                sharedPref.getString(getString(R.string.username), "full name"), sharedPref.getString(getString(R.string.password), "full name"),
+                sharedPref.getString(getString(R.string.email), "full name"), sharedPref.getString(getString(R.string.grade), "full name"));
         ref.setValue(bookdets);
 
         Login.setPassword(confirm.getText().toString());

@@ -5,10 +5,18 @@ package com.example.sathv.olympiahighschoollibrary;
  */
 
 public class FirebaseBook {
-    private String title, author, category, pagecount, summary, isbn, status, duedate, checkedoutto;
+    private String title, author, category, pagecount, summary, isbn, status, duedate, checkedoutto, reservations;
+
+    public String getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(String reservations) {
+        this.reservations = reservations;
+    }
 
     public FirebaseBook(String title, String author, String category, String pagecount, String summary, String isbn,
-                        String status, String duedate, String checkedoutto) {
+                        String status, String duedate, String checkedoutto, String reservations) {
         this.title = title;
         this.author = author;
         this.category = category;
@@ -18,6 +26,7 @@ public class FirebaseBook {
         this.status = status;
         this.duedate = duedate;
         this.checkedoutto = checkedoutto;
+        this.reservations = reservations;
     }
 
 

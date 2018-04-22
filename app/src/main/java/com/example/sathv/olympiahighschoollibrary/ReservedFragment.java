@@ -1,6 +1,8 @@
 package com.example.sathv.olympiahighschoollibrary;
 
 import android.app.Fragment;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
@@ -12,7 +14,13 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Created by sathv on 11/28/2017.
@@ -29,11 +37,16 @@ public class ReservedFragment extends Fragment {
     TextView message;
 
     private ReservedBooksAdapter adapter;
+    ArrayList<String> information = new ArrayList<>();
+
+    View view;
+
+    String rtits[], rauths[];
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getActivity().setTitle("Reserved books");
-        View view = inflater.inflate(R.layout.reservedbooks, container, false);
+        view = inflater.inflate(R.layout.reservedbooks, container, false);
 
         //set variables
         lvr = (ListView) view.findViewById(R.id.listofreservedbooks);
@@ -41,21 +54,21 @@ public class ReservedFragment extends Fragment {
         message = (TextView) view.findViewById(R.id.noreserve);
 
         //enable search menu
-        setHasOptionsMenu(true);
+
+        rtits = collectreservedbooks("title");
+        rauths = collectreservedbooks("author");
 
         //check to see if reserved arraylists are empty or not
-        if (BookInformation.reservedbooktitles.isEmpty() || BookInformation.reservedbookauthor.isEmpty()
-                || BookInformation.reservedbookimages.isEmpty()) {
+        if (rtits.length == 0 || rauths.length == 0) {
 
             //if emtpy, display message
-            message.setText("You currently have no books reserved");
+            message.setText("You currently have no reserved books");
 
         } else {
-            for (int i = 0; i < BookInformation.reservedbooktitles.size(); i++) {
+            for (int i = 0; i < rtits.length; i++) {
 
                 //create new reservedbook and retrieve fields by getting static arraylists and using get method
-                reservedBooks.add(new ReservedBook(BookInformation.reservedbooktitles.get(i).toString(), BookInformation.reservedbookauthor.get(i).toString(),
-                        (int) BookInformation.reservedbookimages.get(i)));
+                reservedBooks.add(new ReservedBook(rtits[i], rauths[i], R.drawable.bear));
 
             }
             //set adapter to listview
@@ -63,6 +76,59 @@ public class ReservedFragment extends Fragment {
             lvr.setAdapter(adapter);
         }
         return view;
+    }
+
+    public String[] collectreservedbooks(final String fieldname) {
+
+        int val = Login.getTils().length;
+
+        Firebase refname;
+
+        for (int i = 0; i < val; i++) {
+            refname = new Firebase("https://libeary-8d044.firebaseio.com/Books/" + Login.getTils()[i]);
+
+            refname.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Map<String, String> map = dataSnapshot.getValue(Map.class);
+
+                    SharedPreferences sp = view.getContext().getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+                    String emailofuser = sp.getString(getString(R.string.email), "");
+
+                    if (map.get("reservations").contains(emailofuser)) {
+                        information.add(map.get(fieldname));
+
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for (String s : information) {
+                            stringBuilder.append(s);
+                            stringBuilder.append(", ");
+                        }
+
+                        SharedPreferences preferences = view.getContext().getSharedPreferences("gatherreserve", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putString(fieldname, stringBuilder.toString());
+                        editor.commit();
+
+                    }
+                    //Log.d("DUDE", information.toString());
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+
+                }
+
+            });
+
+
+        }
+        SharedPreferences preferences = view.getContext().getSharedPreferences("gatherreserve", Context.MODE_PRIVATE);
+        String wordstring = preferences.getString(fieldname, "");
+        //  Log.d("DUDE", "AFTER" + wordstring);
+
+        String[] temp = wordstring.split(", ");
+
+        return temp;
     }
 
     @Override

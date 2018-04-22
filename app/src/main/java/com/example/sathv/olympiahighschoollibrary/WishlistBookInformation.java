@@ -237,7 +237,9 @@ public class WishlistBookInformation extends AppCompatActivity {
     private void updatecheckout(Book needstobeupdated) {
         Firebase mReffname = new Firebase("https://libeary-8d044.firebaseio.com/Books/" + needstobeupdated.getTitle());
         needstobeupdated.setStatus("1");
-        final FirebaseBook bookdets = new FirebaseBook(needstobeupdated.getTitle(), needstobeupdated.getAuthor(), needstobeupdated.getCategory(), needstobeupdated.getPageCount(), needstobeupdated.getSummary(), needstobeupdated.getIsbn(), needstobeupdated.getStatus(), getDatetoputinconfirmation(), Login.getUsername());
+        final FirebaseBook bookdets = new FirebaseBook(needstobeupdated.getTitle(), needstobeupdated.getAuthor(), needstobeupdated.getCategory(), needstobeupdated.getPageCount(), needstobeupdated.getSummary(),
+                needstobeupdated.getIsbn(), needstobeupdated.getStatus(), getDatetoputinconfirmation(), Login.getUsername(),
+                "");
 
         mReffname.setValue(bookdets);
 

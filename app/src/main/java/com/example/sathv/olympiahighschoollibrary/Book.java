@@ -14,6 +14,15 @@ public class Book {
     public String status;
     public String summary;
     public int imageid;
+    public String reservations;
+
+    public String getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(String reservations) {
+        this.reservations = reservations;
+    }
 
     public int getImageid() {
         return imageid;
@@ -24,7 +33,8 @@ public class Book {
     }
 
     //parameters for Book contructor
-    public Book(String title, String author, String pageCount, int imageid, String category, String added, String isbn, String status, String summary) {
+    public Book(String title, String author, String pageCount, int imageid, String category, String added, String isbn,
+                String status, String summary, String reservations) {
         this.title = title;
         this.author = author;
         this.pageCount = pageCount;
@@ -34,6 +44,7 @@ public class Book {
         this.isbn = isbn;
         this.status = status;
         this.summary = summary;
+        this.reservations = reservations;
     }
 
     public String getTitle() {

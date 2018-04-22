@@ -67,10 +67,6 @@ public class UserInformation {
         this.grade = grade;
     }
 
-    public UserInformation() {
-
-    }
-
 
     public String getEmail() {
         return email;

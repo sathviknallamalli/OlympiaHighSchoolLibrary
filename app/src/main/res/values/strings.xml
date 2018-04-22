@@ -51,5 +51,39 @@
     <string name="status">status</string>
     <string name="picid">picid</string>
     <string name="provider">provider</string>
+    <string name="reservations">reservations</string>
+    <string name="uuid">uuid</string>
+
+    <string name="orwellbookreserve">1984</string>
+    <string name="middsummerreserv">MSD</string>
+    <string name="animalreserve">animalreserve</string>
+    <string name="bringinghousereserve">bringinghousereserve</string>
+    <string name="candymakersreserve">candymakersreserve</string>
+    <string name="cpdreserve">uuid</string>
+    <string name="cbreserve">uuid</string>
+    <string name="coperfieldreserve">uuid</string>
+    <string name="farenheitreserve">uuid</string>
+    <string name="frankreserve">uuid</string>
+    <string name="hamletreserve">uuid</string>
+    <string name="fliesreserve">uuid</string>
+    <string name="micereserve">uuid</string>
+    <string name="pridereserve">uuid</string>
+    <string name="current">current</string>
+    <string name="checkedoutto">checkedoutto</string>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 </resources>

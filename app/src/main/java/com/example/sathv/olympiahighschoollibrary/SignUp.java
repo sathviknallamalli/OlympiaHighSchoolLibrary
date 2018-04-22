@@ -175,6 +175,7 @@ public class SignUp extends Activity {
                     editor.putString(getString(R.string.grade), grade);
                     editor.putString(getString(R.string.username), un);
                     editor.putString(getString(R.string.password), password);
+                    editor.putString(getString(R.string.reservations), "");
                     editor.apply();
 
 
